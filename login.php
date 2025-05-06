@@ -14,7 +14,7 @@
             <div class="navbar">
                 <img src="logo1.png" alt="Logo 1" class="logo">
             </div>
-            <h2>CCS Sitin Monitoring System</h2>
+            <h2>CSS SitIn Monitoring 🖥️</h2>
             <form action="login.php" method="POST">
                 <div class="form-control">
                     <input type="text" name="Username" required>
@@ -25,10 +25,8 @@
                     <label>Password</label>
                 </div>
                 <button type="submit">Login</button>
-                <div style="display: flex;">
-                    <div>Don't have an account? 
-                        <a href="registered.php">Register here</a>
-                    </div>
+                <div style="display: flex; justify-content: center; align-items: center; width: 100%;"> 
+                    <a href="registered.php">Register here </a>
                 </div>
             </form>
         </div>

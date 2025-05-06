@@ -47,7 +47,7 @@
         <div class="navbar">
             <img src="logo1.png" alt="Logo 1" class="logo">
         </div>
-        <h3>Register</h3>
+        <h3>🔗Register  Here</h3>
         <form action="registered.php" method="post">
             <div class="form-control">
                 <input type="text" name="IdNo" required>
