@@ -164,83 +164,139 @@ if ($result) {
 html, body {
     background: linear-gradient(to right, #14569b, #14569b);
     display: flex;
+    flex-direction: column;
     width: 100%;
 }
-/* Sidebar Styles */
-.sidebar {
-    width: 250px;
+
+/* Top Navigation Bar Styles */
+.top-nav {
     background-color: rgba(42, 63, 95, 0.9);
-    height: 100vh;
-    padding: 20px;
-    position: fixed;
+    padding: 15px 30px;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
-    transform: translateX(0);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
-.sidebar img {
-    width: 100px;
-    height: 100px;
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-left img {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    margin-bottom: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-.sidebar .user-name {
-    font-size: x-large;
+.nav-left .user-name {
     color: white;
     font-weight: 600;
-    margin-bottom: 5px;
-    text-align: center;
-    width: 100%;
+    font-size: 1.1rem;
 }
 
-.sidebar .admin-text {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-align: center;
+.nav-right {
+    display: flex;
+    gap: 15px;
 }
 
-.sidebar a {
-    width: 100%;
+.nav-right a {
     color: white;
     text-decoration: none;
-    padding: 12px 15px;
+    padding: 8px 15px;
     border-radius: 8px;
-    margin: 5px 0;
     transition: all 0.3s;
     display: flex;
     align-items: center;
-    gap: 10px;
-}
-.sidebar a i {
-    width: 20px;
-    text-align: center;
+    gap: 8px;
+    font-size: 0.9rem;
 }
 
-.sidebar a:hover {
+.nav-right a i {
+    font-size: 1rem;
+}
+
+.nav-right a:hover {
     background: rgba(255, 255, 255, 0.1);
-    transform: translateX(5px);
+    transform: translateY(-2px);
 }
 
-.sidebar .logout-button {
-    margin-top: auto;
+.nav-right .logout-button {
     background: rgba(220, 53, 69, 0.1);
+    margin-left: 10px;
 }
+
+.nav-right .logout-button:hover {
+    background: rgba(220, 53, 69, 0.2);
+}
+
 .content {
-    flex-grow: 1;
-    margin-left: 230px;
+    margin-top: 80px;
     padding: 30px;
-    min-height: 100vh;
+    min-height: calc(100vh - 80px);
     background: #f0f2f5;
-    transition: margin-left 0.3s ease-in-out;
 }
+
+/* Remove old sidebar styles */
+.sidebar {
+    display: none;
+}
+
+/* Update notification badge position */
+.notification-badge {
+    position: relative;
+    top: -2px;
+    right: -5px;
+    margin-left: 5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .nav-right {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .nav-right a {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .top-nav {
+        flex-direction: column;
+        padding: 10px;
+    }
+    
+    .nav-left {
+        margin-bottom: 10px;
+    }
+    
+    .nav-right {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .nav-right a {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+    }
+    
+    .content {
+        margin-top: 120px;
+    }
+}
+
 .parent {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -727,49 +783,33 @@ html, body {
         opacity: 1;
     }
 }
-.notification-badge {
-    background: #ef4444;
-    color: white;
-    border-radius: 50%;
-    padding: 1px 5px;
-    font-size: 12px;
-    position: absolute;
-    top: 15px;
-    right: 10px;
-    min-width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
-}
 </style>
 </head>
 <body>
-<div class="burger" onclick="toggleSidebar()">
-    <div></div>
-    <div></div>
-    <div></div>
+<div class="top-nav">
+    <div class="nav-left">
+        <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" onerror="this.src='assets/default.png';">
+        <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
+    </div>
+    <div class="nav-right">
+        <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
+        <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
+        <a href="addaily.php"><i class="fas fa-chair"></i> Daily Records</a>
+        <a href="adviewsitin.php"><i class="fas fa-eye"></i> Generate Reports</a>
+        <a href="adreservation.php" style="position: relative;">
+            <i class="fas fa-calendar-check"></i> Reservations
+            <?php if ($pendingCount > 0): ?>
+                <span class="notification-badge"><?php echo $pendingCount; ?></span>
+            <?php endif; ?>
+        </a>
+        <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
+        <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
+        <a href="adfeedback.php"><i class="fas fa-book-open"></i> Feedback</a>
+        <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+    </div>
 </div>
-<div class="sidebar">
-    <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" onerror="this.src='assets/default.png';">
-    <center><div class="user-name"><?php echo htmlspecialchars($user_name); ?></div></center>
-    <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-    <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
-    <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
-    <a href="addaily.php"><i class="fas fa-chair"></i> Daily Sitin Records</a>
-    <a href="viewReports.php"><i class="fas fa-eye"></i> View Sitin Reports</a>
-    <a href="adreservation.php" style="position: relative;">
-        <i class="fas fa-calendar-check"></i> Reservations
-        <?php if ($pendingCount > 0): ?>
-            <span class="notification-badge"><?php echo $pendingCount; ?></span>
-        <?php endif; ?>
-    </a>
-    <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-    <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
-    <a href="adfeedback.php"><i class="fas fa-book-open"></i> Feedback Reports</a>
-    <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
-</div>
+
 <div class="content">
     <div class="parent">
         <div class="div1">

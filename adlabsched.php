@@ -91,71 +91,90 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
 
         html, body {
             background: linear-gradient(135deg, #14569b, #2a3f5f);
-            display: flex;
             min-height: 100vh;
             width: 100%;
         }
 
-        /* Sidebar Styles */
-        .sidebar {
-            width: 250px;
+        /* Top Navigation Bar Styles */
+        .top-nav {
             background-color: rgba(42, 63, 95, 0.9);
-            height: 100vh;
-            padding: 20px;
-            position: fixed;
+            padding: 15px 30px;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            box-shadow: 5px 0 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
-            transform: translateX(0);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
         }
 
-        .sidebar img {
-            width: 100px;
-            height: 100px;
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-left img {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
-        .sidebar a {
-            width: 100%;
+        .nav-left .user-name {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-right a {
             color: white;
             text-decoration: none;
-            padding: 12px 15px;
+            padding: 8px 15px;
             border-radius: 8px;
-            margin: 5px 0;
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            font-size: 0.9rem;
         }
 
-        .sidebar a i {
-            width: 20px;
-            text-align: center;
+        .nav-right a i {
+            font-size: 1rem;
         }
 
-        .sidebar a:hover {
+        .nav-right a:hover {
             background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
+            transform: translateY(-2px);
         }
 
-        .sidebar .logout-button {
-            margin-top: auto;
+        .nav-right .logout-button {
             background: rgba(220, 53, 69, 0.1);
+            margin-left: 10px;
         }
 
-        /* Content Area */
+        .nav-right .logout-button:hover {
+            background: rgba(220, 53, 69, 0.2);
+        }
+
         .content {
-            flex-grow: 1;
-            margin-left: 250px;
+            margin-top: 80px;
             padding: 30px;
-            min-height: 100vh;
+            min-height: calc(100vh - 80px);
             background: #f0f2f5;
-            transition: margin-left 0.3s ease-in-out;
-            width: calc(100% - 250px);
+        }
+
+        /* Remove old sidebar styles */
+        .sidebar {
+            display: none;
         }
 
         .parent {
@@ -249,390 +268,58 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             transform: translateY(-1px);
         }
 
-        .schedules-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-        }
-
-        .schedule-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: all 0.2s;
-        }
-
-        .schedule-header {
-            background: #14569b;
-            color: white;
-            padding: 12px;
-            font-weight: 500;
-        }
-
-        .schedule-content {
-            padding: 15px;
-        }
-
-        .schedule-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .view-btn, .delete-btn {
-            padding: 8px 15px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
-
         /* Responsive Design */
         @media (max-width: 1200px) {
             .content-wrapper {
                 grid-template-columns: 1fr;
             }
-            
-            .div2 {
-                height: 500px;
-            }
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                z-index: 1000;
+            .top-nav {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .nav-left {
+                margin-bottom: 10px;
+            }
+            
+            .nav-right {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .nav-right a {
+                font-size: 0.8rem;
+                padding: 6px 10px;
             }
             
             .content {
-                margin-left: 0;
-                width: 100%;
+                margin-top: 120px;
             }
-            
-            .parent {
-                height: auto;
-            }
-        }
-
-        /* Add to your existing styles */
-        .schedule-table {
-            overflow-x: auto;
-            margin-top: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .schedule-table table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .schedule-table th {
-            background: #14569b;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .schedule-table td {
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-
-        .time-slot {
-            background: #f8fafc;
-            font-weight: 500;
-            color: #2d3748;
-        }
-
-        .status-select {
-            width: 100%;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-            cursor: pointer;
-        }
-
-        .status-select option.available {
-            background-color: #dcfce7;
-            color:rgb(146, 231, 178);
-        }
-
-        .status-select option.occupied {
-            background-color: #fee2e2;
-            color:rgb(243, 173, 173);
-        }
-
-        .save-btn {
-            background: #14569b;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            margin-top: 0px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            float: right;
-        }
-
-        .save-btn:hover {
-            background: #0f4578;
-        }
-
-        /* Replace the existing styles */
-        .schedule-container {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            height: calc(100vh - 60px);
-            overflow: hidden;
-        }
-
-        .schedule-container h1 {
-            color: #14569b;
-            font-size: 1.8rem;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .schedule-header {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 20px;
-        }
-
-        .header-controls select {
-            padding: 8px 15px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            background: white;
-            color: #2d3748;
-            cursor: pointer;
-        }
-
-        .schedule-table {
-            overflow: auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .schedule-table table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .schedule-table th {
-            background: #14569b;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-weight: 500;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .schedule-table td {
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-
-        .time-slot {
-            background: #f8fafc;
-            font-weight: 500;
-            color: #2d3748;
-            position: sticky;
-            left: 0;
-            z-index: 5;
-        }
-
-        .status-select {
-            width: 100%;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-            cursor: pointer;
-            background: white;
-        }
-
-        .status-select option.available {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .status-select option.occupied {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-        .schedule-actions {
-            display: flex;
-            justify-content: flex-end;
-            padding: 20px 0;
-        }
-
-        .save-btn {
-            background: #14569b;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .save-btn:hover {
-            background: #0f4578;
-            transform: translateY(-2px);
-        }
-
-        .popup {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .popup.success {
-            background: #4caf50;
-            color: white;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-
-        /* Add to your existing styles */
-        .room-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .room-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            background: #f1f5f9;
-            color: #64748b;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .room-btn.active {
-            background:rgb(184, 211, 240);
-            color: black;
-        }
-
-        .status-btn {
-            width: 100%;
-            padding: 8px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .status-btn.available {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-btn.occupied {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .status-btn::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        .status-btn.available::before {
-            background: #166534;
-        }
-
-        .status-btn.occupied::before {
-            background: #991b1b;
-        }
-
-        .schedule-table td {
-            padding: 8px;
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-
-        /* Make the table more compact */
-        .schedule-table {
-            font-size: 0.9rem;
-        }
-
-        .schedule-table th {
-            padding: 12px 8px;
-        }
-
-        .time-slot {
-            font-size: 0.9rem;
-            padding: 8px;
-            white-space: nowrap;
         }
     </style>
 </head>
 <body>
-    <div class="burger" onclick="toggleSidebar()">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-
-    <div class="sidebar">
-        <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture">
-        <center><div class="user-name" style="font-size: x-large; color: white;"><?php echo htmlspecialchars($user_name); ?></div></center>
-        <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
-        <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
-        <a href="addaily.php"><i class="fas fa-chair"></i> Daily Sitin Records</a>
-        <a href="viewReports.php"><i class="fas fa-eye"></i> View Sitin Reports</a>
-        <a href="adreservation.php"><i class="fas fa-chair"></i> Reservation</a>
-   <!-- <a href="adlabreward.php"><i class="fas fa-chair"></i> Lab Reward</a>-->
-   <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-        <a href="adlabsched.php"><i class="fas fa-calendar-alt"></i> Lab Schedule</a>
-        <a href="adfeedback.php"><i class="fas fa-book-open"></i> Feedback Reports</a>
-        <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+    <div class="top-nav">
+        <div class="nav-left">
+            <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" onerror="this.src='assets/default.png';">
+            <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
+        </div>
+        <div class="nav-right">
+            <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
+            <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
+            <a href="addaily.php"><i class="fas fa-calendar-day"></i> Daily Records</a>
+            <a href="adviewsitin.php"><i class="fas fa-eye"></i> Generate Reports</a>
+            <a href="adreservation.php"><i class="fas fa-calendar-check"></i> Reservations</a>
+            <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
+            <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
+            <a href="adfeedback.php"><i class="fas fa-book-open"></i> Feedback</a>
+            <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        </div>
     </div>
 
     <div class="content">

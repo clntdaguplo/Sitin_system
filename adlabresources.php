@@ -130,79 +130,88 @@ $result = mysqli_query($con, $query);
 
         html, body {
             background: linear-gradient(135deg, #14569b, #2a3f5f);
-            display: flex;
             min-height: 100vh;
             width: 100%;
         }
 
-        /* Sidebar Styles */
-        .sidebar {
-            width: 250px;
+        /* Top Navigation Bar Styles */
+        .top-nav {
             background-color: rgba(42, 63, 95, 0.9);
-            height: 100vh;
-            padding: 20px;
-            position: fixed;
+            padding: 15px 30px;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            box-shadow: 5px 0 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
-            transform: translateX(0);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
         }
 
-        .sidebar img {
-            width: 100px;
-            height: 100px;
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-left img {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
-        .sidebar a {
-            width: 100%;
+        .nav-left .user-name {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-right a {
             color: white;
             text-decoration: none;
-            padding: 12px 15px;
+            padding: 8px 15px;
             border-radius: 8px;
-            margin: 5px 0;
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            font-size: 0.9rem;
         }
 
-        .sidebar a i {
-            width: 20px;
-            text-align: center;
+        .nav-right a i {
+            font-size: 1rem;
         }
 
-        .sidebar a:hover {
+        .nav-right a:hover {
             background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
+            transform: translateY(-2px);
         }
 
-        .sidebar .logout-button {
-            margin-top: auto;
+        .nav-right .logout-button {
             background: rgba(220, 53, 69, 0.1);
+            margin-left: 10px;
         }
 
-        .sidebar .logout-button:hover {
+        .nav-right .logout-button:hover {
             background: rgba(220, 53, 69, 0.2);
         }
 
-        /* Content Area */
         .content {
-            flex-grow: 1;
-            margin-left: 250px;
+            margin-top: 80px;
             padding: 30px;
-            height: 100vh;
+            min-height: calc(100vh - 80px);
             background: #f0f2f5;
-            transition: margin-left 0.3s ease-in-out;
-            width: calc(100% - 250px);
-            overflow: hidden;
         }
 
-        .parent {
+        .container {
             background: white;
             border-radius: 15px;
             padding: 25px;
@@ -211,14 +220,14 @@ $result = mysqli_query($con, $query);
             max-width: 1400px;
             margin: 0 auto;
             height: calc(100vh - 60px);
-            overflow: hidden;
         }
 
         h1 {
             color: #14569b;
-            margin-bottom: 25px;
             font-size: 1.8rem;
             font-weight: 600;
+            margin-bottom: 25px;
+            text-align: left;
         }
 
         .content-wrapper {
@@ -226,8 +235,7 @@ $result = mysqli_query($con, $query);
             grid-template-columns: 1fr 2fr;
             gap: 25px;
             margin-top: 20px;
-            height: calc(100% - 80px);
-            overflow: hidden;
+            min-height: calc(100% - 80px);
         }
 
         .div1, .div2 {
@@ -239,7 +247,7 @@ $result = mysqli_query($con, $query);
 
         .div2 {
             overflow-y: auto;
-            max-height: 100%;
+            max-height: calc(100vh - 250px);
         }
 
         .resource-form {
@@ -415,23 +423,28 @@ $result = mysqli_query($con, $query);
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                z-index: 1000;
+            .top-nav {
+                flex-direction: column;
+                padding: 10px;
             }
             
-            .sidebar.active {
-                transform: translateX(0);
+            .nav-left {
+                margin-bottom: 10px;
+            }
+            
+            .nav-right {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .nav-right a {
+                font-size: 0.8rem;
+                padding: 6px 10px;
             }
             
             .content {
-                margin-left: 0;
-                width: 100%;
-                padding: 15px;
-            }
-            
-            .burger {
-                display: block;
+                margin-top: 120px;
             }
         }
 
@@ -482,63 +495,30 @@ $result = mysqli_query($con, $query);
             font-size: 0.9rem;
             color: #64748b;
         }
-
-        .popup {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 8px;
-            background: #4caf50;
-            color: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transform: translateX(150%);
-            transition: transform 0.3s ease-in-out;
-            z-index: 1000;
-        }
-
-        .popup.show {
-            transform: translateX(0);
-        }
-
-        .popup i {
-            font-size: 1.2rem;
-        }
     </style>
 </head>
 <body>
-    <div class="burger" onclick="toggleSidebar()">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-
-    <div class="sidebar">
-        <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture">
-        <center><div class="user-name" style="font-size: x-large; color: white;"><?php echo htmlspecialchars($user_name); ?></div></center>
-        <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
-        <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
-        <a href="addaily.php"><i class="fas fa-chair"></i> Daily Sitin Records</a>
-        <a href="viewReports.php"><i class="fas fa-eye"></i> View Sitin Reports</a>
-        <a href="adreservation.php"><i class="fas fa-chair"></i> Reservation</a>
-   <!-- <a href="adlabreward.php"><i class="fas fa-chair"></i> Lab Reward</a>-->
-   <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-        <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
-        <a href="adfeedback.php"><i class="fas fa-book-open"></i> Feedback Reports</a>
-        <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
-    </div>
-
-    <div class="popup" id="successPopup">
-        <i class="fas fa-check-circle"></i>
-        <span><?php echo isset($_GET['message']) ? htmlspecialchars($_GET['message']) : 'Operation successful!'; ?></span>
+    <div class="top-nav">
+        <div class="nav-left">
+            <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" onerror="this.src='assets/default.png';">
+            <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
+        </div>
+        <div class="nav-right">
+            <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
+            <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
+            <a href="addaily.php"><i class="fas fa-calendar-day"></i> Daily Records</a>
+            <a href="adviewsitin.php"><i class="fas fa-eye"></i> Generate Reports</a>
+            <a href="adreservation.php"><i class="fas fa-calendar-check"></i> Reservations</a>
+            <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
+            <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
+            <a href="adfeedback.php"><i class="fas fa-book-open"></i> Feedback</a>
+            <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        </div>
     </div>
 
     <div class="content">
-        <div class="parent">
+        <div class="container">
             <h1>Lab Resources Management</h1>
             
             <?php if (isset($success_message)): ?>
@@ -613,9 +593,9 @@ $result = mysqli_query($con, $query);
                                     </div>
                                 </div>
                                 <div class="resource-actions">
-                                <a href="edit_resource.php?id=<?php echo $row['id']; ?>" class="action-btn edit-btn" title="Edit Resource">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                                    <a href="edit_resource.php?id=<?php echo $row['id']; ?>" class="action-btn edit-btn" title="Edit Resource">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
                                     <a href="?delete=<?php echo $row['id']; ?>" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this resource?')" title="Delete Resource">
                                         <i class="fas fa-trash"></i>
                                     </a>
@@ -627,26 +607,5 @@ $result = mysqli_query($con, $query);
             </div>
         </div>
     </div>
-
-    <script>
-        // Sidebar toggle function
-        function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('active');
-            document.querySelector('.content').classList.toggle('sidebar-active');
-        }
-
-        // Popup handling
-        <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
-            const popup = document.getElementById('successPopup');
-            popup.classList.add('show');
-            
-            // Hide popup after 3 seconds
-            setTimeout(() => {
-                popup.classList.remove('show');
-                // Remove query parameters from URL without refreshing
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }, 3000);
-        <?php endif; ?>
-    </script>
 </body>
 </html>
