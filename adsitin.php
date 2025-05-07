@@ -226,6 +226,10 @@ if(isset($_POST['add_points'])) {
         echo "<script>alert('Error adding points!');</script>";
     }
 }
+
+// Get current date in Manila timezone
+$current_date = date('Y-m-d');
+$selected_date = isset($_GET['date']) ? $_GET['date'] : $current_date;
 ?>
 
 <!DOCTYPE html>
@@ -338,9 +342,10 @@ html, body {
     border-radius: 15px;
     padding: 25px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    height: calc(100vh - 60px);
-    max-width: 1400px;
+    height: 90vh;
+    max-width: auto;
     margin: 0 auto;
+    overflow-y: auto;
 }
 
 h1 {
@@ -485,6 +490,150 @@ tbody tr:hover {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     animation: fadeIn 0.5s ease;
 }
+
+/* Add these new styles for the daily records section */
+.tab-container {
+    margin-bottom: 20px;
+}
+
+.tab-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    padding: 10px 20px;
+    background: #f8f9fa;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #2a3f5f;
+    transition: all 0.3s ease;
+}
+
+.tab-button.active {
+    background: #14569b;
+    color: white;
+}
+
+.tab-button:hover {
+    transform: translateY(-2px);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.date-picker {
+    padding: 10px 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-right: 10px;
+}
+
+.date-picker:focus {
+    border-color: #14569b;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(20, 86, 155, 0.1);
+}
+
+/* Add these new styles for the search bar */
+.search-container {
+    margin-bottom: 20px;
+    padding: 0 10px;
+}
+
+.search-box {
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 20px 12px 45px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #2a3f5f;
+    background: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: #14569b;
+    box-shadow: 0 0 0 3px rgba(20, 86, 155, 0.1);
+}
+
+.search-box::before {
+    content: '\f002';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #14569b;
+    font-size: 1.1rem;
+}
+
+.search-box input::placeholder {
+    color: #94a3b8;
+}
+
+/* Update table container for better spacing */
+.table-container {
+    margin-top: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+/* Update table styles for better readability */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+thead th {
+    background: #14569b;
+    color: white;
+    padding: 15px;
+    font-weight: 500;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+tbody td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #2a3f5f;
+    font-size: 0.95rem;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* Add animation for search results */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+tbody tr {
+    animation: fadeIn 0.3s ease;
+}
 </style>
 </head>
 <body>
@@ -497,7 +646,7 @@ tbody tr:hover {
         <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
         <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
         <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
-        <a href="addaily.php"><i class="fas fa-chair"></i> Daily Records</a>
+        
         <a href="adviewsitin.php"><i class="fas fa-eye"></i> Generate Reports</a>
         <a href="adreservation.php"><i class="fas fa-calendar-check"></i> Reservations</a>
         <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
@@ -509,76 +658,86 @@ tbody tr:hover {
 
 <div class="content">
     <div class="container">
-    <h1>Sit-in Management</h1>
-    <?php
-    if (isset($_GET['success'])) {
-        echo "<div class='success-message'>
-                ✅ User information successfully added to login records table.
-              </div>";
-    }
-    if (isset($_GET['logout_success'])) {
-        echo "<div class='success-message'>
-                ✅ Student successfully logged out
-              </div>";
-    }
-    if (isset($_GET['point_success'])) {
-        $reward_type = isset($_GET['reward']) ? $_GET['reward'] : '';
-        $reward_msg = '';
-        
-        // Get the user's current points
-        if (isset($_GET['points'])) {
-            $current_points = intval($_GET['points']);
-            if ($reward_type === 'point') {
-                $reward_msg = "Student logged out and earned 1 point! (Total points: {$current_points})";
-            } else if ($reward_type === 'session') {
-                $reward_msg = "Student logged out and earned 1 new session for reaching {$current_points} points!";
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="openTab('current')">Current Sit-ins</button>
+                <button class="tab-button" onclick="openTab('daily')">Daily Records</button>
+            </div>
+        </div>
+
+        <div id="current" class="tab-content active">
+            <div class="header">
+                <h1>Current Sit-in Management</h1>
+            </div>
+            <?php
+            if (isset($_GET['success'])) {
+                echo "<div class='success-message'>
+                        ✅ User information successfully added to login records table.
+                      </div>";
             }
-        } else {
-            $reward_msg = "Student logged out and earned 1 point!";
-        }
-        echo "<div class='success-message'>✅ " . $reward_msg . "</div>";
-    }
-    if (isset($_GET['error'])) {
-        $error_msg = '';
-        switch($_GET['error']) {
-            case 'no_sessions':
-                $error_msg = "❌ Student has no remaining sessions";
-                break;
-            case 'db_error':
-                $error_msg = "❌ Database error occurred";
-                break;
-            case 'logout_failed':
-                $error_msg = "❌ Failed to logout student";
-                break;
-        }
-        if ($error_msg) {
-            echo "<div class='error-message'>$error_msg</div>";
-        }
-    }
-    ?>
-        <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID No</th>
-                    <th>Full Name</th>
-                    <th>Purpose</th>
-                    <th>Room</th>
-                    <th>Date & Time</th>
-                    <th>Sessions</th>
-                    <th>Points</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                    $sitin_result = mysqli_query($con, "SELECT login_records.IDNO, FULLNAME, 
-                           TIME_IN, REMAINING_SESSIONS, PURPOSE, LAB_ROOM, 
-                           POINTS, CONVERT_TZ(TIME_IN, 'UTC', 'Asia/Manila') as local_time 
-                           FROM login_records 
-                           JOIN user ON login_records.IDNO = user.IDNO 
-                           WHERE TIME_OUT IS NULL 
-                           ORDER BY TIME_IN DESC");
+            if (isset($_GET['logout_success'])) {
+                echo "<div class='success-message'>
+                        ✅ Student successfully logged out
+                      </div>";
+            }
+            if (isset($_GET['point_success'])) {
+                $reward_type = isset($_GET['reward']) ? $_GET['reward'] : '';
+                $reward_msg = '';
+                
+                // Get the user's current points
+                if (isset($_GET['points'])) {
+                    $current_points = intval($_GET['points']);
+                    if ($reward_type === 'point') {
+                        $reward_msg = "Student logged out and earned 1 point! (Total points: {$current_points})";
+                    } else if ($reward_type === 'session') {
+                        $reward_msg = "Student logged out and earned 1 new session for reaching {$current_points} points!";
+                    }
+                } else {
+                    $reward_msg = "Student logged out and earned 1 point!";
+                }
+                echo "<div class='success-message'>✅ " . $reward_msg . "</div>";
+            }
+            if (isset($_GET['error'])) {
+                $error_msg = '';
+                switch($_GET['error']) {
+                    case 'no_sessions':
+                        $error_msg = "❌ Student has no remaining sessions";
+                        break;
+                    case 'db_error':
+                        $error_msg = "❌ Database error occurred";
+                        break;
+                    case 'logout_failed':
+                        $error_msg = "❌ Failed to logout student";
+                        break;
+                }
+                if ($error_msg) {
+                    echo "<div class='error-message'>$error_msg</div>";
+                }
+            }
+            ?>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID No</th>
+                            <th>Full Name</th>
+                            <th>Purpose</th>
+                            <th>Room</th>
+                            <th>Date & Time</th>
+                            <th>Sessions</th>
+                            <th>Points</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                            $sitin_result = mysqli_query($con, "SELECT login_records.IDNO, FULLNAME, 
+                                   TIME_IN, REMAINING_SESSIONS, PURPOSE, LAB_ROOM, 
+                                   POINTS, CONVERT_TZ(TIME_IN, 'UTC', 'Asia/Manila') as local_time 
+                                   FROM login_records 
+                                   JOIN user ON login_records.IDNO = user.IDNO 
+                                   WHERE TIME_OUT IS NULL 
+                                   ORDER BY TIME_IN DESC");
 
 while ($sitin_row = mysqli_fetch_assoc($sitin_result)) { ?>
     <tr>
@@ -603,13 +762,106 @@ while ($sitin_row = mysqli_fetch_assoc($sitin_result)) { ?>
         </td>
     </tr>
 <?php } ?>
-            </tbody>
-        </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="daily" class="tab-content">
+            <div class="header">
+                <h1>Daily Sit-in Reports</h1>
+            </div>
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search by ID Number, Name, Purpose, or Lab Room..." onkeyup="searchTable()">
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="dailyTable">
+                    <thead>
+                        <tr>
+                            <th>ID Number</th>
+                            <th>Name</th>
+                            <th>Time In</th>
+                            <th>Time Out</th>
+                            <th>Purpose</th>
+                            <th>Lab Room</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $daily_query = "SELECT * FROM login_records ORDER BY TIME_IN DESC";
+                        $daily_result = mysqli_query($con, $daily_query);
+
+                        while ($row = mysqli_fetch_assoc($daily_result)) {
+                            echo "<tr>";
+                            echo "<td>" . htmlspecialchars($row['IDNO']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['FULLNAME']) . "</td>";
+                            echo "<td>" . date('h:i A', strtotime($row['TIME_IN'])) . "</td>";
+                            echo "<td>" . ($row['TIME_OUT'] ? date('h:i A', strtotime($row['TIME_OUT'])) : 'Active') . "</td>";
+                            echo "<td>" . htmlspecialchars($row['PURPOSE']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['LAB_ROOM']) . "</td>";
+                            echo "</tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
+function openTab(tabName) {
+    // Hide all tab contents
+    var tabContents = document.getElementsByClassName("tab-content");
+    for (var i = 0; i < tabContents.length; i++) {
+        tabContents[i].classList.remove("active");
+    }
+
+    // Remove active class from all buttons
+    var tabButtons = document.getElementsByClassName("tab-button");
+    for (var i = 0; i < tabButtons.length; i++) {
+        tabButtons[i].classList.remove("active");
+    }
+
+    // Show the selected tab content and activate the button
+    document.getElementById(tabName).classList.add("active");
+    event.currentTarget.classList.add("active");
+}
+
+function searchTable() {
+    var input, filter, table, tr, td, i, j, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("dailyTable");
+    tr = table.getElementsByTagName("tr");
+
+    // Loop through all table rows
+    for (i = 1; i < tr.length; i++) { // Start from 1 to skip header row
+        var found = false;
+        td = tr[i].getElementsByTagName("td");
+        
+        // Loop through all columns
+        for (j = 0; j < td.length; j++) {
+            if (td[j]) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        
+        // Show/hide row based on search result
+        if (found) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+    }
+}
+
 if (window.location.href.indexOf("success=1") > -1) {
     setTimeout(function() {
         window.history.replaceState(null, null, window.location.pathname);

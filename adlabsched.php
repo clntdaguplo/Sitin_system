@@ -95,44 +95,48 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             width: 100%;
         }
 
-        /* Top Navigation Bar Styles */
+        /* Updated Top Navigation Bar Styles */
         .top-nav {
-            background-color: rgba(42, 63, 95, 0.9);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .nav-left {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .nav-left img {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            object-fit: cover;
         }
 
         .nav-left .user-name {
             color: white;
             font-weight: 600;
             font-size: 1.1rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .nav-right {
             display: flex;
-            gap: 15px;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         .nav-right a {
@@ -140,11 +144,17 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             text-decoration: none;
             padding: 8px 15px;
             border-radius: 8px;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-right a.active {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
         }
 
         .nav-right a i {
@@ -152,63 +162,31 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
         }
 
         .nav-right a:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
         }
 
         .nav-right .logout-button {
-            background: rgba(220, 53, 69, 0.1);
-            margin-left: 10px;
+            background: rgba(220, 53, 69, 0.2);
         }
 
         .nav-right .logout-button:hover {
-            background: rgba(220, 53, 69, 0.2);
+            background: rgba(220, 53, 69, 0.3);
         }
 
         .content {
             margin-top: 80px;
             padding: 30px;
             min-height: calc(100vh - 80px);
-            background: #f0f2f5;
         }
 
-        /* Remove old sidebar styles */
-        .sidebar {
-            display: none;
-        }
-
-        .parent {
+        .schedule-container {
             background: white;
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             max-width: 1400px;
             margin: 0 auto;
-            height: calc(100vh - 60px);
-            overflow: hidden;
-        }
-
-        .content-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 25px;
-            height: calc(100% - 100px);
-            overflow: hidden;
-        }
-
-        .div1 {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .div2 {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
         }
 
         h1 {
@@ -216,62 +194,165 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             font-size: 1.8rem;
             margin-bottom: 25px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        h2 {
-            color: #14569b;
-            font-size: 1.2rem;
+        .schedule-content {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .schedule-header {
             margin-bottom: 20px;
+        }
+
+        .room-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .room-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #e9ecef;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .room-btn:hover {
+            background: #dee2e6;
+        }
+
+        .room-btn.active {
+            background: #14569b;
+            color: white;
+        }
+
+        .schedule-table {
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: #14569b;
             font-weight: 600;
         }
 
-        .upload-form {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
+        .time-slot {
+            font-weight: 500;
+            color: #495057;
         }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #14569b;
+        .status-btn {
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
             font-weight: 500;
         }
 
-        select, input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            background: white;
+        .status-btn.available {
+            background: #d4edda;
+            color: #155724;
         }
 
-        .submit-btn {
+        .status-btn.occupied {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .schedule-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .save-btn {
             background: #14569b;
             color: white;
-            padding: 12px 20px;
+            padding: 12px 25px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-            margin-top: 10px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-weight: 500;
         }
 
-        .submit-btn:hover {
+        .save-btn:hover {
             background: #0f4578;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
 
-        /* Responsive Design */
+        .popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        .popup.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .popup.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         @media (max-width: 1200px) {
-            .content-wrapper {
-                grid-template-columns: 1fr;
+            .nav-right {
+                gap: 8px;
+            }
+            
+            .nav-right a {
+                padding: 8px 12px;
+                font-size: 0.85rem;
             }
         }
 
@@ -280,22 +361,21 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
                 flex-direction: column;
                 padding: 10px;
             }
-            
+
             .nav-left {
                 margin-bottom: 10px;
             }
-            
+
             .nav-right {
                 width: 100%;
                 justify-content: center;
-                flex-wrap: wrap;
             }
-            
+
             .nav-right a {
-                font-size: 0.8rem;
                 padding: 6px 10px;
+                font-size: 0.8rem;
             }
-            
+
             .content {
                 margin-top: 120px;
             }
@@ -309,16 +389,36 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
         </div>
         <div class="nav-right">
-            <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
-            <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
-            <a href="addaily.php"><i class="fas fa-calendar-day"></i> Daily Records</a>
-            <a href="adviewsitin.php"><i class="fas fa-eye"></i> Generate Reports</a>
-            <a href="adreservation.php"><i class="fas fa-calendar-check"></i> Reservations</a>
-            <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-            <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
-            <a href="adfeedback.php"><i class="fas fa-book-open"></i> Feedback</a>
-            <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+            <a href="admindash.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'admindash.php' ? 'active' : ''; ?>">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="adannouncement.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adannouncement.php' ? 'active' : ''; ?>">
+                <i class="fas fa-bullhorn"></i> Announcements
+            </a>
+            <a href="adsitin.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adsitin.php' ? 'active' : ''; ?>">
+                <i class="fas fa-chair"></i> Current Sitin
+            </a>
+            <a href="addaily.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'addaily.php' ? 'active' : ''; ?>">
+                <i class="fas fa-calendar-day"></i> Daily Records
+            </a>
+            <a href="adviewsitin.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adviewsitin.php' ? 'active' : ''; ?>">
+                <i class="fas fa-eye"></i> Generate Reports
+            </a>
+            <a href="adreservation.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adreservation.php' ? 'active' : ''; ?>">
+                <i class="fas fa-calendar-check"></i> Reservations
+            </a>
+            <a href="adlabresources.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adlabresources.php' ? 'active' : ''; ?>">
+                <i class="fas fa-book"></i> Lab Resources
+            </a>
+            <a href="adlabsched.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adlabsched.php' ? 'active' : ''; ?>">
+                <i class="fas fa-calendar"></i> Lab Schedule
+            </a>
+            <a href="adfeedback.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adfeedback.php' ? 'active' : ''; ?>">
+                <i class="fas fa-book-open"></i> Feedback
+            </a>
+            <a href="admindash.php?logout=true" class="logout-button">
+                <i class="fas fa-sign-out-alt"></i> Log Out
+            </a>
         </div>
     </div>
 

@@ -60,71 +60,80 @@ echo "<script>alert('Error resetting sessions!');</script>";
 
 html, body {
     background: linear-gradient(135deg, #14569b, #2a3f5f);
-    display: flex;
     min-height: 100vh;
     width: 100%;
 }
 
-/* Sidebar Styles */
-.sidebar {
-    width: 250px;
-    background-color: rgba(42, 63, 95, 0.9);
-    height: 100vh;
-    padding: 20px;
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    transform: translateX(0);
-}
-
-.sidebar img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    margin-bottom: 15px;
-}
-
-.sidebar a {
+/* Top Navigation Bar Styles */
+.topnav {
     width: 100%;
+    background-color: rgba(42, 63, 95, 0.9);
+    padding: 15px 30px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-name {
+    color: white;
+    font-size: 1.1rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.nav-links a {
     color: white;
     text-decoration: none;
-    padding: 12px 15px;
-    border-radius: 8px;
-    margin: 5px 0;
+    padding: 8px 15px;
+    border-radius: 6px;
     transition: all 0.3s;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
-.sidebar a i {
+.nav-links a i {
     width: 20px;
     text-align: center;
 }
 
-.sidebar a:hover {
+.nav-links a:hover {
     background: rgba(255, 255, 255, 0.1);
-    transform: translateX(5px);
 }
 
-.sidebar .logout-button {
-    margin-top: auto;
+.nav-links .logout-button {
     background: rgba(220, 53, 69, 0.1);
 }
 
 /* Content Area */
 .content {
-    flex-grow: 1;
-    margin-left: 250px;
+    margin-top: 80px;
     padding: 30px;
-    min-height: 100vh;
+    min-height: calc(100vh - 80px);
     background: #f0f2f5;
-    transition: margin-left 0.3s ease-in-out;
-    width: calc(100% - 250px);
 }
 
 .container {
@@ -310,51 +319,68 @@ tbody tr:hover {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-        z-index: 1000;
+    .topnav {
+        padding: 10px 15px;
     }
     
-    .sidebar.active {
-        transform: translateX(0);
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: rgba(42, 63, 95, 0.95);
+        flex-direction: column;
+        padding: 20px;
+    }
+    
+    .nav-links.active {
+        display: flex;
+    }
+    
+    .burger {
+        display: block;
+        cursor: pointer;
+    }
+    
+    .burger div {
+        width: 25px;
+        height: 3px;
+        background-color: white;
+        margin: 5px 0;
+        transition: all 0.3s;
     }
     
     .content {
-        margin-left: 0;
-        width: 100%;
+        margin-top: 70px;
         padding: 15px;
-    }
-    
-    .controls-container {
-        flex-direction: column;
-    }
-    
-    .search-box {
-        max-width: 100%;
     }
 }
 </style>
 </head>
 <body>
-<div class="burger" onclick="toggleSidebar()">
-<div></div>
-<div></div>
-<div></div>
-</div>
-<div class="sidebar">
-<img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture">
-<center><div class="user-name" style="font-size: x-large; color: white;"><?php echo htmlspecialchars($user_name); ?></div></center>
-<a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-<a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
-<a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
-<a href="addaily.php"><i class="fas fa-chair"></i> Daily Sitin Records</a>
-<a href="viewReports.php"><i class="fas fa-eye"></i> View Sitin Reports</a>
-<a href="adreservation.php"><i class="fas fa-chair"></i> Reservation</a>
-   <!-- <a href="adlabreward.php"><i class="fas fa-chair"></i> Lab Reward</a>-->
-   <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-<a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
-<a href="viewReports.php"><i class="fas fa-book-open"></i> Feedback Reports</a>
-<a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+<div class="topnav">
+    <div class="user-profile">
+        <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture">
+        <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
+    </div>
+    <div class="burger" onclick="toggleNav()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div class="nav-links">
+        <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
+        <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
+        <a href="addaily.php"><i class="fas fa-chair"></i> Daily Sitin Records</a>
+        <a href="viewReports.php"><i class="fas fa-eye"></i> View Sitin Reports</a>
+        <a href="adreservation.php"><i class="fas fa-chair"></i> Reservation</a>
+        <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
+        <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
+        <a href="viewReports.php"><i class="fas fa-book-open"></i> Feedback Reports</a>
+        <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+    </div>
 </div>
 <div class="content">
 <div class="container">
@@ -438,9 +464,8 @@ row.style.display = text.includes(searchValue) ? '' : 'none';
 });
 });
 
-function toggleSidebar() {
-document.querySelector('.sidebar').classList.toggle('active');
-document.querySelector('.content').classList.toggle('sidebar-active');
+function toggleNav() {
+    document.querySelector('.nav-links').classList.toggle('active');
 }
 
 function resetSessions(idno) {

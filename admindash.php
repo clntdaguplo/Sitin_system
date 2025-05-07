@@ -146,6 +146,15 @@ if ($result) {
     $row = $result->fetch_assoc();
     $pendingCount = $row['count'];
 }
+
+// Get statistics
+$registered_students_query = "SELECT COUNT(*) as count FROM user WHERE IDNO IS NOT NULL";
+$current_sitins_query = "SELECT COUNT(*) as count FROM login_records WHERE TIME_OUT IS NULL";
+$total_sitins_query = "SELECT COUNT(*) as count FROM login_records";
+
+$registered_students = mysqli_fetch_assoc(mysqli_query($con, $registered_students_query))['count'];
+$current_sitins = mysqli_fetch_assoc(mysqli_query($con, $current_sitins_query))['count'];
+$total_sitins = mysqli_fetch_assoc(mysqli_query($con, $total_sitins_query))['count'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -159,7 +168,7 @@ if ($result) {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        
 }
 html, body {
     background: linear-gradient(to right, #14569b, #14569b);
@@ -399,7 +408,9 @@ html, body {
     flex-direction: column;
     height: calc(100vh - 100px); /* Set fixed height */
     max-height: 700px; /* Maximum height */
+    
 }
+
 .points-badge {
     background: linear-gradient(135deg, #0369a1, #0284c7);
     color: white;
@@ -783,6 +794,72 @@ html, body {
         opacity: 1;
     }
 }
+
+/* Statistics Styles */
+.statistics-container {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.statistics-container h2 {
+    color: #14569b;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card i {
+    font-size: 2rem;
+    color: #14569b;
+    background: rgba(20, 86, 155, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.stat-info h3 {
+    color: #2a3f5f;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.stat-info p {
+    color: #14569b;
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .statistics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .statistics-container {
+        margin: 20px 15px;
+    }
+}
 </style>
 </head>
 <body>
@@ -795,7 +872,7 @@ html, body {
         <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
         <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
         <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
-        <a href="addaily.php"><i class="fas fa-chair"></i> Daily Records</a>
+        
         <a href="adviewsitin.php"><i class="fas fa-eye"></i> Generate Reports</a>
         <a href="adreservation.php" style="position: relative;">
             <i class="fas fa-calendar-check"></i> Reservations
@@ -841,109 +918,133 @@ html, body {
             <canvas id="purposePieChart"></canvas>
         </div>
         <div class="div4">
-            <h2><i class="fas fa-trophy"></i> Student Rankings</h2>
-            <div class="leaderboard">
-<?php
-// Fetch all students by points with consistent ordering (same as dashboard.php)
-$leaderboardQuery = "SELECT 
-    u.IDNO, 
-    u.FIRSTNAME, 
-    u.MIDNAME,
-    u.LASTNAME, 
-    u.PROFILE_PIC, 
-    u.POINTS, 
-    u.USERNAME,
-    u.REMAINING_SESSIONS 
-FROM user u 
-WHERE u.USERNAME != 'admin' 
-ORDER BY u.POINTS DESC, u.REMAINING_SESSIONS ASC, u.LASTNAME ASC";
-
-$leaderboardResult = mysqli_query($con, $leaderboardQuery);
-$rank = 1;
-
-if ($leaderboardResult) {
-    while ($user = mysqli_fetch_assoc($leaderboardResult)) {
-        $profile_pic = !empty($user['PROFILE_PIC']) ? htmlspecialchars($user['PROFILE_PIC']) : 'default.jpg';
-        $isCurrentUser = ($user['USERNAME'] === $username); // $username should be set
-        $middleInitial = !empty($user['MIDNAME']) ? ' ' . substr($user['MIDNAME'], 0, 1) . '.' : '';
-        ?>
-        <div class="leaderboard-item">
-            <div class="rank">
-                <?php 
-                if ($rank <= 3) {
-                    switch($rank) {
-                        case 1:
-                            echo '<i class="fas fa-crown" style="color: #FFD700;"></i>';
-                            break;
-                        case 2:
-                            echo '<i class="fas fa-medal" style="color: #C0C0C0;"></i>';
-                            break;
-                        case 3:
-                            echo '<i class="fas fa-award" style="color: #CD7F32;"></i>';
-                            break;
-                    }
-                } else {
-                    echo $rank;
-                }
-                ?>
-            </div>
-            <div class="leaderboard-user">
-                <img src="uploads/<?php echo $profile_pic; ?>" alt="Profile" class="leaderboard-avatar">
-                <div class="user-info">
-                    <div class="user-name" style="color: black; font-size: medium;">
-                        
-                        <?php 
-                        if ($isCurrentUser) {
-                            echo '<strong style="color: #0369a1;">YOU</strong>';
-                        } else {
-                            echo htmlspecialchars($user['LASTNAME'] . ', ' . $user['FIRSTNAME'] . $middleInitial);
-                        }
-                        ?>
+            <div class="statistics-container" style="margin: 0 0 20px 0; background: transparent; box-shadow: none;">
+                <h2 style="color: white;">Statistics</h2>
+                <div class="statistics-grid">
+                    <div class="stat-card" style="background: rgba(255, 255, 255, 0.1);">
+                        <i class="fas fa-users" style="color: white;"></i>
+                        <div class="stat-info">
+                            <h3 style="color: white;">Registered Students</h3>
+                            <p style="color: white;"><?php echo $registered_students; ?></p>
+                        </div>
                     </div>
-                    <div class="user-points" style="color: rgba(36, 36, 36, 0.72);">
-                        <?php echo htmlspecialchars($user['IDNO']); ?>
+                    <div class="stat-card" style="background: rgba(255, 255, 255, 0.1);">
+                        <i class="fas fa-chair" style="color: white;"></i>
+                        <div class="stat-info">
+                            <h3 style="color: white;">Current Sit-ins</h3>
+                            <p style="color: white;"><?php echo $current_sitins; ?></p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: rgba(255, 255, 255, 0.1);">
+                        <i class="fas fa-history" style="color: white;"></i>
+                        <div class="stat-info">
+                            <h3 style="color: white;">Total Sit-ins</h3>
+                            <p style="color: white;"><?php echo $total_sitins; ?></p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="points-badge" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
-    <?php 
-    $sessionsUsed = 30 - (int)$user['REMAINING_SESSIONS'];
-    $points = (int)$user['POINTS'];
-    ?>
-    <div style="
-        background-color: #f0f0f0; 
-        color: #333; 
-        padding: 4px 10px; 
-        border-radius: 20px; 
-        font-size: 13px;
-        font-weight: 500;
-        display: inline-block;
-    ">
-        Sessions Used: <?php echo $sessionsUsed; ?>
-    </div>
-    <div style="
-        background-color: #0369a1; 
-        color: #fff; 
-        padding: 4px 10px; 
-        border-radius: 20px; 
-        font-size: 13px;
-        font-weight: 500;
-        display: inline-block;
-    ">
-        <?php echo $points . ' ' . ($points <= 1 ? 'Point' : 'Points'); ?>
-    </div>
-</div>
+            <h2><i class="fas fa-trophy"></i> Student Rankings</h2>
+            <div class="leaderboard">
+                <?php
+                // Fetch all students by points with consistent ordering (same as dashboard.php)
+                $leaderboardQuery = "SELECT 
+                    u.IDNO, 
+                    u.FIRSTNAME, 
+                    u.MIDNAME,
+                    u.LASTNAME, 
+                    u.PROFILE_PIC, 
+                    u.POINTS, 
+                    u.USERNAME,
+                    u.REMAINING_SESSIONS 
+                FROM user u 
+                WHERE u.USERNAME != 'admin' 
+                ORDER BY u.POINTS DESC, u.REMAINING_SESSIONS ASC, u.LASTNAME ASC";
+
+                $leaderboardResult = mysqli_query($con, $leaderboardQuery);
+                $rank = 1;
+
+                if ($leaderboardResult) {
+                    while ($user = mysqli_fetch_assoc($leaderboardResult)) {
+                        $profile_pic = !empty($user['PROFILE_PIC']) ? htmlspecialchars($user['PROFILE_PIC']) : 'default.jpg';
+                        $isCurrentUser = ($user['USERNAME'] === $username); // $username should be set
+                        $middleInitial = !empty($user['MIDNAME']) ? ' ' . substr($user['MIDNAME'], 0, 1) . '.' : '';
+                        ?>
+                        <div class="leaderboard-item">
+                            <div class="rank">
+                                <?php 
+                                if ($rank <= 3) {
+                                    switch($rank) {
+                                        case 1:
+                                            echo '<i class="fas fa-crown" style="color: #FFD700;"></i>';
+                                            break;
+                                        case 2:
+                                            echo '<i class="fas fa-medal" style="color: #C0C0C0;"></i>';
+                                            break;
+                                        case 3:
+                                            echo '<i class="fas fa-award" style="color: #CD7F32;"></i>';
+                                            break;
+                                    }
+                                } else {
+                                    echo $rank;
+                                }
+                                ?>
+                            </div>
+                            <div class="leaderboard-user">
+                                <img src="uploads/<?php echo $profile_pic; ?>" alt="Profile" class="leaderboard-avatar">
+                                <div class="user-info">
+                                    <div class="user-name" style="color: black; font-size: medium;">
+                                        
+                                        <?php 
+                                        if ($isCurrentUser) {
+                                            echo '<strong style="color: #0369a1;">YOU</strong>';
+                                        } else {
+                                            echo htmlspecialchars($user['LASTNAME'] . ', ' . $user['FIRSTNAME'] . $middleInitial);
+                                        }
+                                        ?>
+                                    </div>
+                                    <div class="user-points" style="color: rgba(36, 36, 36, 0.72);">
+                                        <?php echo htmlspecialchars($user['IDNO']); ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="points-badge" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                        <?php 
+                        $sessionsUsed = 30 - (int)$user['REMAINING_SESSIONS'];
+                        $points = (int)$user['POINTS'];
+                        ?>
+                        <div style="
+                            background-color: #f0f0f0; 
+                            color: #333; 
+                            padding: 4px 10px; 
+                            border-radius: 20px; 
+                            font-size: 13px;
+                            font-weight: 500;
+                            display: inline-block;
+                        ">
+                            Sessions Used: <?php echo $sessionsUsed; ?>
+                        </div>
+                        <div style="
+                            background-color: #0369a1; 
+                            color: #fff; 
+                            padding: 4px 10px; 
+                            border-radius: 20px; 
+                            font-size: 13px;
+                            font-weight: 500;
+                            display: inline-block;
+                        ">
+                            <?php echo $points . ' ' . ($points <= 1 ? 'Point' : 'Points'); ?>
+                        </div>
+                    </div>
 
 
 
-        </div>
-        <?php
-        $rank++;
-    }
-}
-?>
-</div>
-
+                        </div>
+                        <?php
+                        $rank++;
+                    }
+                }
+                ?>
             </div>
         </div>
     </div>
