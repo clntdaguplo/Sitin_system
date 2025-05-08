@@ -299,7 +299,7 @@ h1 {
     <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
     <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
     <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
-    <a href="addaily.php"><i class="fas fa-calendar-day"></i> Daily Reports</a>
+    
     <a href="adviewsitin.php"><i class="fas fa-eye"></i> Generate Reports</a>
     <a href="adreservation.php"><i class="fas fa-chair"></i> Reservation</a>
     <a href="adlabreward.php"><i class="fas fa-chair"></i> Lab Reward</a>

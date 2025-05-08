@@ -97,8 +97,8 @@ html, body {
 }
 
 .nav-left img {
-    width: 40px;
-    height: 40px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
@@ -274,9 +274,9 @@ tbody tr:hover {
         <div class="nav-right">
             <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
             <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
+            <a href="liststudent.php"><i class="fas fa-user-graduate"></i> Students</a>
             <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
-            <a href="addaily.php"><i class="fas fa-calendar-day"></i> Daily Records</a>
-            <a href="adviewsitin.php"><i class="fas fa-eye"></i> Generate Reports</a>
+            
             <a href="adreservation.php"><i class="fas fa-calendar-check"></i> Reservations</a>
             <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
             <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>

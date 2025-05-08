@@ -200,8 +200,8 @@ html, body {
 }
 
 .nav-left img {
-    width: 40px;
-    height: 40px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
@@ -865,15 +865,15 @@ html, body {
 <body>
 <div class="top-nav">
     <div class="nav-left">
-        <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" onerror="this.src='assets/default.png';">
+        <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" onerror="this.src='assets/default.jpg';">
         <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
     </div>
     <div class="nav-right">
         <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
         <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
+        <a href="liststudent.php"><i class="fas fa-user-graduate"></i> Students</a>
         <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
         
-        <a href="adviewsitin.php"><i class="fas fa-eye"></i> Generate Reports</a>
         <a href="adreservation.php" style="position: relative;">
             <i class="fas fa-calendar-check"></i> Reservations
             <?php if ($pendingCount > 0): ?>

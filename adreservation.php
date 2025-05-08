@@ -200,8 +200,8 @@ if ($result) {
         }
 
         .nav-left img {
-            width: 40px;
-            height: 40px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             border: 2px solid rgba(255, 255, 255, 0.2);
         }
@@ -787,6 +787,54 @@ if ($result) {
     justify-content: center;
     box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
 }
+
+/* Add these styles to your existing CSS */
+.nav-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.nav-btn {
+    padding: 10px 20px;
+    background: #f8fafc;
+    border: 2px solid #14569b;
+    border-radius: 8px;
+    color: #14569b;
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+    background: #14569b;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.nav-btn.active {
+    background: #14569b;
+    color: white;
+}
+
+.nav-btn i {
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .nav-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .nav-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
     </style>
 </head>
 <body>
@@ -798,9 +846,9 @@ if ($result) {
         <div class="nav-right">
             <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
             <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
+            <a href="liststudent.php"><i class="fas fa-user-graduate"></i> Students</a>
             <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
-            <a href="addaily.php"><i class="fas fa-calendar-day"></i> Daily Records</a>
-            <a href="adviewsitin.php"><i class="fas fa-eye"></i> Generate Reports</a>
+            
             <a href="adreservation.php" style="position: relative;">
                 <i class="fas fa-calendar-check"></i> Reservations
                 <?php if ($pendingCount > 0): ?>
@@ -815,62 +863,71 @@ if ($result) {
     </div>
 
     <div class="content">
-    <div class="content-header">
-        <h1><i class="fas fa-desktop"></i> COMPLAB MANAGEMENT</h1>
-        <div class="action-buttons">
-            <button class="nav-button" onclick="window.location.href='reservation_requests.php'">
-                <i class="fas fa-calendar-check"></i> Reservation Requests
-            </button>
-            <button class="nav-button" onclick="window.location.href='reservation_logs.php'">
-                <i class="fas fa-history"></i> Reservation Logs
-            </button>
+        <div class="container">
+            <div class="header">
+                <h1>Reservation Management</h1>
+                <div class="nav-buttons">
+                    <a href="adreservation.php" class="nav-btn <?php echo basename($_SERVER['PHP_SELF']) == 'adreservation.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-clock"></i> Reservation Management
+                    </a>
+                    <a href="reservation_requests.php" class="nav-btn <?php echo basename($_SERVER['PHP_SELF']) == 'reservation_requests.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-history"></i> Pending Requests
+                    </a>
+                    <a href="reservation_logs.php" class="nav-btn" <?php echo basename($_SERVER['PHP_SELF']) == 'reservation_logs.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-history"></i> Reservation Logs
+                    </a>
+                </div>
+            </div>
+            <div class="content-header">
+                <h1><i class="fas fa-desktop"></i> COMPLAB MANAGEMENT</h1>
+                
+            </div>
+
+            <div class="pc-management">
+                <div class="control-panel">
+                    <div class="left-controls">
+                        <select class="room-select" onchange="changeRoom(this.value)">
+                            <option value="">Select Laboratory Room</option>
+                            <option value="524">Room 524</option>
+                            <option value="526">Room 526</option>
+                            <option value="528">Room 528</option>
+                            <option value="530">Room 530</option>
+                            <option value="542">Room 542</option>
+                            <option value="544">Room 544</option>
+                        </select>
+                    </div>
+                    <div class="right-controls">
+                        <button onclick="selectAllPCs()" class="control-btn select-all">
+                            <i class="fas fa-check-double"></i> Select All
+                        </button>
+                        <button onclick="updatePCStatus('available')" class="control-btn available">
+                            <i class="fas fa-check-circle"></i> Set Available
+                        </button>
+                        <button onclick="updatePCStatus('used')" class="control-btn used">
+                            <i class="fas fa-times-circle"></i> Set Used
+                        </button>
+                        <button onclick="updatePCStatus('maintenance')" class="control-btn maintenance">
+                            <i class="fas fa-tools"></i> Set Maintenance
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pc-grid">
+            <?php
+            $pcsPerRow = 5;
+            $totalPCs = 40;
+
+            for ($i = 1; $i <= $totalPCs; $i++) {
+                echo '<div class="pc-item available" id="pcItem' . $i . '" onclick="togglePC(' . $i . ')">';
+                echo '<i class="fas fa-desktop"></i><br>';
+                echo 'PC' . $i;
+                echo '</div>';
+            }
+            ?>
+        </div>
+            </div>
         </div>
     </div>
-
-    <div class="pc-management">
-        <div class="control-panel">
-            <div class="left-controls">
-                <select class="room-select" onchange="changeRoom(this.value)">
-                    <option value="">Select Laboratory Room</option>
-                    <option value="524">Room 524</option>
-                    <option value="526">Room 526</option>
-                    <option value="528">Room 528</option>
-                    <option value="530">Room 530</option>
-                    <option value="542">Room 542</option>
-                    <option value="544">Room 544</option>
-                </select>
-            </div>
-            <div class="right-controls">
-                <button onclick="selectAllPCs()" class="control-btn select-all">
-                    <i class="fas fa-check-double"></i> Select All
-                </button>
-                <button onclick="updatePCStatus('available')" class="control-btn available">
-                    <i class="fas fa-check-circle"></i> Set Available
-                </button>
-                <button onclick="updatePCStatus('used')" class="control-btn used">
-                    <i class="fas fa-times-circle"></i> Set Used
-                </button>
-                <button onclick="updatePCStatus('maintenance')" class="control-btn maintenance">
-                    <i class="fas fa-tools"></i> Set Maintenance
-                </button>
-            </div>
-        </div>
-
-        <div class="pc-grid">
-    <?php
-    $pcsPerRow = 5;
-    $totalPCs = 40;
-
-    for ($i = 1; $i <= $totalPCs; $i++) {
-        echo '<div class="pc-item available" id="pcItem' . $i . '" onclick="togglePC(' . $i . ')">';
-        echo '<i class="fas fa-desktop"></i><br>';
-        echo 'PC' . $i;
-        echo '</div>';
-    }
-    ?>
-</div>
-    </div>
-</div>
 
     <script>
     let selectedRoom = '';

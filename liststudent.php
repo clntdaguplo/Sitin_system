@@ -49,13 +49,14 @@ echo "<script>alert('Error resetting sessions!');</script>";
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <title>List of Students</title>
 <style>
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 html, body {
@@ -87,8 +88,8 @@ html, body {
 }
 
 .user-profile img {
-    width: 40px;
-    height: 40px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
@@ -181,7 +182,7 @@ html, body {
 .search-box input {
     width: 100%;
     padding: 10px 15px;
-    padding-right: 45px; /* Make room for the button */
+    padding-right: 45px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     transition: all 0.2s;
@@ -258,11 +259,13 @@ th {
     padding: 15px;
     font-weight: 500;
     text-align: left;
+    font-size: 0.95rem;
 }
 
 td {
     padding: 12px 15px;
     border-bottom: 1px solid #e2e8f0;
+    font-size: 0.95rem;
 }
 
 tbody tr:hover {
@@ -372,13 +375,13 @@ tbody tr:hover {
     <div class="nav-links">
         <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
         <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
+        <a href="liststudent.php"><i class="fas fa-user-graduate"></i> Students</a>
         <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
-        <a href="addaily.php"><i class="fas fa-chair"></i> Daily Sitin Records</a>
-        <a href="viewReports.php"><i class="fas fa-eye"></i> View Sitin Reports</a>
+        
         <a href="adreservation.php"><i class="fas fa-chair"></i> Reservation</a>
         <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
         <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
-        <a href="viewReports.php"><i class="fas fa-book-open"></i> Feedback Reports</a>
+        <a href="viewReports.php"><i class="fas fa-book-open"></i> Feedback</a>
         <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
     </div>
 </div>

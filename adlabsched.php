@@ -118,8 +118,8 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
         }
 
         .nav-left img {
-            width: 40px;
-            height: 40px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             border: 2px solid rgba(255, 255, 255, 0.3);
             object-fit: cover;
@@ -395,15 +395,12 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             <a href="adannouncement.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adannouncement.php' ? 'active' : ''; ?>">
                 <i class="fas fa-bullhorn"></i> Announcements
             </a>
+            <a href="liststudent.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'liststudent.php' ? 'active' : ''; ?>">
+                <i class="fas fa-user-graduate"></i> Student
             <a href="adsitin.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adsitin.php' ? 'active' : ''; ?>">
                 <i class="fas fa-chair"></i> Current Sitin
-            </a>
-            <a href="addaily.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'addaily.php' ? 'active' : ''; ?>">
-                <i class="fas fa-calendar-day"></i> Daily Records
-            </a>
-            <a href="adviewsitin.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adviewsitin.php' ? 'active' : ''; ?>">
-                <i class="fas fa-eye"></i> Generate Reports
-            </a>
+            
+            
             <a href="adreservation.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adreservation.php' ? 'active' : ''; ?>">
                 <i class="fas fa-calendar-check"></i> Reservations
             </a>

@@ -278,8 +278,8 @@ html, body {
 }
 
 .nav-left img {
-    width: 40px;
-    height: 40px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
@@ -634,6 +634,107 @@ tbody tr:hover {
 tbody tr {
     animation: fadeIn 0.3s ease;
 }
+
+.report-container {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.report-filters {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-group label {
+    font-weight: 500;
+    color: #2a3f5f;
+}
+
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    color: #2a3f5f;
+    min-width: 150px;
+}
+
+.filter-select:focus {
+    border-color: #14569b;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(20, 86, 155, 0.1);
+}
+
+.export-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.export-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.csv {
+    background: #28a745;
+    color: white;
+}
+
+.excel {
+    background: #217346;
+    color: white;
+}
+
+.pdf {
+    background: #dc3545;
+    color: white;
+}
+
+.export-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.filter-btn {
+    padding: 8px 15px;
+    background: #14569b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.filter-btn:hover {
+    background: #0f4578;
+    transform: translateY(-2px);
+}
+
+.filter-btn i {
+    font-size: 0.9em;
+}
 </style>
 </head>
 <body>
@@ -645,9 +746,9 @@ tbody tr {
     <div class="nav-right">
         <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
         <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
+        <a href="liststudent.php"><i class="fas fa-user-graduate"></i> Students</a>
         <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
         
-        <a href="adviewsitin.php"><i class="fas fa-eye"></i> Generate Reports</a>
         <a href="adreservation.php"><i class="fas fa-calendar-check"></i> Reservations</a>
         <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
         <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
@@ -662,12 +763,13 @@ tbody tr {
             <div class="tab-buttons">
                 <button class="tab-button active" onclick="openTab('current')">Current Sit-ins</button>
                 <button class="tab-button" onclick="openTab('daily')">Daily Records</button>
+                <button class="tab-button" onclick="openTab('generate')">Generate All Reports</button>
             </div>
         </div>
 
         <div id="current" class="tab-content active">
             <div class="header">
-                <h1>Current Sit-in Management</h1>
+                <h1>Current Sit-in </h1>
             </div>
             <?php
             if (isset($_GET['success'])) {
@@ -769,7 +871,7 @@ while ($sitin_row = mysqli_fetch_assoc($sitin_result)) { ?>
 
         <div id="daily" class="tab-content">
             <div class="header">
-                <h1>Daily Sit-in Reports</h1>
+                <h1>Daily Sit-in Records</h1>
             </div>
             <div class="search-container">
                 <div class="search-box">
@@ -782,6 +884,7 @@ while ($sitin_row = mysqli_fetch_assoc($sitin_result)) { ?>
                         <tr>
                             <th>ID Number</th>
                             <th>Name</th>
+                            <th>Date</th>
                             <th>Time In</th>
                             <th>Time Out</th>
                             <th>Purpose</th>
@@ -794,11 +897,15 @@ while ($sitin_row = mysqli_fetch_assoc($sitin_result)) { ?>
                         $daily_result = mysqli_query($con, $daily_query);
 
                         while ($row = mysqli_fetch_assoc($daily_result)) {
+                            $time_in = strtotime($row['TIME_IN']);
+                            $time_out = $row['TIME_OUT'] ? strtotime($row['TIME_OUT']) : null;
+                            
                             echo "<tr>";
                             echo "<td>" . htmlspecialchars($row['IDNO']) . "</td>";
                             echo "<td>" . htmlspecialchars($row['FULLNAME']) . "</td>";
-                            echo "<td>" . date('h:i A', strtotime($row['TIME_IN'])) . "</td>";
-                            echo "<td>" . ($row['TIME_OUT'] ? date('h:i A', strtotime($row['TIME_OUT'])) : 'Active') . "</td>";
+                            echo "<td>" . date('M d, Y', $time_in) . "</td>";
+                            echo "<td>" . date('h:i A', $time_in) . "</td>";
+                            echo "<td>" . ($time_out ? date('h:i A', $time_out) : 'Active') . "</td>";
                             echo "<td>" . htmlspecialchars($row['PURPOSE']) . "</td>";
                             echo "<td>" . htmlspecialchars($row['LAB_ROOM']) . "</td>";
                             echo "</tr>";
@@ -808,8 +915,66 @@ while ($sitin_row = mysqli_fetch_assoc($sitin_result)) { ?>
                 </table>
             </div>
         </div>
+
+        <div id="generate" class="tab-content">
+            <div class="header">
+                <h1>Sitin Reports</h1>
+            </div>
+            <div class="report-container">
+                <div class="export-buttons">
+                    <button class="export-btn csv" onclick="exportReportToCSV()">
+                        <i class="fas fa-file-csv"></i> Export to CSV
+                    </button>
+                    <button class="export-btn excel" onclick="exportReportToExcel()">
+                        <i class="fas fa-file-excel"></i> Export to Excel
+                    </button>
+                    <button class="export-btn pdf" onclick="exportReportToPDF()">
+                        <i class="fas fa-file-pdf"></i> Export to PDF
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table id="reportTable">
+                        <thead>
+                            <tr>
+                                <th>ID Number</th>
+                                <th>Name</th>
+                                <th>Date</th>
+                                <th>Time In</th>
+                                <th>Time Out</th>
+                                <th>Purpose</th>
+                                <th>Lab Room</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $report_query = "SELECT * FROM login_records ORDER BY TIME_IN DESC";
+                            $report_result = mysqli_query($con, $report_query);
+
+                            while ($row = mysqli_fetch_assoc($report_result)) {
+                                $time_in = strtotime($row['TIME_IN']);
+                                $time_out = $row['TIME_OUT'] ? strtotime($row['TIME_OUT']) : null;
+                                
+                                echo "<tr>";
+                                echo "<td>" . htmlspecialchars($row['IDNO']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['FULLNAME']) . "</td>";
+                                echo "<td>" . date('M d, Y', $time_in) . "</td>";
+                                echo "<td>" . date('h:i A', $time_in) . "</td>";
+                                echo "<td>" . ($time_out ? date('h:i A', $time_out) : 'Active') . "</td>";
+                                echo "<td>" . htmlspecialchars($row['PURPOSE']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['LAB_ROOM']) . "</td>";
+                                echo "</tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 
 <script>
 function openTab(tabName) {
@@ -866,6 +1031,203 @@ if (window.location.href.indexOf("success=1") > -1) {
     setTimeout(function() {
         window.history.replaceState(null, null, window.location.pathname);
     }, 3000); // Clears success message after 3 seconds
+}
+
+function exportReportToCSV() {
+    const table = document.querySelector('#reportTable');
+    let csv = [];
+    
+    // Add styled header information with centering
+    csv.push('"                                                                  "');
+    csv.push('"                              UNIVERSITY OF CEBU - MAIN                              "');
+    csv.push('"                            COLLEGE OF COMPUTER STUDIES                            "');
+    csv.push('"              COMPUTER LABORATORY SITIN MONITORING SYSTEM REPORT                    "');
+    csv.push('"                                                                  "');
+    csv.push(''); // Empty line for spacing
+    
+    const headers = Array.from(table.querySelectorAll('thead th')).map(th => `"${th.innerText}"`);
+    csv.push(headers.join(','));
+    
+    // Only get visible rows (filtered results)
+    const visibleRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => row.style.display !== 'none');
+    
+    visibleRows.forEach(row => {
+        const rowData = Array.from(row.querySelectorAll('td')).map(cell => `"${cell.innerText.replace(/"/g, '""')}"`);
+        csv.push(rowData.join(','));
+    });
+
+    const csvFile = new Blob(['\ufeff' + csv.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const downloadLink = document.createElement('a');
+    downloadLink.download = 'sitin_report.csv';
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = 'none';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+}
+
+function exportReportToExcel() {
+    try {
+        const table = document.querySelector('#reportTable');
+        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText);
+        const visibleRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => row.style.display !== 'none');
+        
+        // Create new workbook with only filtered data
+        const wb = XLSX.utils.book_new();
+        const wsData = [
+            [''],  // Space for logo
+            [''],  // Space for logo
+            [''],  // Space for logo
+            ['                         UNIVERSITY OF CEBU - MAIN      '],
+            ['                        COLLEGE OF COMPUTER STUDIES     '],
+            ['             COMPUTER LABORATORY SITIN MONITORING SYSTEM REPORT       '],
+            [''],  // Empty line for spacing
+            headers
+        ];
+        
+        visibleRows.forEach(row => {
+            const rowData = Array.from(row.querySelectorAll('td')).map(cell => cell.innerText);
+            wsData.push(rowData);
+        });
+        
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        
+        // Set column widths
+        ws['!cols'] = [
+            { wch: 15 }, // ID Number
+            { wch: 30 }, // Name
+            { wch: 15 }, // Date
+            { wch: 15 }, // Time In
+            { wch: 15 }, // Time Out
+            { wch: 40 }, // Purpose
+            { wch: 15 }  // Lab Room
+        ];
+        
+        // Style the header
+        ws['!merges'] = [
+            { s: { r: 3, c: 0 }, e: { r: 3, c: 6 } },  // University name
+            { s: { r: 4, c: 0 }, e: { r: 4, c: 6 } },  // College name
+            { s: { r: 5, c: 0 }, e: { r: 5, c: 6 } }   // Report title
+        ];
+        
+        // Add cell styles for header
+        for (let i = 3; i <= 5; i++) {
+            const cell = XLSX.utils.encode_cell({r: i, c: 0});
+            if (!ws[cell]) ws[cell] = {};
+            ws[cell].s = {
+                font: { bold: true, color: { rgb: "14569B" } },  // UC Blue
+                alignment: { horizontal: "center" }
+            };
+        }
+        
+        XLSX.utils.book_append_sheet(wb, ws, 'Sit-in Report');
+        XLSX.writeFile(wb, 'sitin_report.xlsx');
+    } catch (error) {
+        console.error('Error exporting to Excel:', error);
+        alert('There was an error exporting to Excel. Please try again.');
+    }
+}
+
+function exportReportToPDF() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'mm', 'a4');
+        
+        // Set font and size
+        doc.setFont('helvetica', 'bold');
+        
+        // Center everything on the page
+        const pageWidth = doc.internal.pageSize.width;
+        const pageCenter = pageWidth / 2;
+        
+        // Add header information with styling and UC branding colors
+        const ucBlue = [20, 86, 155];  // UC Blue color
+        const ucGold = [218, 170, 0];  // UC Gold color
+        
+        // Draw decorative top border
+        doc.setDrawColor(...ucBlue);
+        doc.setLineWidth(1);
+        doc.line(20, 15, pageWidth - 20, 15);
+        
+        // Add header text
+        doc.setTextColor(...ucBlue);
+        doc.setFontSize(22);
+        doc.text('UNIVERSITY OF CEBU - MAIN', pageCenter, 30, { align: 'center' });
+        
+        doc.setFontSize(18);
+        doc.text('COLLEGE OF COMPUTER STUDIES', pageCenter, 40, { align: 'center' });
+        
+        doc.setFontSize(16);
+        doc.text('COMPUTER LABORATORY SITIN MONITORING SYSTEM REPORT', pageCenter, 50, { align: 'center' });
+        
+        // Draw bottom border for header
+        doc.setDrawColor(...ucBlue);
+        doc.setLineWidth(1);
+        doc.line(20, 55, pageWidth - 20, 55);
+        
+        // Get current date and time
+        const now = new Date();
+        const dateStr = now.toLocaleDateString();
+        const timeStr = now.toLocaleTimeString();
+        
+        // Add date and time
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Generated on: ${dateStr} ${timeStr}`, pageCenter, 65, { align: 'center' });
+        
+        // Set font size for table content
+        doc.setFontSize(10);
+        
+        const table = document.querySelector('#reportTable');
+        const visibleRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => row.style.display !== 'none');
+        
+        // Define column widths and positions
+        const colWidths = [20, 40, 20, 20, 20, 40, 20];
+        let yPos = 75; // Starting position for table
+        
+        // Calculate total width of the table
+        const totalWidth = colWidths.reduce((a, b) => a + b, 0);
+        // Calculate starting X position to center the table
+        let startX = (pageWidth - totalWidth) / 2;
+        
+        // Draw headers
+        const headers = Array.from(table.querySelectorAll('th'));
+        let xPos = startX;
+        headers.forEach((header, index) => {
+            doc.setFillColor(...ucBlue);
+            doc.setTextColor(255, 255, 255);
+            doc.rect(xPos, yPos, colWidths[index], 10, 'F');
+            doc.text(header.innerText, xPos + 2, yPos + 7);
+            xPos += colWidths[index];
+        });
+        
+        yPos += 10;
+        
+        // Draw rows
+        visibleRows.forEach(row => {
+            xPos = startX;
+            const cells = row.querySelectorAll('td');
+            cells.forEach((cell, index) => {
+                doc.setFillColor(255, 255, 255);
+                doc.setTextColor(0, 0, 0);
+                doc.rect(xPos, yPos, colWidths[index], 10, 'F');
+                doc.text(cell.innerText, xPos + 2, yPos + 7);
+                xPos += colWidths[index];
+            });
+            yPos += 10;
+            
+            // Check if we need a new page
+            if (yPos > doc.internal.pageSize.height - 20) {
+                doc.addPage();
+                yPos = 20;
+            }
+        });
+        
+        // Save the PDF
+        doc.save('sitin_report.pdf');
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('There was an error generating the PDF. Please try again.');
+    }
 }
 </script>
 </body>
