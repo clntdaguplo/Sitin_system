@@ -1006,12 +1006,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
                     <div class="form-group">
                         <label for="purpose">Purpose:</label>
                         <select name="purpose" id="purpose" required>
-                            <option value="">Select Purpose</option>
-                            <?php foreach($purposes as $purpose): ?>
-                                <option value="<?php echo htmlspecialchars($purpose); ?>">
-                                    <?php echo htmlspecialchars($purpose); ?>
-                                </option>
-                            <?php endforeach; ?>
+                            <<option value="">Select Time</option>
+                            <option value="Select">Select</option>
+            <option value="C Programming">C Programming</option>
+            <option value="Java Programming">Java Programming</option>
+            <option value="C# Programming">C# Programming</option>
+            <option value="System Integration & Architecture">System Integration & Architecture</option>
+            <option value="Embedded System & IoT">Embedded System & IoT</option>
+            <option value="Digital logic & Design">Digital logic & Design</option>
+            <option value="Computer Application">Computer Application</option>
+            <option value="Database">Database</option>
+            <option value="Project Management">Project Management</option>
+            <option value="Python Programming">Python Programming</option>
+            <option value="Mobile Application">Mobile Application</option>
+            <option value="Others...">Others...</option>
+            
                         </select>
                     </div>
 

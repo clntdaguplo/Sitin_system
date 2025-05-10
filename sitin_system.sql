@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 07, 2025 at 08:49 PM
+-- Generation Time: May 10, 2025 at 09:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `sitinmonitoring`
+-- Database: `sitin_system`
 --
 
 -- --------------------------------------------------------
@@ -38,7 +38,8 @@ CREATE TABLE `announcements` (
 --
 
 INSERT INTO `announcements` (`TITLE`, `CONTENT`, `CREATED_AT`) VALUES
-('Hey Mayng Buntag!!!', 'Mayng buntag mga tapulan ready namo pa check?', '2025-05-05 16:25:22');
+('Hey Mayng Buntag!!!', 'Mayng buntag mga tapulan ready namo pa check?', '2025-05-05 23:25:22'),
+('Good morning all', 'For your final requirement especially those who were done in presenting their project, upload your zipped/compressed system(Filename: Lastname-FinalProject) including your database(ready to be imported) and in notepad file(admin user and pass) to a gdrive', '2025-05-10 06:45:13');
 
 -- --------------------------------------------------------
 
@@ -58,11 +59,12 @@ CREATE TABLE `feedback` (
 --
 
 INSERT INTO `feedback` (`USER_ID`, `FEEDBACK`, `CREATED_AT`, `LAB_ROOM`) VALUES
-(11331, 'Bugnaw kaayu ang Labroom maka hilanat ig gawas sa room', '2025-05-08 07:09:45', '542'),
-(11331, 'iLoveyou Jhynnn!', '2025-05-06 07:25:45', '524'),
-(369369, 'loveee biiii', '2025-05-08 07:09:04', '528'),
-(22653604, 'ilove jhyn\r\n\r\nsigeg balik', '2025-05-08 07:09:21', '530'),
-(22653604, 'bugnaw kaayu hahahaha ang room', '2025-05-06 07:26:31', '530');
+(11331, 'Bugnaw kaayu ang Labroom maka hilanat ig gawas sa room', '2025-05-08 14:09:45', '542'),
+(11331, 'iLoveyou Jhynnn!', '2025-05-06 14:25:45', '524'),
+(369369, 'loveee biiii', '2025-05-08 14:09:04', '528'),
+(22653604, 'ilove jhyn\r\n\r\nsigeg balik', '2025-05-08 14:09:21', '530'),
+(22653604, 'bugnaw kaayu hahahaha ang room', '2025-05-06 14:26:31', '530'),
+(1000, '54004215404602454203564156451546187148017', '2025-05-10 21:45:31', '530');
 
 -- --------------------------------------------------------
 
@@ -82,13 +84,6 @@ CREATE TABLE `lab_resources` (
   `file_name` varchar(255) DEFAULT NULL,
   `file_type` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `lab_resources`
---
-
-INSERT INTO `lab_resources` (`id`, `title`, `description`, `category`, `resource_type`, `link`, `file_path`, `upload_date`, `file_name`, `file_type`) VALUES
-(0, 'asdasd', 'wadas', 'Web Development', '', '', '681b8b71df349_22653604252.pdf', '2025-05-07 09:33:44', '22653604252.pdf', 'pdf');
 
 -- --------------------------------------------------------
 
@@ -111,42 +106,42 @@ CREATE TABLE `lab_schedules` (
 --
 
 INSERT INTO `lab_schedules` (`id`, `room_number`, `day_group`, `time_slot`, `status`, `notes`, `last_updated`) VALUES
-(0, '524', 'MW', '7:30AM-9:00AM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'TTH', '7:30AM-9:00AM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'F', '7:30AM-9:00AM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'S', '7:30AM-9:00AM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'MW', '9:00AM-10:30AM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'TTH', '9:00AM-10:30AM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'F', '9:00AM-10:30AM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'S', '9:00AM-10:30AM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'MW', '10:30AM-12:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'TTH', '10:30AM-12:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'F', '10:30AM-12:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'S', '10:30AM-12:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'MW', '12:00PM-1:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'TTH', '12:00PM-1:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'F', '12:00PM-1:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'S', '12:00PM-1:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'MW', '1:00PM-3:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'TTH', '1:00PM-3:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'F', '1:00PM-3:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'S', '1:00PM-3:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'MW', '3:00PM-4:30PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'TTH', '3:00PM-4:30PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'F', '3:00PM-4:30PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'S', '3:00PM-4:30PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'MW', '4:30PM-6:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'TTH', '4:30PM-6:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'F', '4:30PM-6:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'S', '4:30PM-6:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'MW', '6:00PM-7:30PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'TTH', '6:00PM-7:30PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'F', '6:00PM-7:30PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'S', '6:00PM-7:30PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'MW', '7:30PM-9:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'TTH', '7:30PM-9:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'F', '7:30PM-9:00PM', 'Available', NULL, '2025-05-07 15:56:54'),
-(0, '524', 'S', '7:30PM-9:00PM', 'Available', NULL, '2025-05-07 15:56:54');
+(0, '524', 'MW', '7:30AM-9:00AM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'TTH', '7:30AM-9:00AM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'F', '7:30AM-9:00AM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'S', '7:30AM-9:00AM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'MW', '9:00AM-10:30AM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'TTH', '9:00AM-10:30AM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'F', '9:00AM-10:30AM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'S', '9:00AM-10:30AM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'MW', '10:30AM-12:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'TTH', '10:30AM-12:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'F', '10:30AM-12:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'S', '10:30AM-12:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'MW', '12:00PM-1:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'TTH', '12:00PM-1:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'F', '12:00PM-1:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'S', '12:00PM-1:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'MW', '1:00PM-3:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'TTH', '1:00PM-3:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'F', '1:00PM-3:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'S', '1:00PM-3:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'MW', '3:00PM-4:30PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'TTH', '3:00PM-4:30PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'F', '3:00PM-4:30PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'S', '3:00PM-4:30PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'MW', '4:30PM-6:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'TTH', '4:30PM-6:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'F', '4:30PM-6:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'S', '4:30PM-6:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'MW', '6:00PM-7:30PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'TTH', '6:00PM-7:30PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'F', '6:00PM-7:30PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'S', '6:00PM-7:30PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'MW', '7:30PM-9:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'TTH', '7:30PM-9:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'F', '7:30PM-9:00PM', 'Available', NULL, '2025-05-07 22:56:54'),
+(0, '524', 'S', '7:30PM-9:00PM', 'Available', NULL, '2025-05-07 22:56:54');
 
 -- --------------------------------------------------------
 
@@ -178,7 +173,8 @@ INSERT INTO `login_records` (`IDNO`, `FULLNAME`, `TIME_IN`, `TIME_OUT`, `LAB_ROO
 (987987, 'Mic M Check', '2025-05-08 00:45:29', '2025-05-08 02:13:19', '544', 'Database'),
 (11331, 'Clint G Daguplo', '2025-05-08 01:43:39', '2025-05-08 02:13:16', '526', 'C Programming'),
 (11331, 'Daguplo, Clint G.', '2025-05-08 02:11:06', '2025-05-08 02:13:16', '524', 'Database'),
-(11331, 'Daguplo, Clint G.', '2025-05-08 02:15:12', '2025-05-08 02:26:43', '524', 'Database');
+(11331, 'Daguplo, Clint G.', '2025-05-08 02:15:12', '2025-05-08 02:26:43', '524', 'Database'),
+(1000, 'Face S Book', '2025-05-10 14:45:31', '2025-05-10 15:31:25', '530', 'Java Programming');
 
 -- --------------------------------------------------------
 
@@ -201,17 +197,18 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`id`, `user_id`, `message`, `type`, `details`, `is_read`, `created_at`) VALUES
-(0, 11331, 'You received 1 point for completing your lab session', 'points', NULL, 1, '2025-05-05 16:25:47'),
-(0, 11331, 'Your reservation has been approved', 'approval', '{\"room\":\"524\",\"pc_number\":6,\"date\":\"May 10, 2025\",\"time\":\"09:00 AM\"}', 1, '2025-05-07 16:22:28'),
-(0, 11331, 'You received 1 point for completing your lab session', 'points', NULL, 1, '2025-05-07 16:22:59'),
-(0, 369369, 'You received 1 point for completing your lab session', 'points', NULL, 1, '2025-05-07 16:37:18'),
-(0, 22653604, 'You received 1 point for completing your lab session', 'points', NULL, 1, '2025-05-07 16:37:19'),
-(0, 987987, 'You received 1 point for completing your lab session', 'points', NULL, 1, '2025-05-07 16:37:20'),
-(0, 11331, 'Your reservation has been approved', 'approval', '{\"room\":\"524\",\"pc_number\":6,\"date\":\"May 10, 2025\",\"time\":\"09:00 AM\"}', 0, '2025-05-07 18:11:06'),
-(0, 11331, 'You received 1 point for completing your lab session', 'points', NULL, 0, '2025-05-07 18:13:16'),
-(0, 11331, 'Congratulations! You\'ve earned a new session for collecting 3 points!', 'session', NULL, 0, '2025-05-07 18:13:16'),
-(0, 987987, 'You received 1 point for completing your lab session', 'points', NULL, 0, '2025-05-07 18:13:19'),
-(0, 11331, 'Your reservation has been approved', 'approval', '{\"room\":\"524\",\"pc_number\":6,\"date\":\"May 10, 2025\",\"time\":\"09:00 AM\"}', 0, '2025-05-07 18:15:12');
+(0, 11331, 'You received 1 point for completing your lab session', 'points', NULL, 1, '2025-05-05 23:25:47'),
+(0, 11331, 'Your reservation has been approved', 'approval', '{\"room\":\"524\",\"pc_number\":6,\"date\":\"May 10, 2025\",\"time\":\"09:00 AM\"}', 1, '2025-05-07 23:22:28'),
+(0, 11331, 'You received 1 point for completing your lab session', 'points', NULL, 1, '2025-05-07 23:22:59'),
+(0, 369369, 'You received 1 point for completing your lab session', 'points', NULL, 1, '2025-05-07 23:37:18'),
+(0, 22653604, 'You received 1 point for completing your lab session', 'points', NULL, 1, '2025-05-07 23:37:19'),
+(0, 987987, 'You received 1 point for completing your lab session', 'points', NULL, 1, '2025-05-07 23:37:20'),
+(0, 11331, 'Your reservation has been approved', 'approval', '{\"room\":\"524\",\"pc_number\":6,\"date\":\"May 10, 2025\",\"time\":\"09:00 AM\"}', 0, '2025-05-08 01:11:06'),
+(0, 11331, 'You received 1 point for completing your lab session', 'points', NULL, 0, '2025-05-08 01:13:16'),
+(0, 11331, 'Congratulations! You\'ve earned a new session for collecting 3 points!', 'session', NULL, 0, '2025-05-08 01:13:16'),
+(0, 987987, 'You received 1 point for completing your lab session', 'points', NULL, 0, '2025-05-08 01:13:19'),
+(0, 11331, 'Your reservation has been approved', 'approval', '{\"room\":\"524\",\"pc_number\":6,\"date\":\"May 10, 2025\",\"time\":\"09:00 AM\"}', 0, '2025-05-08 01:15:12'),
+(0, 1000, 'You received 1 point for completing your lab session', 'points', NULL, 0, '2025-05-10 07:31:25');
 
 -- --------------------------------------------------------
 
@@ -232,16 +229,30 @@ CREATE TABLE `pc_status` (
 --
 
 INSERT INTO `pc_status` (`id`, `room_number`, `pc_number`, `status`, `last_updated`) VALUES
-(0, '524', 1, 'available', '2025-05-05 16:29:26'),
-(0, '524', 1, 'used', '2025-05-05 16:29:31'),
-(0, '524', 1, 'used', '2025-05-05 16:29:34'),
-(0, '524', 1, 'available', '2025-05-05 16:29:45'),
-(0, '524', 1, 'maintenance', '2025-05-07 16:11:19'),
-(0, '524', 2, 'maintenance', '2025-05-07 16:11:19'),
-(0, '524', 3, 'maintenance', '2025-05-07 16:11:19'),
-(0, '524', 4, 'maintenance', '2025-05-07 16:11:19'),
-(0, '524', 5, 'maintenance', '2025-05-07 16:11:19'),
-(0, '524', 6, 'used', '2025-05-07 18:15:12');
+(0, '524', 1, 'available', '2025-05-05 23:29:26'),
+(0, '524', 1, 'used', '2025-05-05 23:29:31'),
+(0, '524', 1, 'used', '2025-05-05 23:29:34'),
+(0, '524', 1, 'available', '2025-05-05 23:29:45'),
+(0, '524', 1, 'maintenance', '2025-05-07 23:11:19'),
+(0, '524', 2, 'maintenance', '2025-05-07 23:11:19'),
+(0, '524', 3, 'maintenance', '2025-05-07 23:11:19'),
+(0, '524', 4, 'maintenance', '2025-05-07 23:11:19'),
+(0, '524', 5, 'maintenance', '2025-05-07 23:11:19'),
+(0, '524', 6, 'used', '2025-05-08 01:15:12'),
+(0, '524', 7, 'used', '2025-05-10 07:05:01'),
+(0, '524', 8, 'used', '2025-05-10 07:05:01'),
+(0, '524', 9, 'used', '2025-05-10 07:05:01'),
+(0, '524', 10, 'used', '2025-05-10 07:05:01'),
+(0, '524', 11, 'maintenance', '2025-05-10 07:05:07'),
+(0, '524', 12, 'maintenance', '2025-05-10 07:05:07'),
+(0, '524', 13, 'maintenance', '2025-05-10 07:05:07'),
+(0, '524', 14, 'maintenance', '2025-05-10 07:05:07'),
+(0, '524', 15, 'maintenance', '2025-05-10 07:05:07'),
+(0, '524', 16, 'used', '2025-05-10 07:05:11'),
+(0, '524', 17, 'used', '2025-05-10 07:05:11'),
+(0, '524', 18, 'used', '2025-05-10 07:05:11'),
+(0, '524', 19, 'used', '2025-05-10 07:05:11'),
+(0, '524', 20, 'used', '2025-05-10 07:05:11');
 
 -- --------------------------------------------------------
 
@@ -269,7 +280,8 @@ INSERT INTO `points_history` (`ID`, `IDNO`, `FULLNAME`, `POINTS_EARNED`, `CONVER
 (0, '22653604', 'Clnt G. Thegups', 1, 0, '2025-05-07 09:37:19'),
 (0, '987987', 'Mic M Check', 1, 0, '2025-05-07 09:37:20'),
 (0, '11331', 'Clint G Daguplo', 3, 1, '2025-05-07 11:13:16'),
-(0, '987987', 'Mic M Check', 1, 0, '2025-05-07 11:13:19');
+(0, '987987', 'Mic M Check', 1, 0, '2025-05-07 11:13:19'),
+(0, '1000', 'Face S Book', 1, 0, '2025-05-10 00:31:25');
 
 -- --------------------------------------------------------
 
@@ -296,10 +308,14 @@ CREATE TABLE `reservations` (
 --
 
 INSERT INTO `reservations` (`id`, `student_id`, `fullname`, `room`, `date`, `time`, `purpose`, `seat_number`, `remaining_sessions`, `status`, `created_at`) VALUES
-(0, '11331', 'Clint G Daguplo', '524', '2025-05-10', '09:00:00', 'Database', 6, 29, 'approved', '2025-05-07 16:17:13'),
-(0, '11331', 'Clint G Daguplo', '530', '2025-05-20', '13:00:00', 'C# Programming', 1, 29, 'approved', '2025-05-07 16:18:07'),
-(0, '369369', 'Sy s Arch', '526', '2025-05-09', '17:30:00', 'Embedded System & IoT', 1, 29, 'approved', '2025-05-07 18:10:43'),
-(0, '369369', 'Sy s Arch', '530', '2025-05-12', '10:30:00', 'Java Programming', 40, 29, 'approved', '2025-05-07 18:14:41');
+(0, '11331', 'Clint G Daguplo', '524', '2025-05-10', '09:00:00', 'Database', 6, 29, 'approved', '2025-05-10 06:53:29'),
+(0, '11331', 'Clint G Daguplo', '530', '2025-05-20', '13:00:00', 'C# Programming', 1, 29, 'approved', '2025-05-10 06:53:29'),
+(0, '369369', 'Sy s Arch', '526', '2025-05-09', '17:30:00', 'Embedded System & IoT', 1, 29, 'approved', '2025-05-10 06:53:29'),
+(0, '369369', 'Sy s Arch', '530', '2025-05-12', '10:30:00', 'Java Programming', 40, 29, 'approved', '2025-05-10 06:53:29'),
+(0, '1000', 'Face S Book', '524', '2025-05-16', '09:00:00', '09:00', 1, 30, 'approved', '2025-05-10 06:53:29'),
+(0, '3000', 'Gram T Insta', '526', '2025-05-14', '13:00:00', 'Mobile Application', 40, 30, 'approved', '2025-05-10 06:53:29'),
+(0, '4000', 'iPhone V ProMax', '524', '2025-05-13', '10:30:00', 'Computer Application', 40, 30, 'pending', '2025-05-10 07:02:19'),
+(0, '1000', 'Face S Book', '544', '2025-05-16', '13:00:00', 'Others...', 20, 30, 'pending', '2025-05-10 07:03:18');
 
 --
 -- Triggers `reservations`
@@ -359,9 +375,15 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`IDNO`, `LASTNAME`, `FIRSTNAME`, `MIDNAME`, `COURSE`, `YEARLEVEL`, `USERNAME`, `PASSWORD`, `EMAIL`, `PROFILE_PIC`, `REMAINING_SESSIONS`, `POINTS`) VALUES
 (11331, 'Daguplo', 'Clint', 'G', 'BSIT', 3, 'clint', '123123', 'clint@gmail.com', 'default.jpg', 27, 3),
+(1000, 'Book', 'Face', 'S', 'BSCRIM', 3, 'face', '123123', 'face@gmail.com', 'superfly.jpg', 29, 1),
+(2000, 'Tube', 'You', 'C', 'BSHM', 3, 'you', '123123', 'you@gmail.com', 'default.jpg', 30, 0),
+(3000, 'Insta', 'Gram', 'T', 'BSCS', 3, 'gram', '123123', 'gram@gmail.com', 'default.jpg', 30, 0),
+(4000, 'ProMax', 'iPhone', 'V', 'BEED', 3, 'iphone', '123123', 'iphone@gmail.com', 'default.jpg', 30, 0),
+(5000, 'Unli', 'Scatter', 'V', 'BEED', 3, 'scatter', '123123', 'scatter@gmail.com', 'default.jpg', 30, 0),
+(6000, 'Helix', 'Cabal', 'V', 'BEED', 3, 'cabal', '123123', 'cabal@gmail.com', 'default.jpg', 30, 0),
 (22653604, 'Thegups', 'Clnt', 'G.', 'BSCS', 2, 'clintclint', '123123', 'clntthegups@gmail.com', 'default.jpg', 28, 1),
-(987987, 'Check', 'Mic', 'M', 'BSHM', 1, 'mic', 'check', 'miccheck@gmail.com', 'patata.jpg', 28, 2),
-(369369, 'Arch', 'Sy', 's', 'BSIT', 3, 'sysarch', '123123', 'sysarch@gmail.com', 'default.jpg', 29, 1);
+(987987, 'Check', 'Mic', 'M', 'BSBA', 1, 'mic', 'check', 'miccheck@gmail.com', 'patata.jpg', 28, 2),
+(369369, 'Arch', 'Sy', 's', 'BSED', 3, 'sysarch', '123123', 'sysarch@gmail.com', 'default.jpg', 29, 1);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

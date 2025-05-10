@@ -1,5 +1,5 @@
 <?php
-    $con = mysqli_connect("localhost", "root", "", "sitinmonitoring") or die(mysql_error());
+    $con = mysqli_connect("localhost", "root", "", "sitin_system") or die(mysql_error());
     
     if (!$con) {
         die("Connection failed: " . mysqli_connect_error());

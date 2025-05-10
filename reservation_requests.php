@@ -7,6 +7,14 @@ date_default_timezone_set('Asia/Manila');
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+// Debug database connection
+error_log("Checking database connection...");
+if (!$con) {
+    error_log("Database connection failed: " . mysqli_connect_error());
+    die("Connection failed: " . mysqli_connect_error());
+}
+error_log("Database connection successful");
+
 // Ensure MySQL is using the correct timezone
 $con->query("SET time_zone = '+08:00'");
 $con->query("SET @@session.time_zone = '+08:00'");
@@ -15,56 +23,58 @@ $con->query("SET @@session.time_zone = '+08:00'");
 error_log("adreservation.php started");
 error_log("Session data: " . print_r($_SESSION, true));
 
-// Function to approve reservation
-function approveReservation($con, $reservation_id) {
+// Function to update reservation status
+function updateReservationStatus($con, $id, $newStatus) {
     try {
-        // First check if reservation exists and is pending
-        $check_query = "SELECT * FROM reservations WHERE id = ? AND status = 'pending'";
+        // Get current status
+        $check_query = "SELECT status FROM reservations WHERE id = ?";
         $check_stmt = $con->prepare($check_query);
-        $check_stmt->bind_param("i", $reservation_id);
+        $check_stmt->bind_param("i", $id);
         $check_stmt->execute();
         $result = $check_stmt->get_result();
         
-        if ($result->num_rows > 0) {
-            // Update the status to approved
-            $update_query = "UPDATE reservations SET status = 'approved', created_at = NOW() WHERE id = ?";
-            $update_stmt = $con->prepare($update_query);
-            $update_stmt->bind_param("i", $reservation_id);
-            
-            if ($update_stmt->execute()) {
-                return true;
-            }
+        if ($result->num_rows === 0) {
+            throw new Exception("Reservation not found");
         }
-        return false;
-    } catch (Exception $e) {
-        error_log("Error in approveReservation: " . $e->getMessage());
-        return false;
-    }
-}
-
-// Function to reject reservation
-function rejectReservation($con, $reservation_id) {
-    try {
-        // First check if reservation exists and is pending
-        $check_query = "SELECT * FROM reservations WHERE id = ? AND status = 'pending'";
-        $check_stmt = $con->prepare($check_query);
-        $check_stmt->bind_param("i", $reservation_id);
-        $check_stmt->execute();
-        $result = $check_stmt->get_result();
         
-        if ($result->num_rows > 0) {
-            // Update the status to rejected
-            $update_query = "UPDATE reservations SET status = 'rejected', created_at = NOW() WHERE id = ?";
-            $update_stmt = $con->prepare($update_query);
-            $update_stmt->bind_param("i", $reservation_id);
+        $row = $result->fetch_assoc();
+        $currentStatus = $row['status'];
+        
+        // Only update if current status is pending
+        if ($currentStatus === 'pending') {
+            // Start transaction
+            $con->begin_transaction();
             
-            if ($update_stmt->execute()) {
+            try {
+                // Insert into reservation_logs
+                $log_query = "INSERT INTO reservation_logs (reservation_id, status, action_taken, created_at) 
+                             VALUES (?, ?, ?, NOW())";
+                $log_stmt = $con->prepare($log_query);
+                $log_stmt->bind_param("iss", $id, $currentStatus, $newStatus);
+                $log_stmt->execute();
+                
+                // Update the status
+                $update_query = "UPDATE reservations SET status = ? WHERE id = ? AND status = 'pending'";
+                $update_stmt = $con->prepare($update_query);
+                $update_stmt->bind_param("si", $newStatus, $id);
+                $update_stmt->execute();
+                
+                if ($update_stmt->affected_rows === 0) {
+                    throw new Exception("Failed to update status");
+                }
+                
+                // Commit transaction
+                $con->commit();
                 return true;
+            } catch (Exception $e) {
+                $con->rollback();
+                throw $e;
             }
+        } else {
+            throw new Exception("Reservation is already " . $currentStatus);
         }
-        return false;
     } catch (Exception $e) {
-        error_log("Error in rejectReservation: " . $e->getMessage());
+        error_log("Error updating reservation status: " . $e->getMessage());
         return false;
     }
 }
@@ -72,28 +82,12 @@ function rejectReservation($con, $reservation_id) {
 // Handle POST requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && isset($_POST['reservation_id'])) {
-        $reservation_id = $_POST['reservation_id'];
+        $reservation_id = intval($_POST['reservation_id']);
         $action = $_POST['action'];
         
-        if ($action === 'approve') {
-            if (approveReservation($con, $reservation_id)) {
-                echo "<script>
-                    alert('Reservation approved successfully!');
-                    window.location.reload();
-                </script>";
-            } else {
-                echo "<script>alert('Failed to approve reservation. It may have already been processed.');</script>";
-            }
-        } elseif ($action === 'reject') {
-            if (rejectReservation($con, $reservation_id)) {
-                echo "<script>
-                    alert('Reservation rejected successfully!');
-                    window.location.reload();
-                </script>";
-            } else {
-                echo "<script>alert('Failed to reject reservation. It may have already been processed.');</script>";
-            }
-        }
+        // Redirect to reservation_logs.php with the necessary parameters
+        header("Location: reservation_logs.php?id=" . $reservation_id . "&action=" . $action);
+        exit();
     }
 }
 

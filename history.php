@@ -23,13 +23,18 @@ $user_name = 'User';
 }
 
 // Fetch sit-in history with feedback status (one feedback per sit-in session)
-$history_query = "SELECT DISTINCT lr.IDNO, lr.FULLNAME, lr.PURPOSE, lr.LAB_ROOM,
-lr.TIME_IN, lr.TIME_OUT,
-CASE WHEN f.FEEDBACK IS NOT NULL THEN 'Submitted' ELSE 'Not Submitted' END as FEEDBACK_STATUS
+$history_query = "SELECT DISTINCT 
+    lr.IDNO,
+    lr.FULLNAME,
+    lr.TIME_IN,
+    lr.TIME_OUT,
+    lr.LAB_ROOM,
+    lr.PURPOSE,
+    CASE WHEN f.FEEDBACK IS NOT NULL THEN 'Submitted' ELSE 'Not Submitted' END as FEEDBACK_STATUS
 FROM login_records lr
 LEFT JOIN feedback f ON lr.IDNO = f.USER_ID AND DATE(lr.TIME_IN) = DATE(f.CREATED_AT)
-WHERE lr.IDNO = (SELECT IDNO FROM user WHERE USERNAME = '$username')
-GROUP BY lr.IDNO, lr.TIME_IN, lr.TIME_OUT, lr.LAB_ROOM, lr.PURPOSE
+WHERE lr.IDNO = (SELECT IDNO FROM user WHERE USERNAME = '$username' LIMIT 1)
+GROUP BY lr.IDNO, lr.FULLNAME, lr.TIME_IN, lr.TIME_OUT, lr.LAB_ROOM, lr.PURPOSE
 ORDER BY lr.TIME_IN DESC";
 $history_result = mysqli_query($con, $history_query);
 ?>
@@ -298,6 +303,7 @@ tbody tr:hover {
 <table>
 <thead>
 <tr>
+<th>ID Number</th>
 <th>Name</th>
 <th>Purpose</th>
 <th>Room</th>
@@ -311,6 +317,7 @@ tbody tr:hover {
 if (mysqli_num_rows($history_result) > 0) {
 while ($history_row = mysqli_fetch_assoc($history_result)) { ?>
 <tr>
+<td><?php echo htmlspecialchars($history_row['IDNO']); ?></td>
 <td><?php echo htmlspecialchars($history_row['FULLNAME']); ?></td>
 <td><?php echo htmlspecialchars($history_row['PURPOSE']); ?></td>
 <td><?php echo htmlspecialchars($history_row['LAB_ROOM']); ?></td>

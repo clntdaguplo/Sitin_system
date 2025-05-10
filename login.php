@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST["Password"];
     
     // Check if the entered credentials are for the default admin account
-    if ($username === 'admin' && $password === 'user') {
+    if ($username === 'admin' && $password === 'admin123') {
         $_SESSION["Username"] = $username;
         echo "<script>alert('Admin Login Successful'); window.location.href = 'admindash.php';</script>";
     } else {

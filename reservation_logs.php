@@ -26,6 +26,76 @@ if ($result && mysqli_num_rows($result) > 0) {
     $profile_pic = 'default.jpg';
     $user_name = 'Admin';
 }
+
+// Handle status updates
+if (isset($_GET['id']) && isset($_GET['action'])) {
+    $reservation_id = intval($_GET['id']);
+    $action = $_GET['action'];
+    
+    try {
+        // First check if reservation exists and is pending
+        $check_query = "SELECT status FROM reservations WHERE id = ?";
+        $check_stmt = $con->prepare($check_query);
+        $check_stmt->bind_param("i", $reservation_id);
+        $check_stmt->execute();
+        $result = $check_stmt->get_result();
+        
+        if ($result->num_rows === 0) {
+            throw new Exception("Reservation not found");
+        }
+        
+        $row = $result->fetch_assoc();
+        $currentStatus = $row['status'];
+        
+        // Only update if current status is pending
+        if ($currentStatus === 'pending') {
+            // Start transaction
+            $con->begin_transaction();
+            
+            try {
+                // Determine new status based on action
+                $newStatus = ($action === 'approve') ? 'approved' : 'rejected';
+                
+                // Insert into reservation_logs
+                $log_query = "INSERT INTO reservation_logs (reservation_id, status, action_taken, created_at) 
+                             VALUES (?, ?, ?, NOW())";
+                $log_stmt = $con->prepare($log_query);
+                $log_stmt->bind_param("iss", $reservation_id, $currentStatus, $newStatus);
+                $log_stmt->execute();
+                
+                // Update the status in reservations table
+                $update_query = "UPDATE reservations SET status = ? WHERE id = ? AND status = 'pending'";
+                $update_stmt = $con->prepare($update_query);
+                $update_stmt->bind_param("si", $newStatus, $reservation_id);
+                $update_stmt->execute();
+                
+                if ($update_stmt->affected_rows === 0) {
+                    throw new Exception("Failed to update status");
+                }
+                
+                // Commit transaction
+                $con->commit();
+                
+                // Show success message and redirect
+                echo "<script>
+                    alert('Reservation " . $newStatus . " successfully!');
+                    window.location.href = 'reservation_requests.php';
+                </script>";
+            } catch (Exception $e) {
+                // Rollback transaction on error
+                $con->rollback();
+                throw new Exception("Failed to update reservation: " . $e->getMessage());
+            }
+        } else {
+            throw new Exception("Reservation is already " . $currentStatus);
+        }
+    } catch (Exception $e) {
+        echo "<script>
+            alert('" . addslashes($e->getMessage()) . "');
+            window.location.href = 'reservation_requests.php';
+        </script>";
+    }
+}
 ?>
 
 <!DOCTYPE html>

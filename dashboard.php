@@ -143,27 +143,31 @@ html, body {
     max-width: 100%;
     margin: 0;
     padding: 30px;
-    min-height: calc(100vh - 120px);
+    min-height: 100vh;
     background: white;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .dashboard-content {
     display: grid;
-    grid-template-columns: 1.5fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 30px;
     margin-top: 30px;
+    width: 100%;
+    max-width: 100%;
 }
 
 .dashboard-left {
     display: flex;
     flex-direction: column;
     gap: 25px;
+    width: 100%;
 }
 
 .dashboard-right {
     height: 100%;
+    width: 100%;
 }
 
 .greeting-card {
@@ -239,7 +243,7 @@ html, body {
     border-radius: 15px;
     padding: 20px;
     height: auto;
-    max-height: 600px;
+    max-height: 800px;
     display: flex;
     flex-direction: column;
 }
@@ -314,14 +318,6 @@ html, body {
     font-size: 0.8rem;
 }
 
-.points-badge {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
 
 .rank {
     min-width: 30px;
@@ -331,7 +327,7 @@ html, body {
     justify-content: center;
     font-size: 1rem;
     font-weight: 600;
-    color: white;
+    color: red;
 }
 
 .rank i {
@@ -420,7 +416,7 @@ html, body {
     }
     
     .leaderboard-section {
-        max-height: 500px;
+        max-height: 600px;
     }
 }
 
@@ -434,7 +430,7 @@ html, body {
     }
     
     .leaderboard-section {
-        max-height: 400px;
+        max-height: 500px;
     }
 }
 
@@ -666,168 +662,218 @@ html, body {
 </div>
 
 <div class="content">
-    <div class="dashboard-grid">
+    <div class="dashboard-grid">    
         <!-- Main Content -->
-        <div class="welcome-container fullscreen">
-            <h1>Welcome to Sit-In Monitoring</h1>
-            <p>Track your laboratory sessions, manage reservations, and stay updated with the latest announcements.</p>
-            
-            <div class="dashboard-content">
-                <!-- Left Section -->
-                <div class="dashboard-left">
-                    <!-- Announcements Section -->
-                    <div class="announcements-section">
-                        <div class="section-header">
-                            <h2><i class="fas fa-bullhorn"></i> Recent Announcements</h2>
-                            <a href="viewAnnouncement.php" class="view-all">View All</a>
-                        </div>
-                        <div class="announcements-list">
-                            <?php
-                            // Fetch recent announcements
-                            $announcements_query = "SELECT * FROM announcements ORDER BY CREATED_AT DESC LIMIT 3";
-                            $announcements_result = mysqli_query($con, $announcements_query);
-                            
-                            if ($announcements_result && mysqli_num_rows($announcements_result) > 0) {
-                                while ($announcement = mysqli_fetch_assoc($announcements_result)) {
-                                    ?>
-                                    <div class="announcement-card">
-                                        <h3><?php echo htmlspecialchars($announcement['TITLE']); ?></h3>
-                                        <p><?php echo nl2br(htmlspecialchars($announcement['CONTENT'])); ?></p>
-                                        <small><?php echo date('F j, Y g:i A', strtotime($announcement['CREATED_AT'])); ?></small>
-                                    </div>
-                                    <?php
-                                }
-                            } else {
-                                echo '<div class="no-announcements">No announcements available.</div>';
-                            }
-                            ?>
-                        </div>
-                    </div>
+        <?php
+        include "connector.php";
 
-                    <!-- Quick Stats -->
-                    <div class="quick-stats">
-                        <div class="stat-card">
-                            <h3>Remaining Sessions</h3>
-                            <div class="value">
-                                <?php 
-                                    $sessionQuery = "SELECT REMAINING_SESSIONS FROM user WHERE USERNAME = '$username'";
-                                    $sessionResult = mysqli_query($con, $sessionQuery);
-                                    $sessions = mysqli_fetch_assoc($sessionResult);
-                                    echo $sessions['REMAINING_SESSIONS'] ?? '0';
-                                ?> Sessions
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Current Points</h3>
-                            <div class="value">
-                                <?php 
-                                $pointsQuery = "SELECT POINTS FROM user WHERE USERNAME = '$username'";
-                                $pointsResult = mysqli_query($con, $pointsQuery);
-                                $points = mysqli_fetch_assoc($pointsResult);
-                                $currentPoints = $points['POINTS'] ?? '0';
-                                echo $currentPoints . ' ' . ($currentPoints <= 1 ? 'Point' : 'Points');
+        if (isset($_SESSION['Username'])) {
+            $username = $_SESSION['Username'];
+            $sql = "SELECT * FROM user WHERE USERNAME='$username'";
+            $result = mysqli_query($con, $sql);
+
+            if ($result && mysqli_num_rows($result) > 0) {
+                $row = mysqli_fetch_assoc($result);
+                $Firstname = htmlspecialchars($row['FIRSTNAME']);
+                echo "<h1 class='page-title'><b>Welcome <b>$Firstname</b> to Sit-in Monitoring System</b></h1>";
+            } else {
+                echo "<h1 class='page-title'>Welcome to Sit-in Monitoring System</h1>";
+            }
+        } else {
+            echo "<h1 class='page-title'>Welcome to Sit-in Monitoring System</h1>";
+        }
+        ?>
+        <div class="dashboard-content">
+            <!-- Left Section -->
+            <div class="dashboard-left">
+                <!-- Announcements Section -->
+                <article class="announcements-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-bullhorn"></i> Recent Announcements</h2>
+                        <a href="viewAnnouncement.php" class="view-all">View All</a>
+                    </div>
+                    <div class="announcements-list">
+                        <?php
+                        // Fetch recent announcements
+                        $announcements_query = "SELECT * FROM announcements ORDER BY CREATED_AT DESC LIMIT 3";
+                        $announcements_result = mysqli_query($con, $announcements_query);
+                        
+                        if ($announcements_result && mysqli_num_rows($announcements_result) > 0) {
+                            while ($announcement = mysqli_fetch_assoc($announcements_result)) {
                                 ?>
-                            </div>
+                                <div class="announcement-card">
+                                    <h3><?php echo htmlspecialchars($announcement['TITLE']); ?></h3>
+                                    <p><?php echo nl2br(htmlspecialchars($announcement['CONTENT'])); ?></p>
+                                    <small><?php echo date('F j, Y g:i A', strtotime($announcement['CREATED_AT'])); ?></small>
+                                </div>
+                                <?php
+                            }
+                        } else {
+                            echo '<div class="no-announcements">No announcements available.</div>';
+                        }
+                        ?>
+                    </div>
+                </article>
+
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <h3>Remaining Sessions</h3>
+                        <div class="value">
+                            <?php 
+                                $sessionQuery = "SELECT REMAINING_SESSIONS FROM user WHERE USERNAME = '$username'";
+                                $sessionResult = mysqli_query($con, $sessionQuery);
+                                $sessions = mysqli_fetch_assoc($sessionResult);
+                                echo $sessions['REMAINING_SESSIONS'] ?? '0';
+                            ?> 
                         </div>
                     </div>
-                </div>
-
-                <!-- Right Section - Top Students -->
-                <div class="dashboard-right">
-                    <div class="leaderboard-section">
-                        <div class="leaderboard-header">
-                            <div class="leaderboard-title">
-                                <i class="fas fa-trophy"></i>
-                                Top Students
-                            </div>
-                        </div>
-                        <div class="leaderboard-list">
-                            <?php
-                            // Fetch all students by points with consistent ordering
-                            $leaderboardQuery = "SELECT 
-                                u.IDNO, 
-                                u.FIRSTNAME, 
-                                u.MIDNAME,
-                                u.LASTNAME, 
-                                u.PROFILE_PIC, 
-                                u.POINTS, 
-                                u.USERNAME,
-                                u.REMAINING_SESSIONS 
-                            FROM user u 
-                            WHERE u.USERNAME != 'admin' 
-                            ORDER BY u.POINTS DESC, u.REMAINING_SESSIONS ASC, u.LASTNAME ASC";
-
-                            $leaderboardResult = mysqli_query($con, $leaderboardQuery);
-                            $rank = 1;
-
-                            if ($leaderboardResult) {
-                                while ($user = mysqli_fetch_assoc($leaderboardResult)) {
-                                    $profile_pic = !empty($user['PROFILE_PIC']) ? htmlspecialchars($user['PROFILE_PIC']) : 'default.jpg';
-                                    $isCurrentUser = ($user['USERNAME'] === $username);
-                                    $middleInitial = !empty($user['MIDNAME']) ? ' ' . substr($user['MIDNAME'], 0, 1) . '.' : '';
-                                    ?>
-                                    <div class="leaderboard-item">
-                                        <div class="rank">
-                                            <?php 
-                                            if ($rank <= 3) {
-                                                switch($rank) {
-                                                    case 1:
-                                                        echo '<i class="fas fa-crown" style="color: #FFD700;"></i>';
-                                                        break;
-                                                    case 2:
-                                                        echo '<i class="fas fa-medal" style="color: #C0C0C0;"></i>';
-                                                        break;
-                                                    case 3:
-                                                        echo '<i class="fas fa-award" style="color: #CD7F32;"></i>';
-                                                        break;
-                                                }
-                                            } else {
-                                                echo $rank;
-                                            }
-                                            ?>
-                                        </div>
-                                        <div class="leaderboard-user">
-                                            <img src="uploads/<?php echo $profile_pic; ?>" alt="Profile" class="leaderboard-avatar">
-                                            <div class="user-info">
-                                                <div class="user-name">
-                                                    <?php 
-                                                    if ($isCurrentUser) {
-                                                        echo '<strong style="color: #0369a1;">YOU</strong>';
-                                                    } else {
-                                                        echo htmlspecialchars($user['LASTNAME'] . ', ' . $user['FIRSTNAME'] . $middleInitial);
-                                                    }
-                                                    ?>
-                                                </div>
-                                                <div class="user-points">
-                                                    <?php echo htmlspecialchars($user['IDNO']); ?>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="points-badge">
-                                            <?php 
-                                            if ($isCurrentUser) {
-                                                echo $user['POINTS'] . ' ' . ($user['POINTS'] <= 1 ? 'Point' : 'Points');
-                                            } else {
-                                                if ($user['POINTS'] >= 100) {
-                                                    echo '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
-                                                } elseif ($user['POINTS'] >= 50) {
-                                                    echo '<i class="fas fa-star"></i><i class="fas fa-star"></i>';
-                                                } else {
-                                                    echo '<i class="fas fa-star"></i>';
-                                                }
-                                            }
-                                            ?>
-                                        </div>
-                                    </div>
-                                    <?php
-                                    $rank++;
-                                }
-                            }
+                    <div class="stat-card">
+                        <h3>Current Points</h3>
+                        <div class="value">
+                            <?php 
+                            $pointsQuery = "SELECT POINTS FROM user WHERE USERNAME = '$username'";
+                            $pointsResult = mysqli_query($con, $pointsQuery);
+                            $points = mysqli_fetch_assoc($pointsResult);
+                            $currentPoints = $points['POINTS'] ?? '0';
+                            echo $currentPoints . ' ' . ($currentPoints <= 1 ? 'Point' : 'Points');
                             ?>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Right Section - Top Students -->
+            <aside class="dashboard-right">
+                <div class="leaderboard-section">
+                    <div class="leaderboard-header">
+                        <div class="leaderboard-title">
+
+                            <span>Leaderboard</span>
+                            Top Students    
+                        </div>
+                    </div>
+                    <div class="leaderboard-list">
+                        <?php
+                        // Fetch all students by points with consistent ordering
+                        $leaderboardQuery = "SELECT 
+                            u.IDNO, 
+                            u.FIRSTNAME, 
+                            u.MIDNAME,
+                            u.LASTNAME, 
+                            u.PROFILE_PIC, 
+                            u.POINTS, 
+                            u.USERNAME,
+                            u.REMAINING_SESSIONS 
+                        FROM user u 
+                        WHERE u.USERNAME != 'admin' 
+                        ORDER BY u.POINTS DESC, u.REMAINING_SESSIONS ASC, u.LASTNAME ASC";
+
+                        $leaderboardResult = mysqli_query($con, $leaderboardQuery);
+                        $rank = 1;
+
+                        if ($leaderboardResult) {
+                            while ($user = mysqli_fetch_assoc($leaderboardResult)) {
+                                $profile_pic = !empty($user['PROFILE_PIC']) ? htmlspecialchars($user['PROFILE_PIC']) : 'default.jpg';
+                                $isCurrentUser = ($user['USERNAME'] === $username);
+                                $middleInitial = !empty($user['MIDNAME']) ? ' ' . substr($user['MIDNAME'], 0, 1) . '.' : '';
+                                ?>
+                                <div class="leaderboard-item">
+                                    <div class="rank">
+                                        <?php 
+                                        if ($rank <= 15) {
+                                            switch($rank) {
+                                                case 1:
+                                                    echo '<i>1st</i>';
+                                                    break;
+                                                case 2:
+                                                    echo '<i>2nd</i>';
+                                                    break;
+                                                case 3:
+                                                    echo '<i>3rd</i>';
+                                                    break;
+                                                case 4:
+                                                    echo '<i>4th</i>';
+                                                    break;
+                                                case 5:
+                                                    echo '<i>5th</i>';
+                                                    break;
+                                                case 6:
+                                                    echo '<i>6th</i>';
+                                                    break;
+                                                case 7:
+                                                    echo '<i>7th</i>';
+                                                    break;
+                                                case 8:
+                                                    echo '<i>8th</i>';
+                                                    break;
+                                                case 9:
+                                                    echo '<i>9th</i>';
+                                                    break;
+                                                case 10:
+                                                    echo '<i>10th</i>';
+                                                    break;
+                                                case 11:
+                                                    echo '<i>11th</i>';
+                                                    break;
+                                                case 12:
+                                                    echo '<i>12th</i>';
+                                                        break;case 13:
+                                                     echo '<i>13th</i>';
+                                                    break;
+                                                case 14:
+                                                    echo '<i>14th</i>';
+                                                    break;
+                                                case 15:
+                                                    echo '<i>15th</i>';
+                                                    break;
+                                            }
+                                        } else {
+                                            echo $rank;
+                                        }
+                                        ?>
+                                    </div>
+                                    <div class="leaderboard-user">
+                                        <img src="uploads/<?php echo $profile_pic; ?>" alt="Profile" class="leaderboard-avatar">
+                                        <div class="user-info">
+                                            <div class="user-name">
+                                                <?php 
+                                                if ($isCurrentUser) {
+                                                    echo '<strong style="color: #0369a1;">YOU</strong>';
+                                                } else {
+                                                    echo htmlspecialchars($user['LASTNAME'] . ', ' . $user['FIRSTNAME'] . $middleInitial);
+                                                }
+                                                ?>
+                                            </div>
+                                            <div class="user-points">
+                                                <?php echo htmlspecialchars($user['IDNO']); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <?php 
+                                        if ($isCurrentUser) {
+                                            echo $user['POINTS'] . ' ' . ($user['POINTS'] <= 1 ? 'Point' : 'Points');
+                                        } else {
+                                            if ($user['POINTS'] >= 100) {
+                                                echo '<i class=""></i><i class=""></i><i class=""></i>';
+                                            } elseif ($user['POINTS'] >= 50) {
+                                                echo '<i class=""></i><i class=""></i>';
+                                            } else {
+                                                echo '<i class=""></i>';
+                                            }
+                                        }
+                                        ?>
+                                    </div>
+                                </div>
+                                <?php
+                                $rank++;
+                            }
+                        }
+                        ?>
+                    </div>
+                </div>
+            </aside>
         </div>
     </div>
 </div>
