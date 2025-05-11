@@ -390,31 +390,33 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
         </div>
         <div class="nav-right">
             <a href="admindash.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'admindash.php' ? 'active' : ''; ?>">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
+                Dashboard
             </a>
             <a href="adannouncement.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adannouncement.php' ? 'active' : ''; ?>">
-                <i class="fas fa-bullhorn"></i> Announcements
+                Announcements
             </a>
             <a href="liststudent.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'liststudent.php' ? 'active' : ''; ?>">
-                <i class="fas fa-user-graduate"></i> Student
-            <a href="adsitin.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adsitin.php' ? 'active' : ''; ?>">
-                <i class="fas fa-chair"></i> Current Sitin
-            
-            
-            <a href="adreservation.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adreservation.php' ? 'active' : ''; ?>">
-                <i class="fas fa-calendar-check"></i> Reservations
+                Students
             </a>
+            <a href="adsitin.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adsitin.php' ? 'active' : ''; ?>">
+                Current Sitin
+            
+            
+            
             <a href="adlabresources.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adlabresources.php' ? 'active' : ''; ?>">
-                <i class="fas fa-book"></i> Lab Resources
+                Lab Resources
             </a>
             <a href="adlabsched.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adlabsched.php' ? 'active' : ''; ?>">
-                <i class="fas fa-calendar"></i> Lab Schedule
+                Lab Schedule
+            </a>
+            <a href="adreservation.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adreservation.php' ? 'active' : ''; ?>">
+                Reservations
             </a>
             <a href="adfeedback.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adfeedback.php' ? 'active' : ''; ?>">
-                <i class="fas fa-book-open"></i> Feedback
+                Feedback
             </a>
             <a href="admindash.php?logout=true" class="logout-button">
-                <i class="fas fa-sign-out-alt"></i> Log Out
+                Log Out
             </a>
         </div>
     </div>

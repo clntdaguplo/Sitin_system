@@ -504,15 +504,16 @@ $result = mysqli_query($con, $query);
             <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
         </div>
         <div class="nav-right">
-            <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
-            <a href="liststudent.php"><i class="fas fa-user-graduate"></i> Students</a>
-            <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
+            <a href="admindash.php"> Dashboard</a>
+            <a href="adannouncement.php"> Announcements</a>
+            <a href="liststudent.php"> Students</a>
+            <a href="adsitin.php"> Current Sitin</a>
             
-            <a href="adreservation.php"><i class="fas fa-calendar-check"></i> Reservations</a>
-            <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-            <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
-            <a href="adfeedback.php"><i class="fas fa-book-open"></i> Feedback</a>
+
+            <a href="adlabresources.php"> Lab Resources</a>
+            <a href="adlabsched.php"> Lab Schedule</a>
+            <a href="adreservation.php"> Reservations</a>
+            <a href="adfeedback.php"> Feedback</a>
             <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
         </div>
     </div>

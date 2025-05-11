@@ -28,9 +28,13 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `announcements` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `TITLE` varchar(255) NOT NULL,
-  `CONTENT` varchar(255) NOT NULL,
-  `CREATED_AT` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `CONTENT` text NOT NULL,
+  `CREATED_AT` timestamp NOT NULL DEFAULT current_timestamp(),
+  `UPDATED_AT` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `STATUS` enum('active','archived') NOT NULL DEFAULT 'active',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

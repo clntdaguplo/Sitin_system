@@ -271,8 +271,8 @@ body {
     <div class="nav-links">
         <a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
         <a href="viewAnnouncement.php"><i class="fas fa-bullhorn"></i> Announcement</a>
-        <a href="labRules&Regulations.php"><i class="fas fa-flask"></i> Rules & Regulations</a>
-        <a href="sitinrules.php"><i class="fas fa-book"></i> Sit-in Rules</a>
+        <a href="labRules&Regulations.php"></i> Rules & Regulations</a>
+        
         <a href="history.php"><i class="fas fa-history"></i> History</a>
         <a href="reservation.php"><i class="fas fa-calendar-alt"></i> Reservation</a>
         <a href="labschedule.php"><i class="fas fa-calendar-alt"></i> Lab Schedules</a>
@@ -286,8 +286,8 @@ body {
         
         <div class="rules-header">
             <h1>
-                <i class="fas fa-flask"></i>
-                Laboratory Rules and Regulations
+                <i ></i>
+                Rules & Regulations
             </h1>
             <a href="dashboard.php" class="back-button">
                 <i class="fas fa-arrow-left"></i>
@@ -295,31 +295,38 @@ body {
             </a>
         </div>
         <div class="rules-content">
-            <center><h2>UNIVERSITY OF CEBU</h2></center>
-            <center><h2>LABORATORY RULES AND REGULATIONS</h2></center>
-            <p>To avoid embarrassment and maintain camaraderie with your friends and superiors at our laboratories, please observe the following:</p>
-            <p><strong>1.</strong> Maintain silence, proper decorum, and discipline inside the laboratory. Mobile phones, walkmans, and other personal pieces of equipment must be switched off.</p>
-            <p><strong>2.</strong> Games are not allowed inside the lab. This includes computer-related games, card games, and other games that may disturb the operation of the lab.</p>
-            <p><strong>3.</strong> Surfing the Internet is allowed only with the permission of the instructor. Downloading and installing of software are strictly prohibited.</p>
-            <p><strong>4.</strong> Getting access to other websites not related to the course (especially pornographic and illicit sites) is strictly prohibited.</p>
-            <p><strong>5.</strong> Deleting computer files and changing the set-up of the computer is a major offense.</p>
-            <p><strong>6.</strong> Observe computer time usage carefully. A fifteen-minute allowance is given for each use. Otherwise, the unit will be given to those who wish to "sit-in".</p>
-            <p><strong>7.</strong> Observe proper decorum while inside the laboratory.</p>
-            <p><strong>8.</strong> Chewing gum, eating, drinking, smoking, and other forms of vandalism are prohibited inside the lab.</p>
-            <p><strong>9.</strong> Anyone causing a continual disturbance will be asked to leave the lab. Acts or gestures offensive to the members of the community, including public display of physical intimacy, are not tolerated.</p>
-            <p><strong>10.</strong> Persons exhibiting hostile or threatening behavior such as yelling, swearing, or disregarding requests made by lab personnel will be asked to leave the lab.</p>
-            <p><strong>11.</strong> For serious offenses, the lab personnel may call the Civil Security Office (CSU) for assistance.</p>
-            <p><strong>12.</strong> Any technical problem or difficulty must be addressed to the laboratory supervisor, student assistant, or instructor immediately.</p>
-            <h2>DISCIPLINARY ACTION</h2>
-            <p style="display: flex; align-items: center;">
-                <strong style="width: 150px; min-width: 130px;">First Offense:</strong> 
-                <span>The Head, Dean, or OIC recommends to the Guidance Center for a suspension from classes for each offender.</span>
-            </p>
-            <p style="display: flex; align-items: center;">
-                <strong style="width: 235px; min-width: 315px;">Second and Subsequent Offenses:</strong> 
-                <span>A recommendation for a heavier sanction will be endorsed to the Guidance Center.</span>
-            </p>
-        </div>
+            <center><h5 class="text-center">University of Cebu</h5></center>
+                                <center><h6 class="text-center">COLLEGE OF INFORMATION & COMPUTER STUDIES</h6></center>
+                                <center><p><strong>LABORATORY RULES AND REGULATIONS</strong></p></center>
+                                <p>To avoid embarrassment and maintain camaraderie with your friends and superiors at our laboratories, please observe the following:</p>
+                                <ol>
+                                    <li>Maintain silence, proper decorum, and discipline inside the laboratory. Mobile phones, walkmans, and other personal equipment must be switched off.</li>
+                                    <li>Games are not allowed inside the lab. This includes computer-related games, card games, and other games that may disturb the operation of the lab.</li>
+                                    <li>Surfing the Internet is allowed only with the permission of the instructor. Downloading and installing software are strictly prohibited.</li>
+                                    <li>Getting access to other websites not related to the course (especially pornographic and illicit sites) is strictly prohibited.</li>
+                                    <li>Deleting computer files and changing the set-up of the computer is a major offense.</li>
+                                    <li>Observe computer time usage carefully. A fifteen-minute allowance is given for each use. Otherwise, the unit will be given to those who wish to "sit-in".</li>
+                                    <li>Observe proper decorum while inside the laboratory.
+                                        <ul>
+                                            <li>Do not get inside the lab unless the instructor is present.</li>
+                                            <li>All bags, knapsacks, and the like must be deposited at the counter.</li>
+                                            <li>Follow the seating arrangement of your instructor.</li>
+                                            <li>At the end of class, all software programs must be closed.</li>
+                                            <li>Return all chairs to their proper places after use.</li>
+                                        </ul>
+                                    </li>
+                                    <li>Chewing gum, eating, drinking, smoking, and other forms of vandalism are prohibited inside the lab.</li>
+                                    <li>Anyone causing a continual disturbance will be asked to leave the lab. Acts or gestures offensive to the community, including public display of physical intimacy, are not tolerated.</li>
+                                    <li>Persons exhibiting hostile or threatening behavior such as yelling, swearing, or disregarding requests made by lab personnel will be asked to leave the lab.</li>
+                                    <li>For serious offenses, the lab personnel may call the Civil Security Office (CSU) for assistance.</li>
+                                    <li>Any technical problem or difficulty must be addressed to the laboratory supervisor, student assistant, or instructor immediately.</li>
+                                </ol>
+                                <p><strong>DISCIPLINARY ACTION</strong></p>
+                                <ul>
+                                    <li><strong>First Offense:</strong> The Head, Dean, or OIC recommends suspension from classes to the Guidance Center.</li>
+                                    <li><strong>Second and Subsequent Offenses:</strong> A recommendation for a heavier sanction will be endorsed to the Guidance Center.</li>
+                                </ul>
+                            </div>
     </div>
 </div>
 </body>

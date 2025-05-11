@@ -7,14 +7,6 @@ date_default_timezone_set('Asia/Manila');
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Debug database connection
-error_log("Checking database connection...");
-if (!$con) {
-    error_log("Database connection failed: " . mysqli_connect_error());
-    die("Connection failed: " . mysqli_connect_error());
-}
-error_log("Database connection successful");
-
 // Ensure MySQL is using the correct timezone
 $con->query("SET time_zone = '+08:00'");
 $con->query("SET @@session.time_zone = '+08:00'");
@@ -22,74 +14,6 @@ $con->query("SET @@session.time_zone = '+08:00'");
 // Debug logging
 error_log("adreservation.php started");
 error_log("Session data: " . print_r($_SESSION, true));
-
-// Function to update reservation status
-function updateReservationStatus($con, $id, $newStatus) {
-    try {
-        // Get current status
-        $check_query = "SELECT status FROM reservations WHERE id = ?";
-        $check_stmt = $con->prepare($check_query);
-        $check_stmt->bind_param("i", $id);
-        $check_stmt->execute();
-        $result = $check_stmt->get_result();
-        
-        if ($result->num_rows === 0) {
-            throw new Exception("Reservation not found");
-        }
-        
-        $row = $result->fetch_assoc();
-        $currentStatus = $row['status'];
-        
-        // Only update if current status is pending
-        if ($currentStatus === 'pending') {
-            // Start transaction
-            $con->begin_transaction();
-            
-            try {
-                // Insert into reservation_logs
-                $log_query = "INSERT INTO reservation_logs (reservation_id, status, action_taken, created_at) 
-                             VALUES (?, ?, ?, NOW())";
-                $log_stmt = $con->prepare($log_query);
-                $log_stmt->bind_param("iss", $id, $currentStatus, $newStatus);
-                $log_stmt->execute();
-                
-                // Update the status
-                $update_query = "UPDATE reservations SET status = ? WHERE id = ? AND status = 'pending'";
-                $update_stmt = $con->prepare($update_query);
-                $update_stmt->bind_param("si", $newStatus, $id);
-                $update_stmt->execute();
-                
-                if ($update_stmt->affected_rows === 0) {
-                    throw new Exception("Failed to update status");
-                }
-                
-                // Commit transaction
-                $con->commit();
-                return true;
-            } catch (Exception $e) {
-                $con->rollback();
-                throw $e;
-            }
-        } else {
-            throw new Exception("Reservation is already " . $currentStatus);
-        }
-    } catch (Exception $e) {
-        error_log("Error updating reservation status: " . $e->getMessage());
-        return false;
-    }
-}
-
-// Handle POST requests
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['action']) && isset($_POST['reservation_id'])) {
-        $reservation_id = intval($_POST['reservation_id']);
-        $action = $_POST['action'];
-        
-        // Redirect to reservation_logs.php with the necessary parameters
-        header("Location: reservation_logs.php?id=" . $reservation_id . "&action=" . $action);
-        exit();
-    }
-}
 
 // Check if admin is logged in
 if (!isset($_SESSION['Username'])) {
@@ -112,6 +36,170 @@ if ($result && mysqli_num_rows($result) > 0) {
 } else {
     $profile_pic = 'default.jpg';
     $user_name = 'Admin';
+}
+
+// Functions for handling reservations
+function handleReservationApproval($con, $reservation_id) {
+    try {
+        $con->begin_transaction();
+        
+        // Get reservation details
+        $stmt = $con->prepare("SELECT r.*, u.FIRSTNAME, u.MIDNAME, u.LASTNAME, u.EMAIL 
+                             FROM reservations r 
+                             JOIN user u ON r.student_id = u.IDNO 
+                             WHERE r.id = ?");
+        $stmt->bind_param("i", $reservation_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 0) {
+            throw new Exception("Reservation not found");
+        }
+        
+        $reservation = $result->fetch_assoc();
+        
+        // Check if already approved
+        if ($reservation['status'] === 'approved') {
+            throw new Exception("Reservation is already approved");
+        }
+        
+        // Update reservation status
+        $update_stmt = $con->prepare("UPDATE reservations SET status = 'approved' WHERE id = ?");
+        $update_stmt->bind_param("i", $reservation_id);
+        $update_stmt->execute();
+        
+        // Insert into reservation_logs
+        $log_stmt = $con->prepare("INSERT INTO reservation_logs (reservation_id, status, action_taken, created_at) 
+                                 VALUES (?, ?, 'approved', NOW())");
+        $log_stmt->bind_param("is", $reservation_id, $reservation['status']);
+        $log_stmt->execute();
+        
+        // Send notification
+        $notif_message = "Your reservation has been approved";
+        $notif_details = json_encode([
+            'room' => $reservation['room'],
+            'pc_number' => $reservation['seat_number'],
+            'date' => date('M d, Y', strtotime($reservation['date'])),
+            'time' => date('h:i A', strtotime($reservation['time']))
+        ]);
+        
+        $notif_stmt = $con->prepare("INSERT INTO notifications (user_id, message, type, details, is_read, created_at) 
+                                   VALUES (?, ?, 'approval', ?, 0, NOW())");
+        $notif_stmt->bind_param("sss", $reservation['student_id'], $notif_message, $notif_details);
+        $notif_stmt->execute();
+        
+        // Send email notification
+        $to = $reservation['EMAIL'];
+        $subject = "Reservation Approved - Lab Room " . $reservation['room'];
+        $message = "Dear Student,\n\n";
+        $message .= "Your reservation for Lab Room " . $reservation['room'] . " has been approved.\n";
+        $message .= "Date: " . date('F j, Y', strtotime($reservation['date'])) . "\n";
+        $message .= "Time: " . date('h:i A', strtotime($reservation['time'])) . "\n";
+        $message .= "Seat Number: " . $reservation['seat_number'] . "\n\n";
+        $message .= "Please arrive 30 minutes before your scheduled time.\n";
+        $message .= "Thank you for using our lab reservation system.\n\n";
+        $message .= "Best regards,\nLab Management Team";
+        
+        $headers = "From: labmanagement@example.com";
+        mail($to, $subject, $message, $headers);
+        
+        $con->commit();
+        return true;
+    } catch (Exception $e) {
+        $con->rollback();
+        throw $e;
+    }
+}
+
+function handleReservationRejection($con, $reservation_id) {
+    try {
+        $con->begin_transaction();
+        
+        // Get reservation details
+        $stmt = $con->prepare("SELECT r.*, u.FIRSTNAME, u.MIDNAME, u.LASTNAME, u.EMAIL 
+                             FROM reservations r 
+                             JOIN user u ON r.student_id = u.IDNO 
+                             WHERE r.id = ?");
+        $stmt->bind_param("i", $reservation_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 0) {
+            throw new Exception("Reservation not found");
+        }
+        
+        $reservation = $result->fetch_assoc();
+        
+        // Check if already rejected
+        if ($reservation['status'] === 'rejected') {
+            throw new Exception("Reservation is already rejected");
+        }
+        
+        // Update reservation status
+        $update_stmt = $con->prepare("UPDATE reservations SET status = 'rejected' WHERE id = ?");
+        $update_stmt->bind_param("i", $reservation_id);
+        $update_stmt->execute();
+        
+        // Insert into reservation_logs
+        $log_stmt = $con->prepare("INSERT INTO reservation_logs (reservation_id, status, action_taken, created_at) 
+                                 VALUES (?, ?, 'rejected', NOW())");
+        $log_stmt->bind_param("is", $reservation_id, $reservation['status']);
+        $log_stmt->execute();
+        
+        // Send notification
+        $notif_message = "Your reservation has been rejected";
+        $notif_details = json_encode([
+            'room' => $reservation['room'],
+            'pc_number' => $reservation['seat_number'],
+            'date' => date('M d, Y', strtotime($reservation['date'])),
+            'time' => date('h:i A', strtotime($reservation['time']))
+        ]);
+        
+        $notif_stmt = $con->prepare("INSERT INTO notifications (user_id, message, type, details, is_read, created_at) 
+                                   VALUES (?, ?, 'rejection', ?, 0, NOW())");
+        $notif_stmt->bind_param("sss", $reservation['student_id'], $notif_message, $notif_details);
+        $notif_stmt->execute();
+        
+        // Send email notification
+        $to = $reservation['EMAIL'];
+        $subject = "Reservation Rejected - Lab Room " . $reservation['room'];
+        $message = "Dear Student,\n\n";
+        $message .= "We regret to inform you that your reservation for Lab Room " . $reservation['room'] . " has been rejected.\n";
+        $message .= "Date: " . date('F j, Y', strtotime($reservation['date'])) . "\n";
+        $message .= "Time: " . date('h:i A', strtotime($reservation['time'])) . "\n\n";
+        $message .= "Please make a new reservation or contact the lab administrator for more information.\n";
+        $message .= "Thank you for your understanding.\n\n";
+        $message .= "Best regards,\nLab Management Team";
+        
+        $headers = "From: labmanagement@example.com";
+        mail($to, $subject, $message, $headers);
+        
+        $con->commit();
+        return true;
+    } catch (Exception $e) {
+        $con->rollback();
+        throw $e;
+    }
+}
+
+// Handle POST requests
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['action']) && isset($_POST['reservation_id'])) {
+        $reservation_id = intval($_POST['reservation_id']);
+        $action = $_POST['action'];
+        
+        try {
+            if ($action === 'approve') {
+                handleReservationApproval($con, $reservation_id);
+                echo "<script>alert('Reservation approved successfully.'); window.location.href='reservation_logs.php';</script>";
+            } elseif ($action === 'reject') {
+                handleReservationRejection($con, $reservation_id);
+                echo "<script>alert('Reservation rejected successfully.'); window.location.href='reservation_logs.php';</script>";
+            }
+        } catch (Exception $e) {
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
+        }
+    }
 }
 ?>
 

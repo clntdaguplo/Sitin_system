@@ -844,20 +844,21 @@ if ($result) {
             <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
         </div>
         <div class="nav-right">
-            <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
-            <a href="liststudent.php"><i class="fas fa-user-graduate"></i> Students</a>
-            <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
+            <a href="admindash.php"></i> Dashboard</a>
+            <a href="adannouncement.php"></i> Announcements</a>
+            <a href="liststudent.php"></i> Students</a>
+            <a href="adsitin.php"></i> Current Sitin</a>
             
+            
+            <a href="adlabresources.php"></i> Lab Resources</a>
+            <a href="adlabsched.php"></i> Lab Schedule</a>
             <a href="adreservation.php" style="position: relative;">
-                <i class="fas fa-calendar-check"></i> Reservations
+                </i> Reservations
                 <?php if ($pendingCount > 0): ?>
                     <span class="notification-badge"><?php echo $pendingCount; ?></span>
                 <?php endif; ?>
             </a>
-            <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-            <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
-            <a href="adfeedback.php"><i class="fas fa-book-open"></i> Feedback</a>
+            <a href="adfeedback.php"></i> Feedback</a>
             <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
         </div>
     </div>

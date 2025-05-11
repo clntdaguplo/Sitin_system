@@ -2,15 +2,16 @@
 session_start();
 include("connector.php");
 
-// Set timezone to Philippines
+// Set timezone
 date_default_timezone_set('Asia/Manila');
 
-// Check if admin is logged in
+// Check admin login
 if (!isset($_SESSION['Username'])) {
     header("Location: login.php");
     exit();
 }
 
+// Get admin info
 $username = $_SESSION['Username'];
 $query = "SELECT PROFILE_PIC, FIRSTNAME, MIDNAME, LASTNAME FROM user WHERE USERNAME = ?";
 $stmt = $con->prepare($query);
@@ -19,81 +20,86 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result && mysqli_num_rows($result) > 0) {
-    $row = mysqli_fetch_assoc($result);
-    $profile_pic = !empty($row['PROFILE_PIC']) ? htmlspecialchars($row['PROFILE_PIC']) : 'default.jpg';
-    $user_name = htmlspecialchars($row['FIRSTNAME'] . ' ' . $row['MIDNAME'] . ' ' . $row['LASTNAME']);
+    $admin = $result->fetch_assoc();
+    $profile_pic = !empty($admin['PROFILE_PIC']) ? htmlspecialchars($admin['PROFILE_PIC']) : 'default.jpg';
+    $user_name = htmlspecialchars($admin['FIRSTNAME'] . ' ' . $admin['MIDNAME'] . ' ' . $admin['LASTNAME']);
 } else {
     $profile_pic = 'default.jpg';
     $user_name = 'Admin';
 }
 
-// Handle status updates
-if (isset($_GET['id']) && isset($_GET['action'])) {
-    $reservation_id = intval($_GET['id']);
-    $action = $_GET['action'];
-    
-    try {
-        // First check if reservation exists and is pending
-        $check_query = "SELECT status FROM reservations WHERE id = ?";
+// Get filters
+$status_filter = $_GET['status'] ?? 'all';
+$filter_date = $_GET['date'] ?? date('Y-m-d'); // Default to today
+
+// Build query based on filters
+$query = "SELECT r.*, u.FIRSTNAME, u.MIDNAME, u.LASTNAME 
+          FROM reservations r 
+          JOIN user u ON r.student_id = u.IDNO 
+          WHERE 1=1";
+
+if ($status_filter !== 'all') {
+    $query .= " AND r.status = '$status_filter'";
+}
+
+if ($filter_date) {
+    $query .= " AND DATE(r.date) = '$filter_date'";
+}
+
+$query .= " ORDER BY r.time DESC";
+$reservations = $con->query($query);
+
+// Check if reservations table has a primary key
+$check_pk_query = "SHOW KEYS FROM reservations WHERE Key_name = 'PRIMARY'";
+$pk_result = $con->query($check_pk_query);
+
+if ($pk_result->num_rows === 0) {
+    // Only add primary key if it doesn't exist
+    $alter_reservations = "ALTER TABLE reservations MODIFY id INT NOT NULL AUTO_INCREMENT PRIMARY KEY";
+    $con->query($alter_reservations);
+}
+
+// Create reservation_logs table if it doesn't exist
+$create_table_query = "CREATE TABLE IF NOT EXISTS reservation_logs (
+    id INT NOT NULL AUTO_INCREMENT,
+    reservation_id INT NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    action_taken VARCHAR(20) NOT NULL,
+    created_at DATETIME NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (reservation_id) REFERENCES reservations(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+$con->query($create_table_query);
+
+// Handle POST requests for approval/rejection
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['action']) && isset($_POST['reservation_id'])) {
+        $reservation_id = intval($_POST['reservation_id']);
+        $action = $_POST['action'];
+        
+        // Get current reservation details
+        $check_query = "SELECT * FROM reservations WHERE id = ?";
         $check_stmt = $con->prepare($check_query);
         $check_stmt->bind_param("i", $reservation_id);
         $check_stmt->execute();
         $result = $check_stmt->get_result();
         
-        if ($result->num_rows === 0) {
-            throw new Exception("Reservation not found");
-        }
-        
-        $row = $result->fetch_assoc();
-        $currentStatus = $row['status'];
-        
-        // Only update if current status is pending
-        if ($currentStatus === 'pending') {
-            // Start transaction
-            $con->begin_transaction();
+        if ($result->num_rows > 0) {
+            $reservation = $result->fetch_assoc();
             
-            try {
-                // Determine new status based on action
-                $newStatus = ($action === 'approve') ? 'approved' : 'rejected';
-                
-                // Insert into reservation_logs
-                $log_query = "INSERT INTO reservation_logs (reservation_id, status, action_taken, created_at) 
-                             VALUES (?, ?, ?, NOW())";
-                $log_stmt = $con->prepare($log_query);
-                $log_stmt->bind_param("iss", $reservation_id, $currentStatus, $newStatus);
-                $log_stmt->execute();
-                
-                // Update the status in reservations table
-                $update_query = "UPDATE reservations SET status = ? WHERE id = ? AND status = 'pending'";
-                $update_stmt = $con->prepare($update_query);
-                $update_stmt->bind_param("si", $newStatus, $reservation_id);
-                $update_stmt->execute();
-                
-                if ($update_stmt->affected_rows === 0) {
-                    throw new Exception("Failed to update status");
-                }
-                
-                // Commit transaction
-                $con->commit();
-                
-                // Show success message and redirect
-                echo "<script>
-                    alert('Reservation " . $newStatus . " successfully!');
-                    window.location.href = 'reservation_requests.php';
-                </script>";
-            } catch (Exception $e) {
-                // Rollback transaction on error
-                $con->rollback();
-                throw new Exception("Failed to update reservation: " . $e->getMessage());
-            }
-        } else {
-            throw new Exception("Reservation is already " . $currentStatus);
+            // Insert into reservation_logs
+            $log_query = "INSERT INTO reservation_logs (reservation_id, status, action_taken, created_at) 
+                         VALUES (?, ?, ?, NOW())";
+            $log_stmt = $con->prepare($log_query);
+            $log_stmt->bind_param("iss", $reservation_id, $reservation['status'], $action);
+            $log_stmt->execute();
+            
+            // Update the status in reservations table
+            $update_query = "UPDATE reservations SET status = ? WHERE id = ?";
+            $update_stmt = $con->prepare($update_query);
+            $update_stmt->bind_param("si", $action, $reservation_id);
+            $update_stmt->execute();
         }
-    } catch (Exception $e) {
-        echo "<script>
-            alert('" . addslashes($e->getMessage()) . "');
-            window.location.href = 'reservation_requests.php';
-        </script>";
     }
 }
 ?>
@@ -398,9 +404,11 @@ if (isset($_GET['id']) && isset($_GET['action'])) {
                                  COALESCE(u.LASTNAME, '') as LASTNAME,
                                  COALESCE(u.FIRSTNAME, '') as FIRSTNAME,
                                  COALESCE(u.MIDNAME, '') as MIDNAME,
-                                 DATE_FORMAT(r.created_at, '%M %d, %Y %h:%i %p') as date_requested
+                                 DATE_FORMAT(r.created_at, '%M %d, %Y %h:%i %p') as date_requested,
+                                 DATE_FORMAT(rl.created_at, '%M %d, %Y %h:%i %p') as action_date
                                  FROM reservations r 
                                  LEFT JOIN user u ON r.student_id = u.IDNO 
+                                 LEFT JOIN reservation_logs rl ON r.id = rl.reservation_id
                                  WHERE r.status IN ('approved', 'rejected')
                                  ORDER BY r.date DESC, r.created_at DESC";
                         $result = mysqli_query($con, $query);
@@ -428,7 +436,7 @@ if (isset($_GET['id']) && isset($_GET['action'])) {
                                 echo "<td>Room " . htmlspecialchars($row['room']) . "</td>";
                                 echo "<td>" . htmlspecialchars($row['purpose']) . "</td>";
                                 echo "<td><span class='status-badge status-" . htmlspecialchars($row['status']) . "'>" . ucfirst(htmlspecialchars($row['status'])) . "</span></td>";
-                                echo "<td>" . htmlspecialchars($row['date_requested']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['action_date']) . "</td>";
                                 echo "</tr>";
                             }
                         }

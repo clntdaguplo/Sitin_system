@@ -164,12 +164,138 @@ $total_sitins = mysqli_fetch_assoc(mysqli_query($con, $total_sitins_query))['cou
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <title>Admin Dashboard</title>
 <style>
+/* Base font styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-        
+    font-family: Arial, sans-serif;
 }
+
+/* Navigation styles */
+.nav-right a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+/* Welcome section */
+.welcome-text p:first-child {
+    font-size: 16px;
+    font-weight: normal;
+    margin-bottom: 5px;
+}
+
+.date {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* Section headers */
+.div2 h2, .div3 h2 {
+    color: #14569b;
+    font-size: 16px;
+    font-weight: normal;
+    margin-bottom: 15px;
+}
+
+/* Statistics */
+.stat-info h3 {
+    color: white;
+    font-size: 14px;
+    font-weight: normal;
+    margin-bottom: 4px;
+}
+
+.stat-info p {
+    color: white;
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0;
+}
+
+/* Leaderboard */
+.leaderboard-title {
+    font-size: 16px;
+    font-weight: normal;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: normal;
+    margin-bottom: 2px;
+}
+
+.user-points {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.points-badge {
+    font-size: 12px;
+    font-weight: normal;
+}
+
+/* Search section */
+.search-container input {
+    font-size: 14px;
+}
+
+.search-container button,
+.list-button {
+    font-size: 14px;
+}
+
+/* Modal content */
+.modal-content h3 {
+    font-size: 16px;
+    font-weight: normal;
+}
+
+.modal-content p {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.modal-content label {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.modal-content select,
+.modal-content input {
+    font-size: 14px;
+}
+
+.modal-content button {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .nav-right a {
+        font-size: 13px;
+    }
+    
+    .welcome-text p:first-child {
+        font-size: 15px;
+    }
+    
+    .date {
+        font-size: 13px;
+    }
+}
+
 html, body {
     background: linear-gradient(to right, #14569b, #14569b);
     display: flex;
@@ -215,18 +341,6 @@ html, body {
 .nav-right {
     display: flex;
     gap: 15px;
-}
-
-.nav-right a {
-    color: white;
-    text-decoration: none;
-    padding: 8px 15px;
-    border-radius: 8px;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
 }
 
 .nav-right a i {
@@ -737,7 +851,7 @@ html, body {
     color: #14569b;
     margin-bottom: 20px;
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: normal;
 }
 
 .modal-content p {
@@ -749,7 +863,7 @@ html, body {
     display: block;
     margin: 15px 0 5px;
     color: #14569b;
-    font-weight: 500;
+    font-weight: normal;
 }
 
 .modal-content select,
@@ -769,7 +883,7 @@ html, body {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: 500;
+    font-weight: normal;
     width: 100%;
     margin-top: 20px;
     transition: background 0.2s;
@@ -806,7 +920,8 @@ html, body {
 
 .statistics-container h2 {
     color: #14569b;
-    font-size: 1.5rem;
+    font-size: 16px;
+    font-weight: normal;
     margin-bottom: 20px;
 }
 
@@ -831,7 +946,7 @@ html, body {
 }
 
 .stat-card i {
-    font-size: 2rem;
+    font-size: 16px;
     color: #14569b;
     background: rgba(20, 86, 155, 0.1);
     padding: 15px;
@@ -860,6 +975,118 @@ html, body {
         margin: 20px 15px;
     }
 }
+
+/* Additional font normalizations */
+.leaderboard-item {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.leaderboard-item .rank {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.leaderboard-item .rank i {
+    font-size: 16px;
+}
+
+.leaderboard-avatar {
+    width: 35px;
+    height: 35px;
+}
+
+.user-info {
+    font-size: 14px;
+}
+
+.user-name strong {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.points-badge {
+    font-size: 12px;
+    font-weight: normal;
+}
+
+/* Statistics section */
+.statistics-container h2 {
+    font-size: 16px;
+    font-weight: normal;
+}
+
+.stat-card i {
+    font-size: 16px;
+}
+
+/* Search section */
+.search-form input {
+    font-size: 14px;
+}
+
+.search-form button {
+    font-size: 14px;
+}
+
+/* Modal styles */
+.modal-content {
+    font-size: 14px;
+}
+
+.modal-content h3 {
+    font-size: 16px;
+    font-weight: normal;
+}
+
+.modal-content p {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.modal-content label {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.modal-content select,
+.modal-content input {
+    font-size: 14px;
+}
+
+.modal-content button {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+/* Notification badge */
+.notification-badge {
+    font-size: 12px;
+    font-weight: normal;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .leaderboard-item {
+        font-size: 13px;
+    }
+    
+    .user-name {
+        font-size: 13px;
+    }
+    
+    .points-badge {
+        font-size: 11px;
+    }
+    
+    .statistics-container h2 {
+        font-size: 15px;
+    }
+    
+    .modal-content {
+        font-size: 13px;
+    }
+}
 </style>
 </head>
 <body>
@@ -869,21 +1096,21 @@ html, body {
         <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
     </div>
     <div class="nav-right">
-        <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
-        <a href="liststudent.php"><i class="fas fa-user-graduate"></i> Students</a>
-        <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
+        <a href="admindash.php"></i> Dashboard</a>
+        <a href="adannouncement.php"></i> Announcements</a>
+        <a href="liststudent.php"></i> Students</a>
+        <a href="adsitin.php"></i> Current Sitin</a>
         
+     
+        <a href="adlabresources.php"></i> Lab Resources</a>
+        <a href="adlabsched.php"></i> Lab Schedule</a>
         <a href="adreservation.php" style="position: relative;">
-            <i class="fas fa-calendar-check"></i> Reservations
+            Reservations
             <?php if ($pendingCount > 0): ?>
                 <span class="notification-badge"><?php echo $pendingCount; ?></span>
             <?php endif; ?>
-        </a>
-        <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-        <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
-        <a href="adfeedback.php"><i class="fas fa-book-open"></i> Feedback</a>
-        <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        <a href="adfeedback.php"></i> Feedback</a>
+        <a href="admindash.php?logout=true" class="logout-button"> Log Out</a>
     </div>
 </div>
 
@@ -919,7 +1146,7 @@ html, body {
         </div>
         <div class="div4">
             <div class="statistics-container" style="margin: 0 0 20px 0; background: transparent; box-shadow: none;">
-                <h2 style="color: white;">Statistics</h2>
+                <h2 style="color: white;"><b>Statistics</b></h2>
                 <div class="statistics-grid">
                     <div class="stat-card" style="background: rgba(255, 255, 255, 0.1);">
                         <i class="fas fa-users" style="color: white;"></i>
@@ -993,7 +1220,7 @@ html, body {
                             <div class="leaderboard-user">
                                 <img src="uploads/<?php echo $profile_pic; ?>" alt="Profile" class="leaderboard-avatar">
                                 <div class="user-info">
-                                    <div class="user-name" style="color: black; font-size: medium;">
+                                    <div>
                                         
                                         <?php 
                                         if ($isCurrentUser) {

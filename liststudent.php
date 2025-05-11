@@ -52,11 +52,12 @@ echo "<script>alert('Error resetting sessions!');</script>";
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <title>List of Students</title>
 <style>
+/* Base font styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 html, body {
@@ -96,7 +97,8 @@ html, body {
 
 .user-name {
     color: white;
-    font-size: 1.1rem;
+    font-size: 14px;
+    font-weight: normal;
 }
 
 .nav-links {
@@ -154,8 +156,8 @@ html, body {
 
 .header h1 {
     color: #14569b;
-    font-size: 1.8rem;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: normal;
     margin-bottom: 15px;
 }
 
@@ -181,22 +183,23 @@ html, body {
 
 .search-box input {
     width: 100%;
-    padding: 10px 15px;
+    padding: 8px 12px;
     padding-right: 45px;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border-radius: 4px;
     transition: all 0.2s;
-    font-size: 0.95rem;
+    font-size: 14px;
+    font-weight: normal;
 }
 
 .search-box button {
     position: absolute;
     right: 5px;
-    padding: 8px 12px;
+    padding: 8px 16px;
     background: #14569b;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
@@ -245,6 +248,8 @@ table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
+    font-size: 14px;
+    font-weight: normal;
 }
 
 thead {
@@ -256,16 +261,17 @@ thead {
 th {
     background: #14569b;
     color: white;
-    padding: 15px;
-    font-weight: 500;
+    padding: 12px;
     text-align: left;
-    font-size: 0.95rem;
+    font-size: 14px;
+    font-weight: normal;
 }
 
 td {
-    padding: 12px 15px;
+    padding: 12px;
     border-bottom: 1px solid #e2e8f0;
-    font-size: 0.95rem;
+    font-size: 14px;
+    font-weight: normal;
 }
 
 tbody tr:hover {
@@ -358,6 +364,35 @@ tbody tr:hover {
         margin-top: 70px;
         padding: 15px;
     }
+    
+    table {
+        font-size: 13px;
+    }
+    
+    th, td {
+        font-size: 13px;
+        padding: 8px;
+    }
+    
+    .nav-right a {
+        font-size: 13px;
+    }
+    
+    .user-name {
+        font-size: 13px;
+    }
+    
+    .status-badge {
+        font-size: 11px;
+    }
+    
+    .pagination {
+        font-size: 13px;
+    }
+    
+    .modal-content {
+        font-size: 13px;
+    }
 }
 </style>
 </head>
@@ -373,15 +408,15 @@ tbody tr:hover {
         <div></div>
     </div>
     <div class="nav-links">
-        <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
-        <a href="liststudent.php"><i class="fas fa-user-graduate"></i> Students</a>
-        <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
+        <a href="admindash.php"></i> Dashboard</a>
+        <a href="adannouncement.php"></i> Announcements</a>
+        <a href="liststudent.php"></i> Students</a>
+        <a href="adsitin.php"></i> Current Sitin</a>
         
-        <a href="adreservation.php"><i class="fas fa-chair"></i> Reservation</a>
-        <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-        <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
-        <a href="viewReports.php"><i class="fas fa-book-open"></i> Feedback</a>
+        <a href="adlabresources.php"></i> Lab Resources</a>
+        <a href="adlabsched.php"></i> Lab Schedule</a>
+        <a href="adreservation.php"></i> Reservations</a>
+        <a href="viewReports.php"></i> Feedback</a>
         <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
     </div>
 </div>

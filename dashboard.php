@@ -649,15 +649,17 @@ html, body {
         <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
     </div>
     <div class="nav-right">
-        <a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="viewAnnouncement.php"><i class="fas fa-bullhorn"></i> Announcement</a>
-        <a href="labRules&Regulations.php"><i class="fas fa-flask"></i> Rules & Regulations</a>
-        <a href="sitinrules.php"><i class="fas fa-book"></i> Sit-in Rules</a>
-        <a href="history.php"><i class="fas fa-history"></i> History</a>
-        <a href="reservation.php"><i class="fas fa-calendar-alt"></i> Reservation</a>
-        <a href="labschedule.php"><i class="fas fa-calendar-alt"></i> Lab Schedules</a>
-        <a href="viewlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-        <a href="login.php" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        <a href="dashboard.php"></i> Dashboard</a>
+        <a href="viewAnnouncement.php"></i> Announcement</a>
+        <a href="profile.php"></i> Edit Profile</a>
+        <a href="labRules&Regulations.php"></i> Lab Rules</a>
+    
+        
+        
+        <a href="labschedule.php"></i> Lab Schedules</a>
+        <a href="viewlabresources.php"></i> Lab Resources</a>
+        <a href="reservation.php"></i> Reservation</a>
+        <a href="login.php" class="logout-button"></i> Log Out</a>
     </div>
 </div>
 
@@ -675,7 +677,9 @@ html, body {
             if ($result && mysqli_num_rows($result) > 0) {
                 $row = mysqli_fetch_assoc($result);
                 $Firstname = htmlspecialchars($row['FIRSTNAME']);
-                echo "<h1 class='page-title'><b>Welcome <b>$Firstname</b> to Sit-in Monitoring System</b></h1>";
+                echo "<center><h1 class='page-title'><b>Welcome <b>$Firstname</b> to Sit-in Monitoring System</b></h1></center>"; 
+                echo "<div class='greeting-card'>";
+                echo "<div class='greeting-content'>";
             } else {
                 echo "<h1 class='page-title'>Welcome to Sit-in Monitoring System</h1>";
             }
@@ -689,7 +693,7 @@ html, body {
                 <!-- Announcements Section -->
                 <article class="announcements-section">
                     <div class="section-header">
-                        <h2><i class="fas fa-bullhorn"></i> Recent Announcements</h2>
+                        <h2></i> Recent Announcements</h2>
                         <a href="viewAnnouncement.php" class="view-all">View All</a>
                     </div>
                     <div class="announcements-list">

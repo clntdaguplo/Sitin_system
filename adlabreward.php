@@ -296,16 +296,16 @@ h1 {
 <div class="sidebar">
     <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture">
     <center><div class="user-name" style="font-size: x-large; color: white;"><?php echo htmlspecialchars($user_name); ?></div></center>
-    <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-    <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
-    <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
+    <a href="admindash.php"> Dashboard</a>
+    <a href="adannouncement.php"> Announcements</a>
+    <a href="adsitin.php"> Current Sitin</a>
     
-    <a href="adviewsitin.php"><i class="fas fa-eye"></i> Generate Reports</a>
-    <a href="adreservation.php"><i class="fas fa-chair"></i> Reservation</a>
-    <a href="adlabreward.php"><i class="fas fa-chair"></i> Lab Reward</a>
-    <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-    <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
-    <a href="adfeedback.php"><i class="fas fa-book-open"></i> Feedback Reports</a>
+    
+    
+    <a href="adlabresources.php"> Lab Resources</a>
+    <a href="adlabsched.php"> Lab Schedule</a>
+    <a href="adreservation.php"> Reservations</a>
+    <a href="adfeedback.php"> Feedback Reports</a>
     <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
 </div>
 <div class="content">
