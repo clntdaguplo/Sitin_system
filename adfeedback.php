@@ -27,7 +27,8 @@ if ($result && mysqli_num_rows($result) > 0) {
 $stmt->close();
 
 // Fetch feedback from users
-$feedback_query = "SELECT f.FEEDBACK, f.LAB_ROOM, f.CREATED_AT, f.USER_ID, u.IDNO, u.USERNAME 
+$feedback_query = "SELECT f.FEEDBACK, f.LAB_ROOM, f.CREATED_AT, f.USER_ID, u.IDNO, u.USERNAME, 
+                   CONCAT(u.FIRSTNAME, ' ', u.MIDNAME, ' ', u.LASTNAME) as FULLNAME 
                    FROM feedback f 
                    INNER JOIN user u ON f.USER_ID = u.IDNO 
                    ORDER BY f.CREATED_AT DESC";
@@ -69,14 +70,14 @@ mysqli_data_seek($feedback_result, 0);
 }
 
 html, body {
-    background: linear-gradient(135deg, #14569b, #2a3f5f);
+    background: linear-gradient(45deg, #ff4757, #ffae42);
     min-height: 100vh;
     width: 100%;
 }
 
 /* Top Navigation Bar Styles */
 .top-nav {
-    background-color: rgba(42, 63, 95, 0.9);
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
@@ -136,12 +137,12 @@ html, body {
 }
 
 .nav-right .logout-button {
-    background: rgba(220, 53, 69, 0.1);
+    background: rgba(247, 162, 5, 0.88);
     margin-left: 10px;
 }
 
 .nav-right .logout-button:hover {
-    background: rgba(220, 53, 69, 0.2);
+    background: rgba(255, 251, 0, 0.93);
 }
 
 .content {
@@ -149,6 +150,7 @@ html, body {
     padding: 30px;
     min-height: calc(100vh - 80px);
     background: #f0f2f5;
+    width: 100%;
 }
 
 /* Remove old sidebar styles */
@@ -168,7 +170,7 @@ html, body {
 }
 
 h1 {
-    color: #14569b;
+    color: rgb(26, 19, 46);
     font-size: 1.8rem;
     font-weight: 600;
     margin-bottom: 25px;
@@ -180,6 +182,7 @@ h1 {
     overflow-y: auto;
     border-radius: 12px;
     background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 /* Table Styles */
@@ -196,7 +199,7 @@ thead {
 }
 
 th {
-    background: #14569b;
+    background: rgb(26, 19, 46);
     color: white;
     padding: 15px;
     text-align: left;
@@ -208,10 +211,13 @@ td {
     padding: 12px 15px;
     border-bottom: 1px solid #e2e8f0;
     background: transparent;
+    transition: all 0.3s ease;
 }
 
 tbody tr:hover {
     background: #f8fafc;
+    transform: translateX(5px);
+    transition: all 0.3s ease;
 }
 
 /* Custom Scrollbar */
@@ -225,12 +231,12 @@ tbody tr:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #14569b;
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #0f4578;
+    background: linear-gradient(45deg,rgb(47, 0, 177),rgb(150, 145, 79));
 }
 
 /* Responsive Design */
@@ -263,6 +269,90 @@ tbody tr:hover {
         height: calc(100vh - 30px);
     }
 }
+
+.button-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.print-button {
+    background: #45a049;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.print-button:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(20, 86, 155, 0.2);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    margin: 0;
+    color: rgb(26, 19, 46);
+}
+
+/* Add hover effect to table rows */
+tbody tr {
+    transition: all 0.3s ease;
+}
+
+tbody tr:hover {
+    background: rgba(150, 145, 79, 0.1);
+    transform: translateX(5px);
+}
+
+/* Update notification badge */
+.notification-badge {
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    padding: 1px 5px;
+    font-size: 12px;
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+/* Add animation for table rows */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+tbody tr {
+    animation: fadeIn 0.3s ease-out;
+    animation-fill-mode: both;
+}
+
+tbody tr:nth-child(1) { animation-delay: 0.1s; }
+tbody tr:nth-child(2) { animation-delay: 0.2s; }
+tbody tr:nth-child(3) { animation-delay: 0.3s; }
+tbody tr:nth-child(4) { animation-delay: 0.4s; }
+tbody tr:nth-child(5) { animation-delay: 0.5s; }
 </style>
 </head>
 <body>
@@ -281,39 +371,75 @@ tbody tr:hover {
             <a href="adlabresources.php"> Lab Resources</a>
             <a href="adlabsched.php"> Lab Schedule</a>
             <a href="adreservation.php"> Reservations</a>
-            <a href="adfeedback.php"> Feedback</a>
+            <a href="adfeedback.php"> FEEDBACK</a>
             <a href="admindash.php?logout=true" class="logout-button"> Log Out</a>
         </div>
     </div>
 
     <div class="content">
         <div class="container">
-            <h1>Feedback from Users</h1>
+            <div class="header">
+                <h1>Student Feedbacks</h1>
+                <div class="button-container">
+                    <a href="print_feedback.php" target="_blank" class="print-button">
+                        <i class="fas fa-print"></i> Print All Feedbacks
+                    </a>
+                </div>
+            </div>
             <div class="feedback-container">
             <table>
                 <thead>
                     <tr>
                         <th>ID No.</th>
-                        <th>Lab Room</th>
-                        <th style="margin-left: 100px;">Date</th>
+                        <th>Name</th>
                         <th>Feedback</th>
-                        
+                        <th>Lab Room</th>
+                        <th>Date & Time</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($feedback_row = mysqli_fetch_assoc($feedback_result)): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($feedback_row['USER_ID']); ?></td>
-                            <td><?php echo htmlspecialchars($feedback_row['LAB_ROOM']); ?></td>
-                            <td><?php echo htmlspecialchars($feedback_row['CREATED_AT']); ?></td>
-                            <td><?php echo htmlspecialchars($feedback_row['FEEDBACK']); ?></td>
-                            
-                        </tr>
-                    <?php endwhile; ?>
+                    <?php
+                    if ($feedback_result && mysqli_num_rows($feedback_result) > 0) {
+                        while ($row = mysqli_fetch_assoc($feedback_result)) {
+                            echo "<tr>";
+                            echo "<td>" . htmlspecialchars($row['IDNO']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['FULLNAME']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['FEEDBACK']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['LAB_ROOM']) . "</td>";
+                            echo "<td>" . date('M d, Y h:i A', strtotime($row['CREATED_AT'])) . "</td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='5' style='text-align: center; padding: 20px;'>No feedback available</td></tr>";
+                    }
+                    ?>
                 </tbody>
             </table>
             </div>
         </div>
     </div>
+
+    <script>
+    function printFeedback() {
+        const printContent = document.querySelector('.feedback-container').innerHTML;
+        const originalContent = document.body.innerHTML;
+        
+        document.body.innerHTML = `
+            <div style="padding: 20px;">
+                <h1 style="color: #14569b; margin-bottom: 20px;">Feedback Report</h1>
+                <div style="margin-bottom: 20px;">
+                    <p><strong>Generated on:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                ${printContent}
+            </div>
+        `;
+        
+        window.print();
+        document.body.innerHTML = originalContent;
+        
+        // Reattach event listeners after printing
+        document.querySelector('button[onclick="printFeedback()"]').addEventListener('click', printFeedback);
+    }
+    </script>
 </body>
 </html>

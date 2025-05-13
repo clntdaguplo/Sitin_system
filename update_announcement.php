@@ -25,6 +25,14 @@ if ($result && mysqli_num_rows($result) > 0) {
     $user_name = 'Admin';
 }
 
+// Fetch pending reservations count
+$pendingCount = 0;
+$pending_query = "SELECT COUNT(*) as count FROM reservations WHERE STATUS = 'pending'";
+$pending_result = $con->query($pending_query);
+if ($pending_result) {
+    $pendingCount = $pending_result->fetch_assoc()['count'];
+}
+
 // Fetch the announcement details
 if (isset($_GET['title'])) {
     $title = $_GET['title'];
@@ -68,72 +76,87 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 html, body {
-    background: linear-gradient(135deg, #14569b, #2a3f5f);
-    display: flex;
-    min-height: 100vh;
-    width: 100%;
-}
-
-/* Sidebar Styles */
-.sidebar {
-    width: 250px;
-    background-color: rgba(42, 63, 95, 0.9);
-    height: 100vh;
-    padding: 20px;
-    position: fixed;
+    background: #f0f2f5;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    transform: translateX(0);
-}
-
-.sidebar img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    margin-bottom: 15px;
-}
-
-.sidebar a {
     width: 100%;
+}
+
+/* Top Navigation Bar Styles */
+.top-nav {
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-left img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.nav-left .user-name {
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.nav-right {
+    display: flex;
+    gap: 15px;
+}
+
+.nav-right a {
     color: white;
     text-decoration: none;
-    padding: 12px 15px;
+    padding: 8px 15px;
     border-radius: 8px;
-    margin: 5px 0;
     transition: all 0.3s;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    font-size: 0.9rem;
 }
 
-.sidebar a i {
-    width: 20px;
-    text-align: center;
+.nav-right a i {
+    font-size: 1rem;
 }
 
-.sidebar a:hover {
+.nav-right a:hover {
     background: rgba(255, 255, 255, 0.1);
-    transform: translateX(5px);
+    transform: translateY(-2px);
 }
 
-.sidebar .logout-button {
-    margin-top: auto;
-    background: rgba(220, 53, 69, 0.1);
+.nav-right .logout-button {
+    background: rgba(247, 162, 5, 0.88);
+    margin-left: 10px;
+}
+
+.nav-right .logout-button:hover {
+    background: rgba(255, 251, 0, 0.93);
 }
 
 /* Content Area */
 .content {
-    flex-grow: 1;
-    margin-left: 250px;
+    margin-top: 100px;
     padding: 30px;
-    min-height: 100vh;
-    background: #f0f2f5;
-    transition: margin-left 0.3s ease-in-out;
-    width: calc(100% - 250px);
+    min-height: calc(100vh - 100px);
 }
 
 .container {
@@ -178,7 +201,7 @@ textarea {
 }
 
 button {
-    background: #14569b;
+    background: #45a049;
     color: white;
     padding: 12px 25px;
     border: none;
@@ -192,94 +215,126 @@ button {
 }
 
 button:hover {
-    background: #0f4578;
+    background: #45a049;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-        z-index: 1000;
+@media (max-width: 1200px) {
+    .nav-right {
+        flex-wrap: wrap;
+        justify-content: center;
     }
     
-    .sidebar.active {
-        transform: translateX(0);
+    .nav-right a {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .top-nav {
+        flex-direction: column;
+        padding: 10px;
+    }
+    
+    .nav-left {
+        margin-bottom: 10px;
+    }
+    
+    .nav-right {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .nav-right a {
+        font-size: 0.8rem;
+        padding: 6px 10px;
     }
     
     .content {
-        margin-left: 0;
-        width: 100%;
-        padding: 15px;
-    }
-    
-    .container {
-        padding: 20px;
+        margin-top: 120px;
     }
 }
 
-/* Burger Menu */
-.burger {
-    display: none;
-    position: fixed;
-    top: 20px;
-    left: 20px;
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.button-group button {
+    flex: 1;
+    margin: 0;
+}
+
+.cancel-button {
+    flex: 1;
+    background:rgba(245, 200, 1, 0.94);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
-    z-index: 1001;
+    font-weight: 500;
+    transition: all 0.2s;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1rem;
 }
 
-.burger div {
-    width: 25px;
-    height: 3px;
-    background-color: #14569b;
-    margin: 5px;
-    transition: 0.3s;
+.cancel-button:hover {
+    background:rgba(255, 208, 0, 0.94);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {
-    .burger {
-        display: block;
+    .button-group {
+        flex-direction: column;
     }
 }
 </style>
-</head>
+</head> 
 <body>
-<div class="burger" onclick="toggleSidebar()">
-    <div></div>
-    <div></div>
-    <div></div>
+<div class="top-nav">
+    <div class="nav-left">
+        <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" onerror="this.src='assets/default.jpg';">
+        <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
+    </div>
+    <div class="nav-right">
+        <a href="admindash.php"></i> Dashboard</a>
+        <a href="adannouncement.php"></i> Announcements</a>
+        <a href="liststudent.php"></i> Students</a>
+        <a href="adsitin.php"></i> Current Sitin</a>
+        
+       
+        <a href="adlabresources.php"></i> Lab Resources</a>
+        <a href="adlabsched.php"></i> Lab Schedule</a>
+        <a href="adreservation.php" style="position: relative;">
+             Reservations
+            <?php if ($pendingCount > 0): ?>
+                <span class="notification-badge"><?php echo $pendingCount; ?></span>
+            <?php endif; ?>
+        <a href="adfeedback.php"></i> Feedback</a>
+        <a href="admindash.php?logout=true" class="logout-button"> Log Out</a>
+    </div>
 </div>
-<div class="sidebar">
-<img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture">
-<center><div class="user-name" style="font-size: x-large; color: white;"><?php echo htmlspecialchars($user_name); ?></div></center>
-<a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-<a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
-<a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
-<a href="addaily.php"><i class="fas fa-chair"></i> Daily Sitin Records</a>
-<a href="viewReports.php"><i class="fas fa-eye"></i> View Sitin Reports</a>
-<a href="adreservation.php"><i class="fas fa-chair"></i> Reservation</a>
-   <!-- <a href="adlabreward.php"><i class="fas fa-chair"></i> Lab Reward</a>-->
-   <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-<a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
-<a href="viewReports.php"><i class="fas fa-book-open"></i> Feedback Reports</a>
-<a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
-</div>
+
 <div class="content">
     <div class="container">
         <h1>Update Announcement</h1>
         <form action="update_announcement.php?title=<?php echo htmlspecialchars($title); ?>" method="POST">
             <input type="text" name="title" value="<?php echo htmlspecialchars($announcement['TITLE']); ?>" required>
             <textarea name="content" rows="5" required><?php echo htmlspecialchars($announcement['CONTENT']); ?></textarea>
-            <button type="submit">Update Announcement</button>
+            <div class="button-group">
+                <button type="submit">Update Announcement</button>
+                <a href="adannouncement.php" class="cancel-button">Cancel</a>
+            </div>
         </form>
     </div>
 </div>
-<script>
-function toggleSidebar() {
-    document.querySelector('.sidebar').classList.toggle('active');
-    document.querySelector('.content').classList.toggle('sidebar-active');
-}
-</script>
 </body>
 </html>

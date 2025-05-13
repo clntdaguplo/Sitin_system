@@ -28,19 +28,44 @@ $user_name = 'Admin';
 $query = "SELECT * FROM user WHERE POINTS > 0 OR REMAINING_SESSIONS > 0 ORDER BY POINTS DESC, LASTNAME ASC";
 
 // Fetch students
-$students_query = "SELECT IDNO, FIRSTNAME, MIDNAME, LASTNAME, COURSE, YEARLEVEL, REMAINING_SESSIONS FROM user WHERE IDNO IS NOT NULL";
+$students_query = "SELECT u.*, f.FEEDBACK 
+                  FROM user u 
+                  LEFT JOIN feedback f ON u.IDNO = f.USER_ID 
+                  WHERE u.IDNO IS NOT NULL 
+                  AND (f.FEEDBACK IS NULL OR f.FEEDBACK != 'No feedback submitted yet.')
+                  ORDER BY u.LASTNAME ASC";
 $students_result = $con->query($students_query);
 
 // Handle reset sessions
 if (isset($_POST['reset_sessions'])) {
-$reset_query = "UPDATE user SET REMAINING_SESSIONS = 30 WHERE IDNO IS NOT NULL";
-if ($con->query($reset_query)) {
-echo "<script>alert('All student sessions have been reset to 30!');</script>";
-header("Location: liststudent.php");
-exit();
-} else {
-echo "<script>alert('Error resetting sessions!');</script>";
-}
+    // Start transaction
+    $con->begin_transaction();
+    
+    try {
+        // First clear all active sessions by setting TIME_OUT to current time
+        $clear_sessions = "UPDATE login_records SET TIME_OUT = NOW() WHERE TIME_OUT IS NULL";
+        if (!$con->query($clear_sessions)) {
+            throw new Exception("Error clearing active sessions");
+        }
+        
+        // Then reset all student sessions to 30
+        $reset_query = "UPDATE user SET REMAINING_SESSIONS = 30 WHERE IDNO IS NOT NULL";
+        if (!$con->query($reset_query)) {
+            throw new Exception("Error resetting sessions");
+        }
+        
+        // Commit the transaction
+        $con->commit();
+        
+        // Redirect with success message
+        header("Location: liststudent.php?reset_success=1");
+        exit();
+    } catch (Exception $e) {
+        // Rollback on error
+        $con->rollback();
+        header("Location: liststudent.php?reset_error=" . urlencode($e->getMessage()));
+        exit();
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -60,8 +85,41 @@ echo "<script>alert('Error resetting sessions!');</script>";
     font-family: Arial, sans-serif;
 }
 
+/* Alert Messages */
+.alert {
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert i {
+    font-size: 16px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 html, body {
-    background: linear-gradient(135deg, #14569b, #2a3f5f);
+    background: linear-gradient(45deg, #ff4757, #ffae42);
     min-height: 100vh;
     width: 100%;
 }
@@ -69,7 +127,7 @@ html, body {
 /* Top Navigation Bar Styles */
 .topnav {
     width: 100%;
-    background-color: rgba(42, 63, 95, 0.9);
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
     padding: 15px 30px;
     position: fixed;
     top: 0;
@@ -125,10 +183,15 @@ html, body {
 
 .nav-links a:hover {
     background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
 .nav-links .logout-button {
-    background: rgba(220, 53, 69, 0.1);
+    background: rgba(247, 162, 5, 0.88);
+}
+
+.nav-links .logout-button:hover {
+    background: rgba(255, 251, 0, 0.93);
 }
 
 /* Content Area */
@@ -196,7 +259,7 @@ html, body {
     position: absolute;
     right: 5px;
     padding: 8px 16px;
-    background: #14569b;
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
     color: white;
     border: none;
     border-radius: 4px;
@@ -208,8 +271,8 @@ html, body {
 }
 
 .search-box button:hover {
-    background: #0f4578;
     transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .search-box input:focus {
@@ -219,7 +282,7 @@ html, body {
 }
 
 .reset-button {
-    background: #dc3545;
+    background:  rgb(219, 99, 0);
     color: white;
     padding: 10px 20px;
     border: none;
@@ -232,8 +295,8 @@ html, body {
 }
 
 .reset-button:hover {
-    background: #c82333;
     transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .table-container {
@@ -259,7 +322,7 @@ thead {
 }
 
 th {
-    background: #14569b;
+    background: rgb(26, 19, 46);
     color: white;
     padding: 12px;
     text-align: left;
@@ -293,20 +356,24 @@ tbody tr:hover {
 }
 
 .reset-btn {
-    background: #ffc107;
-    color: #000;
-}
-
-.delete-btn {
-    background: #dc3545;
+    background: linear-gradient(45deg, #4CAF50, #45a049);
     color: white;
 }
 
-.reset-btn:hover, .delete-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.delete-btn {
+    background:  rgb(219, 99, 0);
+    color: white;
 }
 
+.reset-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+}
+
+
+.delete-btn:hover {
+    background:rgb(134, 5, 15);
+}
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
@@ -318,12 +385,12 @@ tbody tr:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #14569b;
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #0f4578;
+    background: linear-gradient(45deg,rgb(47, 0, 177),rgb(150, 145, 79));
 }
 
 /* Responsive Design */
@@ -410,14 +477,14 @@ tbody tr:hover {
     <div class="nav-links">
         <a href="admindash.php"></i> Dashboard</a>
         <a href="adannouncement.php"></i> Announcements</a>
-        <a href="liststudent.php"></i> Students</a>
+        <a href="liststudent.php"></i> STUDENTS</a>
         <a href="adsitin.php"></i> Current Sitin</a>
         
         <a href="adlabresources.php"></i> Lab Resources</a>
         <a href="adlabsched.php"></i> Lab Schedule</a>
         <a href="adreservation.php"></i> Reservations</a>
-        <a href="viewReports.php"></i> Feedback</a>
-        <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        <a href="adfeedback.php"></i> Feedback</a>
+        <a href="admindash.php?logout=true" class="logout-button"> Log Out</a>
     </div>
 </div>
 <div class="content">
@@ -426,6 +493,20 @@ tbody tr:hover {
 <h1>List of Students</h1>
 </div>
 <div class="controls-container">
+<?php
+// Display success/error messages
+if (isset($_GET['reset_success'])) {
+    echo '<div class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            All student sessions have been reset to 30!
+          </div>';
+} elseif (isset($_GET['reset_error'])) {
+    echo '<div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i>
+            Error: ' . htmlspecialchars($_GET['reset_error']) . '
+          </div>';
+}
+?>
 <div class="search-box">
 <input type="text" id="searchInput" placeholder="Search by ID, Name, or Course...">
 <button type="button">
@@ -482,8 +563,8 @@ while ($row = mysqli_fetch_assoc($result)) {
     echo "<td class='points-column " . $points_class . "'>" . htmlspecialchars($row['POINTS']) . "</td>";
     echo "<td class='text-center'>" . htmlspecialchars($row['REMAINING_SESSIONS']) . "</td>";
     echo "<td class='action-buttons'>";
-    echo "<button onclick='resetSessions(" . $row['IDNO'] . ")' class='reset-btn' title='Reset Sessions'><i class='fas fa-redo'></i></button>";
-    echo "<button onclick='deleteStudent(" . $row['IDNO'] . ")' class='delete-btn' title='Delete Student'><i class='fas fa-trash'></i></button>";
+    echo "<button onclick='resetSessions(" . $row['IDNO'] . ")' class='reset-btn' title='Reset Sessions'>Reset</button>";
+    echo "<button onclick='deleteStudent(" . $row['IDNO'] . ")' class='delete-btn' title='Delete Student'>Delete</button>";
     echo "</td>";
     echo "</tr>";
 }

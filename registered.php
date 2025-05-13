@@ -128,8 +128,8 @@ $email = $_POST["Email"];
 //var_dump($username, $password, !is_numeric($username));
 
 if (!empty($username) && !empty($password) && !is_numeric($username)) {
-$query = "INSERT INTO user (IDNO, LASTNAME, FIRSTNAME, MIDNAME, COURSE, YEARLEVEL, USERNAME, PASSWORD, EMAIL) VALUES
-('$idno', '$lastname', '$firstname', '$midname', '$course', '$yearLevel', '$username', '$password', '$email')";
+$query = "INSERT INTO user (IDNO, LASTNAME, FIRSTNAME, MIDNAME, COURSE, YEARLEVEL, USERNAME, PASSWORD, EMAIL, REMAINING_SESSIONS) VALUES
+('$idno', '$lastname', '$firstname', '$midname', '$course', '$yearLevel', '$username', '$password', '$email', 30)";
 
 if (mysqli_query($con, $query)) {
 echo "<script type='text/javascript'> alert('Successfully Registered'); window.location.href = 'login.php';

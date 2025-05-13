@@ -129,14 +129,14 @@ $result = mysqli_query($con, $query);
         }
 
         html, body {
-            background: linear-gradient(135deg, #14569b, #2a3f5f);
+            background: linear-gradient(45deg, #ff4757, #ffae42);
             min-height: 100vh;
             width: 100%;
         }
 
         /* Top Navigation Bar Styles */
         .top-nav {
-            background-color: rgba(42, 63, 95, 0.9);
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
@@ -196,19 +196,20 @@ $result = mysqli_query($con, $query);
         }
 
         .nav-right .logout-button {
-            background: rgba(220, 53, 69, 0.1);
+            background: rgba(247, 162, 5, 0.88);
             margin-left: 10px;
         }
 
         .nav-right .logout-button:hover {
-            background: rgba(220, 53, 69, 0.2);
+            background: rgba(255, 251, 0, 0.93);
         }
 
         .content {
             margin-top: 80px;
-            padding: 30px;
+            padding: 20px;
             min-height: calc(100vh - 80px);
             background: #f0f2f5;
+            width: 100%;
         }
 
         .container {
@@ -217,13 +218,12 @@ $result = mysqli_query($con, $query);
             padding: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 1400px;
             margin: 0 auto;
-            height: calc(100vh - 60px);
+            height: calc(100vh - 100px);
         }
 
         h1 {
-            color: #14569b;
+            color: black;
             font-size: 1.8rem;
             font-weight: 600;
             margin-bottom: 25px;
@@ -235,23 +235,23 @@ $result = mysqli_query($con, $query);
             grid-template-columns: 1fr 2fr;
             gap: 25px;
             margin-top: 20px;
-            min-height: calc(100% - 80px);
+            height: calc(100% - 80px);
         }
 
         .div1, .div2 {
-            background: white;
+            background: rgb(216, 213, 213);
             border-radius: 12px;
             padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            height: 100%;
         }
 
         .div2 {
             overflow-y: auto;
-            max-height: calc(100vh - 250px);
         }
 
         .resource-form {
-            background: #f8f9fa;
+            background: rgba(255, 255, 255, 0.1);
             padding: 20px;
             border-radius: 8px;
         }
@@ -263,7 +263,7 @@ $result = mysqli_query($con, $query);
         label {
             display: block;
             margin-bottom: 8px;
-            color: #14569b;
+            color: black;
             font-weight: 500;
         }
 
@@ -272,22 +272,22 @@ $result = mysqli_query($con, $query);
         select {
             width: 100%;
             padding: 10px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             transition: all 0.2s;
         }
 
         input[type="text"]:focus,
         textarea:focus,
         select:focus {
-            border-color: #14569b;
+            border-color: white;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(20, 86, 155, 0.1);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
         }
 
         .submit-btn {
-            background: #14569b;
+            background: #45a049;
             color: white;
             padding: 12px 24px;
             border: none;
@@ -300,15 +300,12 @@ $result = mysqli_query($con, $query);
         }
 
         .submit-btn:hover {
-            background: #0f4578;
+            background: #45a049;
             transform: translateY(-1px);
         }
 
         .resource-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: white;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 15px;
@@ -321,21 +318,21 @@ $result = mysqli_query($con, $query);
         }
 
         .resource-title {
+            color: black;
             font-size: 1.1rem;
             font-weight: 600;
-            color: #1e293b;
             margin-bottom: 8px;
         }
 
         .resource-description {
-            color: #64748b;
+            color: rgba(0, 0, 0, 0.8);
             margin-bottom: 10px;
             font-size: 0.95rem;
         }
 
         .resource-meta {
             font-size: 0.85rem;
-            color: #94a3b8;
+            color: rgba(0, 0, 0, 0.6);
         }
 
         .resource-actions {
@@ -344,19 +341,25 @@ $result = mysqli_query($con, $query);
         }
 
         .action-btn {
-            padding: 8px;
+            padding: 8px 15px;
             border-radius: 6px;
             color: white;
             text-decoration: none;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
 
         .edit-btn {
-            background: #14569b;
+            background: #45a049;
+        }
+
+        .edit-btn:hover {
+            background: #0f4578;
+            transform: translateY(-2px);
         }
 
         .delete-btn {
-            background: #dc3545;
+            background: rgba(220, 53, 69, 0.8);
         }
 
         .action-btn:hover {
@@ -371,15 +374,15 @@ $result = mysqli_query($con, $query);
         }
 
         .success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: rgba(40, 167, 69, 0.1);
+            color: black;
+            border: 1px solid rgba(40, 167, 69, 0.3);
         }
 
         .error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: rgba(220, 53, 69, 0.1);
+            color: black;
+            border: 1px solid rgba(220, 53, 69, 0.3);
         }
 
         .resources-list {
@@ -408,13 +411,21 @@ $result = mysqli_query($con, $query);
 
         /* Responsive Design */
         @media (max-width: 1200px) {
+            .content {
+                padding: 15px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
             .content-wrapper {
                 grid-template-columns: 1fr;
                 height: auto;
             }
             
             .div1 {
-                width: 100%;
+                height: auto;
             }
             
             .div2 {
@@ -423,6 +434,16 @@ $result = mysqli_query($con, $query);
         }
 
         @media (max-width: 768px) {
+            .content {
+                margin-top: 120px;
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 15px;
+                height: calc(100vh - 140px);
+            }
+            
             .top-nav {
                 flex-direction: column;
                 padding: 10px;
@@ -441,10 +462,6 @@ $result = mysqli_query($con, $query);
             .nav-right a {
                 font-size: 0.8rem;
                 padding: 6px 10px;
-            }
-            
-            .content {
-                margin-top: 120px;
             }
         }
 
@@ -473,27 +490,28 @@ $result = mysqli_query($con, $query);
             align-items: center;
             gap: 10px;
             padding: 12px 20px;
-            background: #f8fafc;
-            border: 2px dashed #14569b;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px dashed rgba(0, 0, 0, 0.2);
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
+            color: black;
         }
 
         .file-label:hover {
-            background: #f1f5f9;
-            border-color: #0f4578;
+            background: rgba(255, 255, 255, 1);
+            border-color: rgba(0, 0, 0, 0.3);
         }
 
         .file-label i {
             font-size: 1.2rem;
-            color: #14569b;
+            color: black;
         }
 
         .file-info {
             margin-top: 8px;
             font-size: 0.9rem;
-            color: #64748b;
+            color: rgba(0, 0, 0, 0.6);
         }
     </style>
 </head>
@@ -510,7 +528,7 @@ $result = mysqli_query($con, $query);
             <a href="adsitin.php"> Current Sitin</a>
             
 
-            <a href="adlabresources.php"> Lab Resources</a>
+            <a href="adlabresources.php"> LAB RESOURCES</a>
             <a href="adlabsched.php"> Lab Schedule</a>
             <a href="adreservation.php"> Reservations</a>
             <a href="adfeedback.php"> Feedback</a>
@@ -520,7 +538,7 @@ $result = mysqli_query($con, $query);
 
     <div class="content">
         <div class="container">
-            <h1>Lab Resources Management</h1>
+            <h1>Laboratory Resources </h1>
             
             <?php if (isset($success_message)): ?>
                 <div class="message success"><?php echo $success_message; ?></div>
@@ -544,22 +562,10 @@ $result = mysqli_query($con, $query);
                                 <textarea id="description" name="description" required></textarea>
                             </div>
 
-                            <div class="form-group">
-                                <label for="category">Category</label>
-                                <select id="category" name="category" required>
-                                    <option value="Programming">Programming</option>
-                                    <option value="Web Development">Web Development</option>
-                                    <option value="Database">Database</option>
-                                    <option value="Networking">Networking</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
+                            
 
                             <div class="form-row">
-                                <div class="form-group">
-                                    <label for="link">Resource Link (Optional)</label>
-                                    <input type="text" id="link" name="link" placeholder="Enter URL (e.g., Google Drive link)">
-                                </div>
+                                
 
                                 <div class="form-group">
                                     <label for="resource_file">Upload File (Optional)</label>
@@ -575,7 +581,7 @@ $result = mysqli_query($con, $query);
                             </div>
 
                             <button type="submit" name="submit" class="submit-btn">
-                                <i class="fas fa-plus"></i> Add Resource
+                                 Add Resource
                             </button>
                         </form>
                     </div>
@@ -589,16 +595,17 @@ $result = mysqli_query($con, $query);
                                     <div class="resource-title"><?php echo htmlspecialchars($row['title']); ?></div>
                                     <div class="resource-description"><?php echo htmlspecialchars($row['description']); ?></div>
                                     <div class="resource-meta">
-                                        Category: <?php echo htmlspecialchars($row['category']); ?> |
-                                        Added: <?php echo date('M d, Y', strtotime($row['upload_date'])); ?>
+                                        
+                                        <br>
+                                        Uploaded: <?php echo date('M d, Y', strtotime($row['upload_date'])); ?>
                                     </div>
                                 </div>
                                 <div class="resource-actions">
                                     <a href="edit_resource.php?id=<?php echo $row['id']; ?>" class="action-btn edit-btn" title="Edit Resource">
-                                        <i class="fas fa-edit"></i>
+                                        Edit
                                     </a>
                                     <a href="?delete=<?php echo $row['id']; ?>" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this resource?')" title="Delete Resource">
-                                        <i class="fas fa-trash"></i>
+                                        Delete
                                     </a>
                                 </div>
                             </div>

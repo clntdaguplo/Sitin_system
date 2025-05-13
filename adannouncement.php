@@ -95,7 +95,7 @@ $announcements_result = $con->query($announcements_query);
 }
 
 html, body {
-    background: linear-gradient(135deg, #14569b, #2a3f5f);
+    background: #f0f2f5;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -103,7 +103,7 @@ html, body {
 
 /* Top Navigation Bar Styles */
 .top-nav {
-    background-color: rgba(42, 63, 95, 0.9);
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
@@ -163,27 +163,78 @@ html, body {
 }
 
 .nav-right .logout-button {
-    background: rgba(220, 53, 69, 0.1);
+    background: rgba(247, 162, 5, 0.88);
     margin-left: 10px;
 }
 
 .nav-right .logout-button:hover {
-    background: rgba(220, 53, 69, 0.2);
+    background: rgba(255, 251, 0, 0.93);
+}
+
+/* Update notification badge position */
+.notification-badge {
+    position: relative;
+    top: -2px;
+    right: -5px;
+    margin-left: 5px;
 }
 
 .content {
-    margin-top: 80px;
+    margin-top: 100px;
     padding: 30px;
-    min-height: calc(100vh - 80px);
-    background: #f0f2f5;
+    min-height: calc(100vh - 100px);
 }
 
-/* Remove old sidebar styles */
-.sidebar {
-    display: none;
+.parent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-/* Rest of your existing styles for announcements, forms, etc. */
+.div1 {
+    background: rgb(216, 213, 213);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    position: relative;
+    min-height: 400px;
+}
+
+.div1 h1 {
+    color:rgb(0, 0, 0);
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.current-time {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 500;
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    right: 30px;
+}
+
+.current-time i {
+    color: #45a049;
+}
+
+.current-time span {
+    margin-right: 10px;
+}
+
 form {
     display: flex;
     flex-direction: column;
@@ -192,108 +243,165 @@ form {
 
 input[type="text"], textarea {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    padding: 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
     font-size: 1em;
     background: #f8fafc;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: all 0.3s ease;
 }
 
 input[type="text"]:focus, textarea:focus {
-    border-color: #14569b;
+    border-color:rgb(0, 0, 0);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(20, 86, 155, 0.1);
+    box-shadow: 0 0 0 4px rgba(20, 86, 155, 0.1);
 }
 
 textarea {
-    min-height: 150px;
+    min-height: 200px;
     resize: vertical;
 }
 
 button[type="submit"] {
-    background: #14569b;
+    background: #45a049;
     color: white;
-    padding: 12px 25px;
+    padding: 15px 25px;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+button[type="submit"]::before {
+    content: '\f0a1';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
 }
 
 button[type="submit"]:hover {
-    background: #0f4578;
-    transform: translateY(-1px);
+    background:rgb(68, 170, 73);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(20, 86, 155, 0.2);
 }
+
+.div2 {
+    background: rgb(216, 213, 213);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    max-height: 800px;
+    overflow-y: auto;
+}
+
+.div2 h2 {
+    color:rgb(0, 0, 0);
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 
 .announcement {
     background: #f8f9fa;
     border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 15px;
-    transition: transform 0.2s;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
 }
 
 .announcement:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    border-color:rgb(0, 0, 0);
 }
 
 .announcement h3 {
-    color: #14569b;
-    margin-bottom: 12px;
-    font-size: 1.2em;
+    color:rgb(0, 0, 0);
+    margin-bottom: 15px;
+    font-size: 1.3em;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.announcement h3::before {
+    content: '\f0a1';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 0.9em;
 }
 
 .announcement p {
     color: #4a5568;
-    margin-bottom: 15px;
-    line-height: 1.6;
+    margin-bottom: 20px;
+    line-height: 1.7;
+    font-size: 1.05em;
 }
 
 .announcement .timestamp {
     color: #718096;
     font-size: 0.9em;
-    margin-bottom: 15px;
-}
-
-.actions {
-    display: flex;
-    gap: 10px;
-}
-
-.update, .delete {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
+.announcement .timestamp::before {
+    content: '\f017';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+}
+
+.update, .delete {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+}
+
 .update {
-    background: #14569b;
+    background: #45a049;
     color: white;
 }
 
 .delete {
-    background: #dc3545;
+    background:rgba(245, 200, 1, 0.94);
     color: white;
 }
 
 .update:hover, .delete:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.div2 {
-    max-height: 800px;
-    overflow-y: auto;
+.update:hover {
+    background: #45a049;
+}
+
+.delete:hover {
+    background:rgb(134, 5, 15);
 }
 
 /* Custom scrollbar */
@@ -307,7 +415,7 @@ button[type="submit"]:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #14569b;
+    background:rgb(65, 0, 245);
     border-radius: 4px;
 }
 
@@ -320,6 +428,15 @@ button[type="submit"]:hover {
     .parent {
         grid-template-columns: 1fr;
         padding: 15px;
+    }
+    .nav-right {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .nav-right a {
+        font-size: 0.8rem;
+        padding: 6px 12px;
     }
 }
 
@@ -347,6 +464,19 @@ button[type="submit"]:hover {
     .content {
         margin-top: 120px;
     }
+    
+    .div1, .div2 {
+        padding: 20px;
+    }
+    
+    .actions {
+        flex-direction: column;
+    }
+    
+    .update, .delete {
+        width: 100%;
+        justify-content: center;
+    }
 }
 </style>
 </head>
@@ -358,7 +488,7 @@ button[type="submit"]:hover {
     </div>
     <div class="nav-right">
         <a href="admindash.php"> Dashboard</a>
-        <a href="adannouncement.php"> Announcements</a>
+        <a href="adannouncement.php"> ANNOUNCEMENT</a>
         <a href="liststudent.php">Students</a>
         <a href="adsitin.php"> Current Sitin</a>
         
@@ -367,7 +497,7 @@ button[type="submit"]:hover {
         <a href="adlabsched.php"> Lab Schedule</a>
         <a href="adreservation.php"> Reservations</a>
         <a href="adfeedback.php"> Feedback</a>
-        <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        <a href="admindash.php?logout=true" class="logout-button"> Log Out</a>
     </div>
 </div>
 
@@ -380,6 +510,12 @@ button[type="submit"]:hover {
                 <textarea name="content" placeholder="Announcement Content" required></textarea>
                 <button type="submit">Post Announcement</button>
             </form>
+            <div class="current-time">
+                <i class="fas fa-calendar-alt"></i>
+                <span id="current-date"></span>
+                <i class="fas fa-clock"></i>
+                <span id="current-time"></span>
+            </div>
         </div>
         <div class="div2">
             <h2>Announcements</h2>
@@ -390,10 +526,10 @@ button[type="submit"]:hover {
                     <span class="timestamp"><?php echo htmlspecialchars($announcement['CREATED_AT']); ?></span>
                     <div class="actions">
                         <button class="update" onclick="updateAnnouncement('<?php echo htmlspecialchars($announcement['TITLE']); ?>')">
-                            <i class="fas fa-edit"></i> Update
+                             Update
                         </button>
                         <button class="delete" onclick="deleteAnnouncement('<?php echo htmlspecialchars($announcement['TITLE']); ?>')">
-                            <i class="fas fa-trash"></i> Delete
+                             Delete
                         </button>
                     </div>
                 </div>
@@ -412,6 +548,33 @@ function deleteAnnouncement(title) {
         window.location.href = `adannouncement.php?delete=${title}`;
     }
 }
+
+function updateDateTime() {
+    const now = new Date();
+    
+    // Update time
+    const timeString = now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit',
+        hour12: true 
+    });
+    
+    // Update date
+    const dateString = now.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    document.getElementById('current-time').textContent = timeString;
+    document.getElementById('current-date').textContent = dateString;
+}
+
+// Update date and time immediately and then every second
+updateDateTime();
+setInterval(updateDateTime, 1000);
 </script>
 </body>
 </html>

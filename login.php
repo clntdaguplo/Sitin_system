@@ -34,7 +34,6 @@
         <script src="" async defer></script>
     </body>
 </html>
-
 <?php
 session_start();
 include("connector.php"); // Ensure this connects to your database
@@ -66,3 +65,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+

@@ -26,43 +26,63 @@ if ($result && mysqli_num_rows($result) > 0) {
 
 // Modify the POST handler section for sit-in
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $searchId = $_POST["searchId"];
-    $purpose = $_POST["purpose"];
-    $labRoom = $_POST["labRoom"];
-    date_default_timezone_set("Asia/Manila");
-    $time_in = date("Y-m-d H:i:s");
+    if (isset($_POST['student_id']) && isset($_POST['purpose']) && isset($_POST['lab_room'])) {
+        $student_id = $_POST['student_id'];
+        $purpose = $_POST['purpose'];
+        $labRoom = $_POST['lab_room'];
+        date_default_timezone_set("Asia/Manila");
+        $time_in = date("Y-m-d H:i:s");
 
-    // Start transaction
-    $con->begin_transaction();
+        // Start transaction
+        $con->begin_transaction();
 
-    try {
-        // Fetch user details and check remaining sessions
-        $user_query = "SELECT FIRSTNAME, MIDNAME, LASTNAME, REMAINING_SESSIONS FROM user WHERE IDNO = ?";
-        $stmt = $con->prepare($user_query);
-        $stmt->bind_param("s", $searchId);
-        $stmt->execute();
-        $user_result = $stmt->get_result()->fetch_assoc();
+        try {
+            // First check if student is already sitting in
+            $check_query = "SELECT COUNT(*) as count FROM login_records WHERE IDNO = ? AND TIME_OUT IS NULL";
+            $stmt = $con->prepare($check_query);
+            $stmt->bind_param("s", $student_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $is_sitting = $result->fetch_assoc()['count'] > 0;
 
-        if ($user_result && $user_result['REMAINING_SESSIONS'] > 0) {
+            if ($is_sitting) {
+                throw new Exception("Student is already sitting in");
+            }
+
+            // Fetch user details and check remaining sessions
+            $user_query = "SELECT FIRSTNAME, MIDNAME, LASTNAME, REMAINING_SESSIONS FROM user WHERE IDNO = ?";
+            $stmt = $con->prepare($user_query);
+            $stmt->bind_param("s", $student_id);
+            $stmt->execute();
+            $user_result = $stmt->get_result()->fetch_assoc();
+
+            if (!$user_result) {
+                throw new Exception("Student not found");
+            }
+
+            if ($user_result['REMAINING_SESSIONS'] <= 0) {
+                throw new Exception("no_sessions");
+            }
+
             $fullname = $user_result['FIRSTNAME'] . ' ' . $user_result['MIDNAME'] . ' ' . $user_result['LASTNAME'];
             
-            // Insert into login records (removed session deduction)
+            // Insert into login records
             $stmt = $con->prepare("INSERT INTO login_records (IDNO, FULLNAME, TIME_IN, PURPOSE, LAB_ROOM) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $searchId, $fullname, $time_in, $purpose, $labRoom);
+            $stmt->bind_param("sssss", $student_id, $fullname, $time_in, $purpose, $labRoom);
             $stmt->execute();
 
             $con->commit();
             header("Location: adsitin.php?success=1");
             exit;
-        } else {
+        } catch (Exception $e) {
             $con->rollback();
-            header("Location: adsitin.php?error=no_sessions");
+            if ($e->getMessage() === "no_sessions") {
+                header("Location: adsitin.php?error=no_sessions");
+            } else {
+                header("Location: adsitin.php?error=" . urlencode($e->getMessage()));
+            }
             exit;
         }
-    } catch (Exception $e) {
-        $con->rollback();
-        header("Location: adsitin.php?error=db_error");
-        exit;
     }
 }
 
@@ -249,7 +269,7 @@ $selected_date = isset($_GET['date']) ? $_GET['date'] : $current_date;
 }
 
 html, body {
-    background: linear-gradient(135deg, #14569b, #2a3f5f);
+    background: linear-gradient(45deg, #ff4757, #ffae42);
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -257,7 +277,7 @@ html, body {
 
 /* Top Navigation Bar Styles */
 .top-nav {
-    background-color: rgba(42, 63, 95, 0.9);
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
@@ -349,7 +369,7 @@ html, body {
 }
 
 h1 {
-    color: #14569b;
+    color:rgb(0, 0, 0);
     font-size: 1.8rem;
     font-weight: 600;
     margin-bottom: 25px;
@@ -376,7 +396,7 @@ thead {
 }
 
 th {
-    background: #14569b;
+    background:rgb(30, 117, 211);
     color: white;
     padding: 15px;
     font-weight: 500;
@@ -439,7 +459,7 @@ tbody tr:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #14569b;
+    background:rgb(6, 62, 122);
     border-radius: 4px;
 }
 
@@ -514,7 +534,7 @@ tbody tr:hover {
 }
 
 .tab-button.active {
-    background: #14569b;
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
     color: white;
 }
 
@@ -606,7 +626,7 @@ table {
 }
 
 thead th {
-    background: #14569b;
+    background: rgb(26, 19, 46);
     color: white;
     padding: 15px;
     font-weight: 500;
@@ -694,18 +714,18 @@ tbody tr {
     font-weight: 500;
 }
 
-.csv {
-    background: #28a745;
+.export-btn.csv {
+    background: green;
     color: white;
 }
 
-.excel {
-    background: #217346;
+.export-btn.excel {
+    background:rgb(197, 177, 0);
     color: white;
 }
 
-.pdf {
-    background: #dc3545;
+.export-btn.pdf {
+    background: rgb(163, 9, 3);
     color: white;
 }
 
@@ -735,6 +755,132 @@ tbody tr {
 .filter-btn i {
     font-size: 0.9em;
 }
+
+/* Add these styles for better table display */
+.purpose-column {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.room-column {
+    text-align: center;
+}
+
+table td {
+    vertical-align: middle;
+}
+
+.w3-button {
+    padding: 6px 12px;
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+/* Add hover effect for purpose column */
+.purpose-column:hover {
+    white-space: normal;
+    overflow: visible;
+    position: relative;
+    z-index: 1;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    padding: 5px;
+}
+
+/* Add these new styles */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.status-badge.active {
+    background: rgb(2, 126, 29);
+    color: white;
+}
+
+.active-session {
+    background-color: #f8f9fa;
+    border-left: 4px solid #28a745;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    color: #dee2e6;
+}
+
+.empty-state p {
+    font-size: 1.1em;
+    margin: 0;
+}
+
+.no-records {
+    text-align: center;
+    padding: 20px;
+}
+
+/* Add these new styles */
+.status-badge.completed {
+    background-color: #6c757d;
+    color: white;
+}
+
+.duration-column {
+    text-align: center;
+    font-family: monospace;
+    font-weight: 500;
+    min-width: 100px;
+    color: #2a3f5f;
+}
+
+.duration-column[data-active="true"] {
+    color: #28a745;
+    font-weight: 600;
+}
+
+/* Add animation for active duration */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.duration-column[data-active="true"] {
+    animation: pulse 2s infinite;
+}
+
+/* Add styles for time column */
+.time-column {
+    font-family: monospace;
+    white-space: nowrap;
+    color: #2a3f5f;
+}
+
+.time-column[data-time] {
+    color: #28a745;
+}
+
+.w3-button.w3-green {
+    background: #28a745;
+    color: white;
+}
+
+.w3-button.w3-red {
+    background:rgb(168, 6, 6);
+    color: white;
+}
 </style>
 </head>
 <body>
@@ -747,7 +893,7 @@ tbody tr {
         <a href="admindash.php"></i> Dashboard</a>
         <a href="adannouncement.php"></i> Announcements</a>
         <a href="liststudent.php"></i> Students</a>
-        <a href="adsitin.php"></i> Current Sitin</a>
+        <a href="adsitin.php"></i> CURRENT SIT-IN</a>
         
        
         <a href="adlabresources.php"></i> Lab Resources</a>
@@ -770,24 +916,23 @@ tbody tr {
 
         <div id="current" class="tab-content active">
             <div class="header">
-                <h1>Current Sit-in </h1>
+                <h1>Current Sit-in</h1>
             </div>
             <?php
             if (isset($_GET['success'])) {
                 echo "<div class='success-message'>
-                        ✅ User information successfully added to login records table.
+                         User information successfully added to login records table.
                       </div>";
             }
             if (isset($_GET['logout_success'])) {
                 echo "<div class='success-message'>
-                        ✅ Student successfully logged out
+                         Student successfully logged out
                       </div>";
             }
             if (isset($_GET['point_success'])) {
                 $reward_type = isset($_GET['reward']) ? $_GET['reward'] : '';
                 $reward_msg = '';
                 
-                // Get the user's current points
                 if (isset($_GET['points'])) {
                     $current_points = intval($_GET['points']);
                     if ($reward_type === 'point') {
@@ -798,20 +943,22 @@ tbody tr {
                 } else {
                     $reward_msg = "Student logged out and earned 1 point!";
                 }
-                echo "<div class='success-message'>✅ " . $reward_msg . "</div>";
+                echo "<div class='success-message'> " . $reward_msg . "</div>";
             }
             if (isset($_GET['error'])) {
                 $error_msg = '';
                 switch($_GET['error']) {
                     case 'no_sessions':
-                        $error_msg = "❌ Student has no remaining sessions";
+                        $error_msg = " Student has no remaining sessions";
                         break;
                     case 'db_error':
-                        $error_msg = "❌ Database error occurred";
+                        $error_msg = " Database error occurred";
                         break;
                     case 'logout_failed':
-                        $error_msg = "❌ Failed to logout student";
+                        $error_msg = " Failed to logout student";
                         break;
+                    default:
+                        $error_msg = " " . htmlspecialchars($_GET['error']);
                 }
                 if ($error_msg) {
                     echo "<div class='error-message'>$error_msg</div>";
@@ -822,11 +969,13 @@ tbody tr {
                 <table>
                     <thead>
                         <tr>
+                            <th>Status</th>
                             <th>ID No</th>
                             <th>Full Name</th>
                             <th>Purpose</th>
                             <th>Room</th>
-                            <th>Date & Time</th>
+                            <th>Time In</th>
+                            <th>Duration</th>
                             <th>Sessions</th>
                             <th>Points</th>
                             <th>Action</th>
@@ -834,37 +983,73 @@ tbody tr {
                     </thead>
                     <tbody>
                         <?php
-                            $sitin_result = mysqli_query($con, "SELECT login_records.IDNO, FULLNAME, 
-                                   TIME_IN, REMAINING_SESSIONS, PURPOSE, LAB_ROOM, 
-                                   POINTS, CONVERT_TZ(TIME_IN, 'UTC', 'Asia/Manila') as local_time 
-                                   FROM login_records 
-                                   JOIN user ON login_records.IDNO = user.IDNO 
-                                   WHERE TIME_OUT IS NULL 
-                                   ORDER BY TIME_IN DESC");
+                        $sitin_result = mysqli_query($con, "SELECT 
+                            lr.IDNO, 
+                            lr.FULLNAME, 
+                            lr.PURPOSE, 
+                            lr.LAB_ROOM, 
+                            lr.TIME_IN,
+                            u.REMAINING_SESSIONS, 
+                            u.POINTS,
+                            CONVERT_TZ(lr.TIME_IN, 'UTC', 'Asia/Manila') as local_time 
+                            FROM login_records lr 
+                            JOIN user u ON lr.IDNO = u.IDNO 
+                            WHERE lr.TIME_OUT IS NULL 
+                            ORDER BY lr.TIME_IN DESC");
 
-while ($sitin_row = mysqli_fetch_assoc($sitin_result)) { ?>
-    <tr>
-        <td><?php echo htmlspecialchars($sitin_row['IDNO']); ?></td>
-        <td><?php echo htmlspecialchars($sitin_row['FULLNAME']); ?></td>
-        <td class="purpose-column"><?php echo htmlspecialchars($sitin_row['PURPOSE']); ?></td>
-        <td class="room-column"><?php echo htmlspecialchars($sitin_row['LAB_ROOM']); ?></td>
-        <td><?php 
-            $timestamp = strtotime($sitin_row['TIME_IN']);
-            echo date('M d, Y h:i A', $timestamp); 
-        ?></td>
-        <td><?php echo htmlspecialchars($sitin_row['REMAINING_SESSIONS']); ?></td>
-        <td><?php echo htmlspecialchars($sitin_row['POINTS']); ?></td>
-        <td>
-            <div style="display: flex; gap: 5px;">
-                <a href="adsitin.php?addpoint=<?php echo htmlspecialchars($sitin_row['IDNO']); ?>" 
-                   class="w3-button w3-green" 
-                   title="Add 1 point">Reward</a>
-                <a href="adsitin.php?id=<?php echo htmlspecialchars($sitin_row['IDNO']); ?>" 
-                   class="w3-button w3-red">Logout</a>
-            </div>
-        </td>
-    </tr>
-<?php } ?>
+                        if (mysqli_num_rows($sitin_result) > 0) {
+                            while ($sitin_row = mysqli_fetch_assoc($sitin_result)) { 
+                                $time_in = strtotime($sitin_row['TIME_IN']);
+                                $current_time = time();
+                                $duration_seconds = max(0, $current_time - $time_in);
+                                $total_minutes = floor($duration_seconds / 60);
+                                
+                                // Convert to hours if more than 60 minutes
+                                if ($total_minutes >= 60) {
+                                    $hours = floor($total_minutes / 60);
+                                    $remaining_minutes = $total_minutes % 60;
+                                    $duration = $hours . " hr" . ($remaining_minutes > 0 ? " " . $remaining_minutes . " mins" : "");
+                                } else {
+                                    $duration = $total_minutes . " mins";
+                                }
+                            ?>
+                                <tr class="active-session">
+                                    <td>
+                                        <span class="status-badge active">Currently Sitting</span>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($sitin_row['IDNO']); ?></td>
+                                    <td><?php echo htmlspecialchars($sitin_row['FULLNAME']); ?></td>
+                                    <td class="purpose-column"><?php echo htmlspecialchars($sitin_row['PURPOSE']); ?></td>
+                                    <td class="room-column"><?php echo htmlspecialchars($sitin_row['LAB_ROOM']); ?></td>
+                                    <td class="time-column" data-time="<?php echo $time_in; ?>">
+                                        <?php echo date('M d, Y h:i A', $time_in); ?>
+                                    </td>
+                                    <td class="duration-column" data-start="<?php echo $time_in; ?>" data-active="true">
+                                        <?php echo $duration; ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($sitin_row['REMAINING_SESSIONS']); ?></td>
+                                    <td><?php echo htmlspecialchars($sitin_row['POINTS']); ?></td>
+                                    <td>
+                                        <div style="display: flex; gap: 5px;">
+                                            <a href="adsitin.php?addpoint=<?php echo htmlspecialchars($sitin_row['IDNO']); ?>" 
+                                               class="w3-button w3-green" 
+                                               title="Add 1 point">Reward</a>
+                                            <a href="adsitin.php?id=<?php echo htmlspecialchars($sitin_row['IDNO']); ?>" 
+                                               class="w3-button w3-red">Logout</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php }
+                        } else { ?>
+                            <tr>
+                                <td colspan="10" class="no-records">
+                                    <div class="empty-state">
+                                        <i class="fas fa-users"></i>
+                                        <p>No students are currently sitting in</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php } ?>
                     </tbody>
                 </table>
             </div>
@@ -888,8 +1073,10 @@ while ($sitin_row = mysqli_fetch_assoc($sitin_result)) { ?>
                             <th>Date</th>
                             <th>Time In</th>
                             <th>Time Out</th>
+                            <th>Duration</th>
                             <th>Purpose</th>
                             <th>Lab Room</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -901,14 +1088,42 @@ while ($sitin_row = mysqli_fetch_assoc($sitin_result)) { ?>
                             $time_in = strtotime($row['TIME_IN']);
                             $time_out = $row['TIME_OUT'] ? strtotime($row['TIME_OUT']) : null;
                             
+                            // Calculate duration in minutes
+                            $duration = '';
+                            if ($time_out) {
+                                $diff = max(0, $time_out - $time_in); // Prevent negative values
+                                $total_minutes = floor($diff / 60);
+                                if ($total_minutes >= 60) {
+                                    $hours = floor($total_minutes / 60);
+                                    $remaining_minutes = $total_minutes % 60;
+                                    $duration = $hours . " hr" . ($remaining_minutes > 0 ? " " . $remaining_minutes . " mins" : "");
+                                } else {
+                                    $duration = $total_minutes . " mins";
+                                }
+                            } else {
+                                $current_time = time();
+                                $diff = max(0, $current_time - $time_in); // Prevent negative values
+                                $total_minutes = floor($diff / 60);
+                                if ($total_minutes >= 60) {
+                                    $hours = floor($total_minutes / 60);
+                                    $remaining_minutes = $total_minutes % 60;
+                                    $duration = $hours . " hr" . ($remaining_minutes > 0 ? " " . $remaining_minutes . " mins" : "");
+                                } else {
+                                    $duration = $total_minutes . " mins";
+                                }
+                            }
+                            
                             echo "<tr>";
                             echo "<td>" . htmlspecialchars($row['IDNO']) . "</td>";
                             echo "<td>" . htmlspecialchars($row['FULLNAME']) . "</td>";
                             echo "<td>" . date('M d, Y', $time_in) . "</td>";
                             echo "<td>" . date('h:i A', $time_in) . "</td>";
                             echo "<td>" . ($time_out ? date('h:i A', $time_out) : 'Active') . "</td>";
+                            echo "<td class='duration-column'>" . $duration . "</td>";
                             echo "<td>" . htmlspecialchars($row['PURPOSE']) . "</td>";
                             echo "<td>" . htmlspecialchars($row['LAB_ROOM']) . "</td>";
+                            echo "<td><span class='status-badge " . ($time_out ? 'completed' : 'active') . "'>" . 
+                                 ($time_out ? 'Completed' : 'Active') . "</span></td>";
                             echo "</tr>";
                         }
                         ?>
@@ -942,8 +1157,10 @@ while ($sitin_row = mysqli_fetch_assoc($sitin_result)) { ?>
                                 <th>Date</th>
                                 <th>Time In</th>
                                 <th>Time Out</th>
+                                <th>Duration</th>
                                 <th>Purpose</th>
                                 <th>Lab Room</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -955,14 +1172,42 @@ while ($sitin_row = mysqli_fetch_assoc($sitin_result)) { ?>
                                 $time_in = strtotime($row['TIME_IN']);
                                 $time_out = $row['TIME_OUT'] ? strtotime($row['TIME_OUT']) : null;
                                 
+                                // Calculate duration in minutes
+                                $duration = '';
+                                if ($time_out) {
+                                    $diff = max(0, $time_out - $time_in); // Prevent negative values
+                                    $total_minutes = floor($diff / 60);
+                                    if ($total_minutes >= 60) {
+                                        $hours = floor($total_minutes / 60);
+                                        $remaining_minutes = $total_minutes % 60;
+                                        $duration = $hours . " hr" . ($remaining_minutes > 0 ? " " . $remaining_minutes . " mins" : "");
+                                    } else {
+                                        $duration = $total_minutes . " mins";
+                                    }
+                                } else {
+                                    $current_time = time();
+                                    $diff = max(0, $current_time - $time_in); // Prevent negative values
+                                    $total_minutes = floor($diff / 60);
+                                    if ($total_minutes >= 60) {
+                                        $hours = floor($total_minutes / 60);
+                                        $remaining_minutes = $total_minutes % 60;
+                                        $duration = $hours . " hr" . ($remaining_minutes > 0 ? " " . $remaining_minutes . " mins" : "");
+                                    } else {
+                                        $duration = $total_minutes . " mins";
+                                    }
+                                }
+                                
                                 echo "<tr>";
                                 echo "<td>" . htmlspecialchars($row['IDNO']) . "</td>";
                                 echo "<td>" . htmlspecialchars($row['FULLNAME']) . "</td>";
                                 echo "<td>" . date('M d, Y', $time_in) . "</td>";
                                 echo "<td>" . date('h:i A', $time_in) . "</td>";
                                 echo "<td>" . ($time_out ? date('h:i A', $time_out) : 'Active') . "</td>";
+                                echo "<td class='duration-column'>" . $duration . "</td>";
                                 echo "<td>" . htmlspecialchars($row['PURPOSE']) . "</td>";
                                 echo "<td>" . htmlspecialchars($row['LAB_ROOM']) . "</td>";
+                                echo "<td><span class='status-badge " . ($time_out ? 'completed' : 'active') . "'>" . 
+                                     ($time_out ? 'Completed' : 'Active') . "</span></td>";
                                 echo "</tr>";
                             }
                             ?>
@@ -1099,26 +1344,18 @@ function exportReportToExcel() {
             { wch: 15 }, // Date
             { wch: 15 }, // Time In
             { wch: 15 }, // Time Out
+            { wch: 15 }, // Duration
             { wch: 40 }, // Purpose
-            { wch: 15 }  // Lab Room
+            { wch: 15 }, // Lab Room
+            { wch: 15 }  // Status
         ];
         
         // Style the header
         ws['!merges'] = [
-            { s: { r: 3, c: 0 }, e: { r: 3, c: 6 } },  // University name
-            { s: { r: 4, c: 0 }, e: { r: 4, c: 6 } },  // College name
-            { s: { r: 5, c: 0 }, e: { r: 5, c: 6 } }   // Report title
+            { s: { r: 3, c: 0 }, e: { r: 3, c: 8 } },  // University name
+            { s: { r: 4, c: 0 }, e: { r: 4, c: 8 } },  // College name
+            { s: { r: 5, c: 0 }, e: { r: 5, c: 8 } }   // Report title
         ];
-        
-        // Add cell styles for header
-        for (let i = 3; i <= 5; i++) {
-            const cell = XLSX.utils.encode_cell({r: i, c: 0});
-            if (!ws[cell]) ws[cell] = {};
-            ws[cell].s = {
-                font: { bold: true, color: { rgb: "14569B" } },  // UC Blue
-                alignment: { horizontal: "center" }
-            };
-        }
         
         XLSX.utils.book_append_sheet(wb, ws, 'Sit-in Report');
         XLSX.writeFile(wb, 'sitin_report.xlsx');
@@ -1230,6 +1467,48 @@ function exportReportToPDF() {
         alert('There was an error generating the PDF. Please try again.');
     }
 }
+
+// Update both time and duration in real-time
+function updateTimeAndDuration() {
+    const now = Math.floor(Date.now() / 1000);
+    
+    // Update durations for active sessions
+    const durationCells = document.querySelectorAll('.duration-column[data-active="true"]');
+    durationCells.forEach(cell => {
+        const startTime = parseInt(cell.getAttribute('data-start'));
+        const durationSeconds = Math.max(0, now - startTime);
+        const totalMinutes = Math.floor(durationSeconds / 60);
+        
+        // Convert to hours if more than 60 minutes
+        if (totalMinutes >= 60) {
+            const hours = Math.floor(totalMinutes / 60);
+            const remainingMinutes = totalMinutes % 60;
+            cell.textContent = hours + " hr" + (remainingMinutes > 0 ? " " + remainingMinutes + " mins" : "");
+        } else {
+            cell.textContent = totalMinutes + " mins";
+        }
+    });
+    
+    // Update times
+    const timeCells = document.querySelectorAll('.time-column[data-time]');
+    timeCells.forEach(cell => {
+        const timeIn = parseInt(cell.getAttribute('data-time'));
+        const date = new Date(timeIn * 1000);
+        cell.textContent = date.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+    });
+}
+
+// Update every second for smoother counting
+setInterval(updateTimeAndDuration, 1000);
+// Initial update
+updateTimeAndDuration();
 </script>
 </body>
 </html>

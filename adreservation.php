@@ -172,14 +172,14 @@ if ($result) {
         }
 
         html, body {
-            background: linear-gradient(135deg, #14569b, #2a3f5f);
+            background: white;
             min-height: 100vh;
             width: 100%;
         }
 
         /* Top Navigation Bar Styles */
         .top-nav {
-            background-color: rgba(42, 63, 95, 0.9);
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
@@ -239,19 +239,20 @@ if ($result) {
         }
 
         .nav-right .logout-button {
-            background: rgba(220, 53, 69, 0.1);
+            background: rgba(247, 162, 5, 0.88);
             margin-left: 10px;
         }
 
         .nav-right .logout-button:hover {
-            background: rgba(220, 53, 69, 0.2);
+            background: rgba(255, 251, 0, 0.93);
         }
 
         .content {
             margin-top: 80px;
-            padding: 30px;
+            padding: 20px;
             min-height: calc(100vh - 80px);
             background: #f0f2f5;
+            width: 100%;
         }
 
         /* Remove old sidebar styles */
@@ -262,11 +263,11 @@ if ($result) {
         .container {
             background: white;
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            height: calc(100vh - 60px);
-            max-width: 1400px;
-            margin: 0 auto;
+            height: calc(100vh - 100px);
+            width: 100%;
+            margin: 0;
         }
 
         .header {
@@ -286,7 +287,8 @@ if ($result) {
             margin-bottom: 20px;
             display: flex;
             gap: 15px;
-            justify-content: center;
+            justify-content: flex-start;
+            flex-wrap: wrap;
         }
 
         select {
@@ -304,7 +306,7 @@ if ($result) {
         }
 
         .filter-section button {
-            background: #14569b;
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
             color: white;
             padding: 8px 20px;
             border: none;
@@ -314,8 +316,8 @@ if ($result) {
         }
 
         .filter-section button:hover {
-            background: #0f4578;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .reservation-table {
@@ -339,7 +341,7 @@ if ($result) {
         }
 
         th {
-            background: #14569b;
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
             color: white;
             padding: 15px;
             font-weight: 500;
@@ -390,29 +392,24 @@ if ($result) {
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #14569b;
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #0f4578;
+            background: linear-gradient(45deg,rgb(47, 0, 177),rgb(150, 145, 79));
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                z-index: 1000;
-            }
-            
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            
             .content {
-                margin-left: 0;
-                width: 100%;
+                margin-top: 120px;
+                padding: 10px;
+            }
+            
+            .container {
                 padding: 15px;
+                height: calc(100vh - 140px);
             }
             
             .filter-section {
@@ -426,7 +423,7 @@ if ($result) {
 
         /* Update these styles */
 .content-header {
-    background: linear-gradient(135deg, #14569b, #2a3f5f);
+    background: rgb(26, 19, 46);
     color: white;
     padding: 20px;
     border-radius: 15px 15px 0 0;
@@ -772,7 +769,7 @@ if ($result) {
 }
 
 .notification-badge {
-    background: #ef4444;
+    background: #dc3545;
     color: white;
     border-radius: 50%;
     padding: 1px 5px;
@@ -810,13 +807,13 @@ if ($result) {
 }
 
 .nav-btn:hover {
-    background: #14569b;
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
     color: white;
     transform: translateY(-2px);
 }
 
 .nav-btn.active {
-    background: #14569b;
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
     color: white;
 }
 
@@ -833,6 +830,172 @@ if ($result) {
     .nav-btn {
         width: 100%;
         justify-content: center;
+    }
+}
+
+/* Tab styles */
+.tab-container {
+    margin-bottom: 20px;
+}
+
+.tab-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    background: #f8fafc;
+    border: 2px solid #14569b;
+    border-radius: 8px;
+    color: #14569b;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+    color: white;
+    transform: translateY(-2px);
+}
+
+.tab-btn.active {
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Table styles */
+.table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    margin-top: 20px;
+    height: calc(100vh - 250px);
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+th {
+    background: rgb(26, 19, 46);
+    color: white;
+    padding: 15px;
+    font-weight: 500;
+    text-align: left;
+}
+
+td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* Status badges */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-approved {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Action buttons */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.approve-btn, .reject-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.approve-btn {
+    background: #28a745;
+    color: white;
+}
+
+.reject-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.approve-btn:hover, .reject-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .content {
+        margin-top: 120px;
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 15px;
+        height: calc(100vh - 140px);
+    }
+    
+    .tab-buttons {
+        flex-direction: column;
+    }
+    
+    .tab-btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    table {
+        min-width: 800px;
     }
 }
     </style>
@@ -853,7 +1016,7 @@ if ($result) {
             <a href="adlabresources.php"></i> Lab Resources</a>
             <a href="adlabsched.php"></i> Lab Schedule</a>
             <a href="adreservation.php" style="position: relative;">
-                </i> Reservations
+                </i> RESERVATION    
                 <?php if ($pendingCount > 0): ?>
                     <span class="notification-badge"><?php echo $pendingCount; ?></span>
                 <?php endif; ?>
@@ -867,79 +1030,209 @@ if ($result) {
         <div class="container">
             <div class="header">
                 <h1>Reservation Management</h1>
-                <div class="nav-buttons">
-                    <a href="adreservation.php" class="nav-btn <?php echo basename($_SERVER['PHP_SELF']) == 'adreservation.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-clock"></i> Reservation Management
-                    </a>
-                    <a href="reservation_requests.php" class="nav-btn <?php echo basename($_SERVER['PHP_SELF']) == 'reservation_requests.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-history"></i> Pending Requests
-                    </a>
-                    <a href="reservation_logs.php" class="nav-btn" <?php echo basename($_SERVER['PHP_SELF']) == 'reservation_logs.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-history"></i> Reservation Logs
-                    </a>
-                </div>
             </div>
-            <div class="content-header">
-                <h1><i class="fas fa-desktop"></i> COMPLAB MANAGEMENT</h1>
-                
-            </div>
-
-            <div class="pc-management">
-                <div class="control-panel">
-                    <div class="left-controls">
-                        <select class="room-select" onchange="changeRoom(this.value)">
-                            <option value="">Select Laboratory Room</option>
-                            <option value="524">Room 524</option>
-                            <option value="526">Room 526</option>
-                            <option value="528">Room 528</option>
-                            <option value="530">Room 530</option>
-                            <option value="542">Room 542</option>
-                            <option value="544">Room 544</option>
-                        </select>
-                    </div>
-                    <div class="right-controls">
-                        <button onclick="selectAllPCs()" class="control-btn select-all">
-                            <i class="fas fa-check-double"></i> Select All
-                        </button>
-                        <button onclick="updatePCStatus('available')" class="control-btn available">
-                            <i class="fas fa-check-circle"></i> Set Available
-                        </button>
-                        <button onclick="updatePCStatus('used')" class="control-btn used">
-                            <i class="fas fa-times-circle"></i> Set Used
-                        </button>
-                        <button onclick="updatePCStatus('maintenance')" class="control-btn maintenance">
-                            <i class="fas fa-tools"></i> Set Maintenance
-                        </button>
-                    </div>
+            
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="showTab('management')">Reservation Management</button>
+                    <button class="tab-btn" onclick="showTab('requests')">Pending Requests</button>
+                    <button class="tab-btn" onclick="showTab('logs')">Reservation Logs</button>
                 </div>
 
-                <div class="pc-grid">
-            <?php
-            $pcsPerRow = 5;
-            $totalPCs = 40;
+                <!-- Reservation Management Tab -->
+                <div id="management" class="tab-content active">
+                    <div class="content-header">
+                        
+                    </div>
+                    <div class="pc-management">
+                        <div class="control-panel">
+                            <div class="left-controls">
+                                <select class="room-select" onchange="changeRoom(this.value)">
+                                    <option value="">Select Laboratory Room</option>
+                                    <option value="524">Room 524</option>
+                                    <option value="526">Room 526</option>
+                                    <option value="528">Room 528</option>
+                                    <option value="530">Room 530</option>
+                                    <option value="542">Room 542</option>
+                                    <option value="544">Room 544</option>
+                                </select>
+                            </div>
+                            <div class="right-controls">
+                                <button onclick="selectAllPCs()" class="control-btn select-all">
+                                    <i class="fas fa-check-double"></i> Select All
+                                </button>
+                                <button onclick="updatePCStatus('available')" class="control-btn available">
+                                    <i class="fas fa-check-circle"></i> Set Available
+                                </button>
+                                <button onclick="updatePCStatus('used')" class="control-btn used">
+                                    <i class="fas fa-times-circle"></i> Set Used
+                                </button>
+                                <button onclick="updatePCStatus('maintenance')" class="control-btn maintenance">
+                                    <i class="fas fa-tools"></i> Set Maintenance
+                                </button>
+                            </div>
+                        </div>
+                        <div class="pc-grid">
+                            <?php
+                            $pcsPerRow = 5;
+                            $totalPCs = 40;
+                            for ($i = 1; $i <= $totalPCs; $i++) {
+                                echo '<div class="pc-item available" id="pcItem' . $i . '" onclick="togglePC(' . $i . ')">';
+                                echo '<i class="fas fa-desktop"></i><br>';
+                                echo 'PC' . $i;
+                                echo '</div>';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                </div>
 
-            for ($i = 1; $i <= $totalPCs; $i++) {
-                echo '<div class="pc-item available" id="pcItem' . $i . '" onclick="togglePC(' . $i . ')">';
-                echo '<i class="fas fa-desktop"></i><br>';
-                echo 'PC' . $i;
-                echo '</div>';
-            }
-            ?>
-        </div>
+                <!-- Pending Requests Tab -->
+                <div id="requests" class="tab-content">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Number</th>
+                                    <th>Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Lab Room</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $requests_query = "SELECT r.*, 
+                                                 COALESCE(u.LASTNAME, '') as LASTNAME,
+                                                 COALESCE(u.FIRSTNAME, '') as FIRSTNAME,
+                                                 COALESCE(u.MIDNAME, '') as MIDNAME
+                                                 FROM reservations r 
+                                                 LEFT JOIN user u ON r.student_id = u.IDNO 
+                                                 WHERE r.status = 'pending' 
+                                                 ORDER BY r.date ASC";
+                                $requests_result = mysqli_query($con, $requests_query);
+
+                                while ($row = mysqli_fetch_assoc($requests_result)) {
+                                    $fullName = '';
+                                    if (!empty($row['LASTNAME']) || !empty($row['FIRSTNAME'])) {
+                                        $fullName = $row['LASTNAME'] . ', ' . $row['FIRSTNAME'];
+                                        if (!empty($row['MIDNAME'])) {
+                                            $fullName .= ' ' . substr($row['MIDNAME'], 0, 1) . '.';
+                                        }
+                                    } else {
+                                        $fullName = 'N/A';
+                                    }
+
+                                    echo "<tr>";
+                                    echo "<td>" . htmlspecialchars($row['student_id']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($fullName) . "</td>";
+                                    echo "<td>" . date('M d, Y', strtotime($row['date'])) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['time']) . "</td>";
+                                    echo "<td>Room " . htmlspecialchars($row['room']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['purpose']) . "</td>";
+                                    echo "<td><span class='status-badge status-" . htmlspecialchars($row['status']) . "'>" . ucfirst(htmlspecialchars($row['status'])) . "</span></td>";
+                                    echo "<td class='action-buttons'>";
+                                    echo "<button class='approve-btn' onclick='approveReservation(" . $row['id'] . ")'><i class='fas fa-check'></i> Approve</button>";
+                                    echo "<button class='reject-btn' onclick='rejectReservation(" . $row['id'] . ")'><i class='fas fa-times'></i> Reject</button>";
+                                    echo "</td>";
+                                    echo "</tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Reservation Logs Tab -->
+                <div id="logs" class="tab-content">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Number</th>
+                                    <th>Name</th>
+                                    <th>Date Requested</th>
+                                    <th>Date to Reserve</th>
+                                    <th>Time</th>
+                                    <th>Lab Room</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                    <th>Action Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $logs_query = "SELECT r.*, 
+                                             COALESCE(u.LASTNAME, '') as LASTNAME,
+                                             COALESCE(u.FIRSTNAME, '') as FIRSTNAME,
+                                             COALESCE(u.MIDNAME, '') as MIDNAME,
+                                             DATE_FORMAT(r.created_at, '%M %d, %Y %h:%i %p') as date_requested,
+                                             DATE_FORMAT(rl.created_at, '%M %d, %Y %h:%i %p') as action_date
+                                             FROM reservations r 
+                                             LEFT JOIN user u ON r.student_id = u.IDNO 
+                                             LEFT JOIN reservation_logs rl ON r.id = rl.reservation_id
+                                             WHERE r.status IN ('approved', 'rejected')
+                                             ORDER BY r.date DESC, r.created_at DESC";
+                                $logs_result = mysqli_query($con, $logs_query);
+
+                                while ($row = mysqli_fetch_assoc($logs_result)) {
+                                    $fullName = '';
+                                    if (!empty($row['LASTNAME']) || !empty($row['FIRSTNAME'])) {
+                                        $fullName = $row['LASTNAME'] . ', ' . $row['FIRSTNAME'];
+                                        if (!empty($row['MIDNAME'])) {
+                                            $fullName .= ' ' . substr($row['MIDNAME'], 0, 1) . '.';
+                                        }
+                                    } else {
+                                        $fullName = 'N/A';
+                                    }
+
+                                    echo "<tr>";
+                                    echo "<td>" . htmlspecialchars($row['student_id']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($fullName) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['date_requested']) . "</td>";
+                                    echo "<td>" . date('M d, Y', strtotime($row['date'])) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['time']) . "</td>";
+                                    echo "<td>Room " . htmlspecialchars($row['room']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['purpose']) . "</td>";
+                                    echo "<td><span class='status-badge status-" . htmlspecialchars($row['status']) . "'>" . ucfirst(htmlspecialchars($row['status'])) . "</span></td>";
+                                    echo "<td>" . htmlspecialchars($row['action_date']) . "</td>";
+                                    echo "</tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-    let selectedRoom = '';
-
-    // Toggle sidebar
-    function toggleSidebar() {
-        document.querySelector('.sidebar').classList.toggle('active');
-        document.querySelector('.content').classList.toggle('sidebar-active');
+    // Tab switching functionality
+    function showTab(tabId) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Remove active class from all buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Show selected tab content
+        document.getElementById(tabId).classList.add('active');
+        
+        // Add active class to clicked button
+        event.target.classList.add('active');
     }
 
-    // PC selection
+    // Existing PC management functions
+    let selectedRoom = '';
+
     function togglePC(pcNumber) {
         if (!selectedRoom) {
             alert('Please select a room first');
@@ -948,13 +1241,10 @@ if ($result) {
         
         const pcItem = document.querySelector(`#pcItem${pcNumber}`);
         if (pcItem) {
-            // Allow selection regardless of current status
             pcItem.classList.toggle('selected');
-            console.log(`Toggled PC ${pcNumber} in room ${selectedRoom}`);
         }
     }
 
-    // Update PC status (Available, Used, Maintenance)
     async function updatePCStatus(status) {
         if (!selectedRoom) {
             alert('Please select a room first');
@@ -971,8 +1261,6 @@ if ($result) {
             const pcNumbers = Array.from(selectedPCs).map(item => 
                 parseInt(item.id.replace('pcItem', ''))
             );
-
-            console.log('Updating PCs:', pcNumbers, 'to status:', status);
 
             const response = await fetch('update_pc_status.php', {
                 method: 'POST',
@@ -993,7 +1281,6 @@ if ($result) {
             const data = await response.json();
             if (data.success) {
                 selectedPCs.forEach(item => {
-                    // Remove all status classes and add new status
                     item.classList.remove('selected', 'available', 'used', 'maintenance');
                     item.classList.add(status);
                 });
@@ -1008,7 +1295,6 @@ if ($result) {
         }
     }
 
-    // Room change handler
     async function changeRoom(roomId) {
         if (!roomId) {
             clearSelections();
@@ -1024,12 +1310,10 @@ if ($result) {
                 throw new Error(data.message);
             }
 
-            // Reset all PCs to available state
             document.querySelectorAll('.pc-item').forEach(item => {
                 item.className = 'pc-item available';
             });
             
-            // Update PC statuses from database
             data.data.forEach(pc => {
                 const pcItem = document.querySelector(`#pcItem${pc.pc_number}`);
                 if (pcItem) {
@@ -1044,7 +1328,6 @@ if ($result) {
         }
     }
 
-    // Select all PCs
     function selectAllPCs() {
         if (!selectedRoom) {
             alert('Please select a room first');
@@ -1056,20 +1339,17 @@ if ($result) {
             !item.classList.contains('selected')
         );
         
-        // Allow selection of all PCs regardless of status
         pcItems.forEach(item => {
             item.classList.toggle('selected', anyUnselected);
         });
     }
 
-    // Clear selections
     function clearSelections() {
         document.querySelectorAll('.pc-item').forEach(item => {
             item.classList.remove('selected');
         });
     }
 
-    // Show notification
     function showNotification(message, type = 'success') {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
@@ -1081,6 +1361,33 @@ if ($result) {
         }, 3000);
     }
 
+    // Reservation management functions
+    function approveReservation(id) {
+        if (confirm('Are you sure you want to approve this reservation?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.innerHTML = `
+                <input type="hidden" name="action" value="approve">
+                <input type="hidden" name="reservation_id" value="${id}">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    function rejectReservation(id) {
+        if (confirm('Are you sure you want to reject this reservation?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.innerHTML = `
+                <input type="hidden" name="action" value="reject">
+                <input type="hidden" name="reservation_id" value="${id}">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', () => {
         const roomSelect = document.querySelector('.room-select');
@@ -1088,63 +1395,6 @@ if ($result) {
             changeRoom(roomSelect.value);
         }
     });
-    // Add this to your existing script section
-    function updatePendingCount() {
-        fetch('get_pending_count.php')
-            .then(response => response.json())
-            .then(data => {
-                const badge = document.querySelector('.notification-badge');
-                if (data.count > 0) {
-                    if (!badge) {
-                        const newBadge = document.createElement('span');
-                        newBadge.className = 'notification-badge';
-                        newBadge.textContent = data.count;
-                        document.querySelector('a[href="adreservation.php"]').appendChild(newBadge);
-                    } else {
-                        badge.textContent = data.count;
-                        badge.style.display = 'flex';
-                    }
-                } else {
-                    if (badge) {
-                        badge.style.display = 'none';
-                    }
-                }
-            })
-            .catch(error => console.error('Error updating pending count:', error));
-    }
-
-    // Update count every 30 seconds
-    setInterval(updatePendingCount, 30000);
-
-    function updatePendingCount() {
-        fetch('get_pending_count.php')
-            .then(response => response.json())
-            .then(data => {
-                const badge = document.querySelector('.notification-badge');
-                if (data.count > 0) {
-                    if (!badge) {
-                        const newBadge = document.createElement('span');
-                        newBadge.className = 'notification-badge';
-                        newBadge.textContent = data.count;
-                        document.querySelector('a[href="adreservation.php"]').appendChild(newBadge);
-                    } else {
-                        badge.textContent = data.count;
-                        badge.style.display = 'flex';
-                    }
-                } else {
-                    if (badge) {
-                        badge.style.display = 'none';
-                    }
-                }
-            })
-            .catch(error => console.error('Error updating pending count:', error));
-    }
-
-    // Update count every 30 seconds
-    setInterval(updatePendingCount, 30000);
-
-    // Initial update on page load
-    document.addEventListener('DOMContentLoaded', updatePendingCount);
     </script>
 </body>
 </html>

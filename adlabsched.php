@@ -25,6 +25,15 @@ if ($result && mysqli_num_rows($result) > 0) {
 }
 $stmt->close();
 
+// Count pending reservations
+$pending_query = "SELECT COUNT(*) as count FROM reservations WHERE status = 'pending'";
+$pending_result = mysqli_query($con, $pending_query);
+$pendingCount = 0;
+if ($pending_result && mysqli_num_rows($pending_result) > 0) {
+    $row = mysqli_fetch_assoc($pending_result);
+    $pendingCount = $row['count'];
+}
+
 // Handle file upload
 if (isset($_POST['submit'])) {
     $room_number = mysqli_real_escape_string($con, $_POST['room_number']);
@@ -86,57 +95,53 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
         }
 
         html, body {
-            background: linear-gradient(135deg, #14569b, #2a3f5f);
+            background: white;
             min-height: 100vh;
             width: 100%;
         }
 
-        /* Updated Top Navigation Bar Styles */
+        /* Top Navigation Bar Styles */
         .top-nav {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .nav-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
 
         .nav-left img {
             width: 70px;
             height: 70px;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .nav-left .user-name {
             color: white;
             font-weight: 600;
             font-size: 1.1rem;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .nav-right {
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
+            gap: 15px;
         }
 
         .nav-right a {
@@ -144,17 +149,11 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             text-decoration: none;
             padding: 8px 15px;
             border-radius: 8px;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 0.9rem;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-right a.active {
-            background: rgba(255, 255, 255, 0.2);
-            font-weight: 600;
         }
 
         .nav-right a i {
@@ -162,22 +161,25 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
         }
 
         .nav-right a:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
             transform: translateY(-2px);
         }
 
         .nav-right .logout-button {
-            background: rgba(220, 53, 69, 0.2);
+            background: rgba(247, 162, 5, 0.88);
+            margin-left: 10px;
         }
 
         .nav-right .logout-button:hover {
-            background: rgba(220, 53, 69, 0.3);
+            background: rgba(255, 251, 0, 0.93);
         }
 
         .content {
             margin-top: 80px;
-            padding: 30px;
+            padding: 20px;
             min-height: calc(100vh - 80px);
+            background: #f0f2f5;
+            width: 100%;
         }
 
         .schedule-container {
@@ -185,24 +187,15 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            max-width: 1400px;
+            width: 100%;
             margin: 0 auto;
-        }
-
-        h1 {
-            color: #14569b;
-            font-size: 1.8rem;
-            margin-bottom: 25px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            height: calc(100vh - 100px);
         }
 
         .schedule-content {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .schedule-header {
@@ -232,12 +225,13 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
         }
 
         .room-btn.active {
-            background: #14569b;
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
             color: white;
         }
 
         .schedule-table {
-            overflow-x: auto;
+            flex: 1;
+            overflow-y: auto;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -246,7 +240,7 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 800px;
+            min-width: 100%;
         }
 
         th, td {
@@ -256,8 +250,8 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
         }
 
         th {
-            background: #f8f9fa;
-            color: #14569b;
+            background: rgb(26, 19, 46);
+            color: white;
             font-weight: 600;
         }
 
@@ -281,7 +275,7 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             color: #155724;
         }
 
-        .status-btn.occupied {
+        .status-btn.unavailable {
             background: #f8d7da;
             color: #721c24;
         }
@@ -290,10 +284,11 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             margin-top: 20px;
             display: flex;
             justify-content: flex-end;
+            padding: 10px 0;
         }
 
         .save-btn {
-            background: #14569b;
+            background: #155724;
             color: white;
             padding: 12px 25px;
             border: none;
@@ -307,7 +302,7 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
         }
 
         .save-btn:hover {
-            background: #0f4578;
+            background: #155724;
             transform: translateY(-2px);
         }
 
@@ -346,84 +341,93 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
         }
 
         @media (max-width: 1200px) {
-            .nav-right {
-                gap: 8px;
+            .content {
+                padding: 15px;
             }
             
-            .nav-right a {
-                padding: 8px 12px;
-                font-size: 0.85rem;
+            .schedule-container {
+                padding: 20px;
             }
         }
 
         @media (max-width: 768px) {
-            .top-nav {
-                flex-direction: column;
-                padding: 10px;
-            }
-
-            .nav-left {
-                margin-bottom: 10px;
-            }
-
-            .nav-right {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .nav-right a {
-                padding: 6px 10px;
-                font-size: 0.8rem;
-            }
-
             .content {
                 margin-top: 120px;
+                padding: 10px;
             }
+            
+            .schedule-container {
+                padding: 15px;
+                height: calc(100vh - 140px);
+            }
+        }
+
+        /* Update scrollbar colors */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg,rgb(47, 0, 177),rgb(150, 145, 79));
+        }
+
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="top-nav">
-        <div class="nav-left">
-            <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" onerror="this.src='assets/default.png';">
-            <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
-        </div>
-        <div class="nav-right">
-            <a href="admindash.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'admindash.php' ? 'active' : ''; ?>">
-                Dashboard
-            </a>
-            <a href="adannouncement.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adannouncement.php' ? 'active' : ''; ?>">
-                Announcements
-            </a>
-            <a href="liststudent.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'liststudent.php' ? 'active' : ''; ?>">
-                Students
-            </a>
-            <a href="adsitin.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adsitin.php' ? 'active' : ''; ?>">
-                Current Sitin
-            
-            
-            
-            <a href="adlabresources.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adlabresources.php' ? 'active' : ''; ?>">
-                Lab Resources
-            </a>
-            <a href="adlabsched.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adlabsched.php' ? 'active' : ''; ?>">
-                Lab Schedule
-            </a>
-            <a href="adreservation.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adreservation.php' ? 'active' : ''; ?>">
-                Reservations
-            </a>
-            <a href="adfeedback.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'adfeedback.php' ? 'active' : ''; ?>">
-                Feedback
-            </a>
-            <a href="admindash.php?logout=true" class="logout-button">
-                Log Out
-            </a>
-        </div>
+<div class="top-nav">
+    <div class="nav-left">
+        <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" onerror="this.src='assets/default.jpg';">
+        <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
+    </div>
+    <div class="nav-right">
+        <a href="admindash.php"></i> Dashboard</a>
+        <a href="adannouncement.php"></i> Announcements</a>
+        <a href="liststudent.php"></i> Students</a>
+        <a href="adsitin.php"></i> Current Sitin</a>
+        
+       
+        <a href="adlabresources.php"></i> Lab Resources</a>
+        <a href="adlabsched.php"></i> LAB SCHEDULES</a>
+        <a href="adreservation.php" style="position: relative;">
+             Reservations
+            <?php if ($pendingCount > 0): ?>
+                <span class="notification-badge"><?php echo $pendingCount; ?></span>
+            <?php endif; ?>
+
+        <a href="adfeedback.php"></i> Feedback</a>
+        <a href="admindash.php?logout=true" class="logout-button"> Log Out</a>
+    </div>
     </div>
 
     <div class="content">
         <div class="schedule-container">
-            <h1><i class="fas fa-calendar-alt"></i> Lab Schedule Management</h1>
+            <h1> Laboratory Schedule </h1>
             
             <?php if (isset($success_message)): ?>
                 <div class="popup success">
@@ -449,8 +453,10 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
                         <thead>
                             <tr>
                                 <th>Time Slot</th>
-                                <th>Monday/Wednesday</th>
-                                <th>Tuesday/Thursday</th>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
                                 <th>Friday</th>
                                 <th>Saturday</th>
                             </tr>
@@ -472,7 +478,7 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
                             foreach ($time_slots as $time_slot): ?>
                                 <tr>
                                     <td class="time-slot"><?php echo $time_slot; ?></td>
-                                    <?php foreach (['MW', 'TTH', 'F', 'S'] as $day): ?>
+                                    <?php foreach (['M', 'T', 'W', 'TH', 'F', 'S'] as $day): ?>
                                         <td>
                                             <button class="status-btn available" 
                                                     data-time="<?php echo $time_slot; ?>" 
@@ -523,7 +529,7 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
         function updateScheduleUI(schedules) {
             // Reset all buttons to available
             document.querySelectorAll('.status-btn').forEach(btn => {
-                btn.classList.remove('occupied');
+                btn.classList.remove('unavailable');
                 btn.classList.add('available');
                 btn.textContent = 'Available';
             });
@@ -542,8 +548,8 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
         }
 
         function toggleStatus(button) {
-            const currentStatus = button.classList.contains('available') ? 'available' : 'occupied';
-            const newStatus = currentStatus === 'available' ? 'occupied' : 'available';
+            const currentStatus = button.classList.contains('available') ? 'available' : 'unavailable';
+            const newStatus = currentStatus === 'available' ? 'unavailable' : 'available';
             
             button.classList.remove(currentStatus);
             button.classList.add(newStatus);
@@ -569,7 +575,7 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
                     room: activeRoom,
                     time: btn.dataset.time,
                     day: btn.dataset.day,
-                    status: btn.classList.contains('available') ? 'Available' : 'Occupied'
+                    status: btn.classList.contains('available') ? 'Available' : 'Unavailable'
                 });
             });
 
