@@ -1149,8 +1149,8 @@ tbody tr:hover {
                                 <tr>
                                     <th>ID Number</th>
                                     <th>Name</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
+                                    <th>Date Time</th>
+                                    <th>Date Time to Reserve</th>
                                     <th>Lab Room</th>
                                     <th>Purpose</th>
                                     <th>Status</th>
@@ -1162,7 +1162,8 @@ tbody tr:hover {
                                 $requests_query = "SELECT r.*, 
                                                  COALESCE(u.LASTNAME, '') as LASTNAME,
                                                  COALESCE(u.FIRSTNAME, '') as FIRSTNAME,
-                                                 COALESCE(u.MIDNAME, '') as MIDNAME
+                                                 COALESCE(u.MIDNAME, '') as MIDNAME,
+                                                 DATE_FORMAT(r.created_at, '%M %d, %Y %h:%i %p') as request_datetime
                                                  FROM reservations r 
                                                  LEFT JOIN user u ON r.student_id = u.IDNO 
                                                  WHERE r.status = 'pending' 
@@ -1180,11 +1181,14 @@ tbody tr:hover {
                                         $fullName = 'N/A';
                                     }
 
+                                    // Format the reservation date and time
+                                    $reserveDateTime = date('M d, Y', strtotime($row['date'])) . ' ' . htmlspecialchars($row['time']);
+
                                     echo "<tr>";
                                     echo "<td>" . htmlspecialchars($row['student_id']) . "</td>";
                                     echo "<td>" . htmlspecialchars($fullName) . "</td>";
-                                    echo "<td>" . date('M d, Y', strtotime($row['date'])) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['time']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['request_datetime']) . "</td>";
+                                    echo "<td>" . $reserveDateTime . "</td>";
                                     echo "<td>Room " . htmlspecialchars($row['room']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['purpose']) . "</td>";
                                     echo "<td><span class='status-badge status-" . htmlspecialchars($row['status']) . "'>" . ucfirst(htmlspecialchars($row['status'])) . "</span></td>";
