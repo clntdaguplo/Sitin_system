@@ -29,91 +29,145 @@ if ($result && mysqli_num_rows($result) > 0) {
     $user_name = 'Admin';
 }
 
+// Create reservation_logs table if it doesn't exist
+$create_logs_table = "CREATE TABLE IF NOT EXISTS reservation_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    reservation_id INT NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (reservation_id) REFERENCES reservations(id)
+)";
+
+if (!$con->query($create_logs_table)) {
+    error_log("Error creating reservation_logs table: " . $con->error);
+}
+
 // Handle reservation approval
-if(isset($_POST['approve'])) {
+if(isset($_POST['action']) && $_POST['action'] === 'approve') {
     $reservation_id = $_POST['reservation_id'];
-    $student_id = $_POST['student_id'];
-    $room = $_POST['room'];
-    $date = $_POST['date'];
-    $time = $_POST['time'];
-    $seat_number = $_POST['seat_number'];
     
-    // Update reservation status
-    $update_query = "UPDATE reservations SET status = 'approved' WHERE id = ?";
-    $update_stmt = $con->prepare($update_query);
-    $update_stmt->bind_param("i", $reservation_id);
+    // Get reservation details
+    $query = "SELECT r.*, u.EMAIL FROM reservations r 
+              JOIN user u ON r.student_id = u.IDNO 
+              WHERE r.id = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("i", $reservation_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $reservation = $result->fetch_assoc();
     
-    if($update_stmt->execute()) {
-        // Get student email for notification
-        $email_query = "SELECT EMAIL FROM user WHERE IDNO = ?";
-        $email_stmt = $con->prepare($email_query);
-        $email_stmt->bind_param("s", $student_id);
-        $email_stmt->execute();
-        $email_result = $email_stmt->get_result();
-        $student_email = mysqli_fetch_assoc($email_result)['EMAIL'];
+    if($reservation) {
+        // Start transaction
+        $con->begin_transaction();
         
-        // Send email notification
-        $to = $student_email;
-        $subject = "Reservation Approved - Lab Room $room";
-        $message = "Dear Student,\n\n";
-        $message .= "Your reservation for Lab Room $room has been approved.\n";
-        $message .= "Date: " . date('F j, Y', strtotime($date)) . "\n";
-        $message .= "Time: " . date('h:i A', strtotime($time)) . "\n";
-        $message .= "Seat Number: $seat_number\n\n";
-        $message .= "Please arrive 30 minutes before your scheduled time.\n";
-        $message .= "Thank you for using our lab reservation system.\n\n";
-        $message .= "Best regards,\nLab Management Team";
-        
-        $headers = "From: labmanagement@example.com";
-        
-        mail($to, $subject, $message, $headers);
-        
-        echo "<script>alert('Reservation approved and notification sent to student.');</script>";
-    } else {
-        echo "<script>alert('Error approving reservation.');</script>";
+        try {
+            // Update reservation status
+            $update_query = "UPDATE reservations SET status = 'approved' WHERE id = ?";
+            $update_stmt = $con->prepare($update_query);
+            $update_stmt->bind_param("i", $reservation_id);
+            $update_stmt->execute();
+            
+            // Log the approval with current timestamp
+            $log_query = "INSERT INTO reservation_logs (reservation_id, status, created_at) VALUES (?, 'approved', NOW())";
+            $log_stmt = $con->prepare($log_query);
+            $log_stmt->bind_param("i", $reservation_id);
+            $log_stmt->execute();
+            
+            // Send email notification
+            $to = $reservation['EMAIL'];
+            $subject = "Reservation Approved - Lab Room " . $reservation['room'];
+            $message = "Dear Student,\n\n";
+            $message .= "Your reservation for Lab Room " . $reservation['room'] . " has been approved.\n";
+            $message .= "Date: " . date('F j, Y', strtotime($reservation['date'])) . "\n";
+            $message .= "Time: " . $reservation['time'] . "\n";
+            $message .= "Seat Number: " . $reservation['seat_number'] . "\n\n";
+            $message .= "Please arrive 30 minutes before your scheduled time.\n";
+            $message .= "Thank you for using our lab reservation system.\n\n";
+            $message .= "Best regards,\nLab Management Team";
+            
+            $headers = "From: labmanagement@example.com";
+            
+            mail($to, $subject, $message, $headers);
+            
+            // Commit transaction
+            $con->commit();
+            
+            echo "<script>
+                alert('Reservation approved and notification sent to student.');
+                window.location.href = 'adreservation.php';
+            </script>";
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $con->rollback();
+            echo "<script>
+                alert('Error approving reservation: " . addslashes($e->getMessage()) . "');
+                window.location.href = 'adreservation.php';
+            </script>";
+        }
     }
 }
 
 // Handle reservation rejection
-if(isset($_POST['reject'])) {
+if(isset($_POST['action']) && $_POST['action'] === 'reject') {
     $reservation_id = $_POST['reservation_id'];
-    $student_id = $_POST['student_id'];
-    $room = $_POST['room'];
-    $date = $_POST['date'];
-    $time = $_POST['time'];
     
-    // Update reservation status
-    $update_query = "UPDATE reservations SET status = 'rejected' WHERE id = ?";
-    $update_stmt = $con->prepare($update_query);
-    $update_stmt->bind_param("i", $reservation_id);
+    // Get reservation details
+    $query = "SELECT r.*, u.EMAIL FROM reservations r 
+              JOIN user u ON r.student_id = u.IDNO 
+              WHERE r.id = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("i", $reservation_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $reservation = $result->fetch_assoc();
     
-    if($update_stmt->execute()) {
-        // Get student email for notification
-        $email_query = "SELECT EMAIL FROM user WHERE IDNO = ?";
-        $email_stmt = $con->prepare($email_query);
-        $email_stmt->bind_param("s", $student_id);
-        $email_stmt->execute();
-        $email_result = $email_stmt->get_result();
-        $student_email = mysqli_fetch_assoc($email_result)['EMAIL'];
+    if($reservation) {
+        // Start transaction
+        $con->begin_transaction();
         
-        // Send email notification
-        $to = $student_email;
-        $subject = "Reservation Rejected - Lab Room $room";
-        $message = "Dear Student,\n\n";
-        $message .= "We regret to inform you that your reservation for Lab Room $room has been rejected.\n";
-        $message .= "Date: " . date('F j, Y', strtotime($date)) . "\n";
-        $message .= "Time: " . date('h:i A', strtotime($time)) . "\n\n";
-        $message .= "Please make a new reservation or contact the lab administrator for more information.\n";
-        $message .= "Thank you for your understanding.\n\n";
-        $message .= "Best regards,\nLab Management Team";
-        
-        $headers = "From: labmanagement@example.com";
-        
-        mail($to, $subject, $message, $headers);
-        
-        echo "<script>alert('Reservation rejected and notification sent to student.');</script>";
-    } else {
-        echo "<script>alert('Error rejecting reservation.');</script>";
+        try {
+            // Update reservation status
+            $update_query = "UPDATE reservations SET status = 'rejected' WHERE id = ?";
+            $update_stmt = $con->prepare($update_query);
+            $update_stmt->bind_param("i", $reservation_id);
+            $update_stmt->execute();
+            
+            // Log the rejection with current timestamp
+            $log_query = "INSERT INTO reservation_logs (reservation_id, status, created_at) VALUES (?, 'rejected', NOW())";
+            $log_stmt = $con->prepare($log_query);
+            $log_stmt->bind_param("i", $reservation_id);
+            $log_stmt->execute();
+            
+            // Send email notification
+            $to = $reservation['EMAIL'];
+            $subject = "Reservation Rejected - Lab Room " . $reservation['room'];
+            $message = "Dear Student,\n\n";
+            $message .= "We regret to inform you that your reservation for Lab Room " . $reservation['room'] . " has been rejected.\n";
+            $message .= "Date: " . date('F j, Y', strtotime($reservation['date'])) . "\n";
+            $message .= "Time: " . $reservation['time'] . "\n\n";
+            $message .= "Please make a new reservation or contact the lab administrator for more information.\n";
+            $message .= "Thank you for your understanding.\n\n";
+            $message .= "Best regards,\nLab Management Team";
+            
+            $headers = "From: labmanagement@example.com";
+            
+            mail($to, $subject, $message, $headers);
+            
+            // Commit transaction
+            $con->commit();
+            
+            echo "<script>
+                alert('Reservation rejected and notification sent to student.');
+                window.location.href = 'adreservation.php';
+            </script>";
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $con->rollback();
+            echo "<script>
+                alert('Error rejecting reservation: " . addslashes($e->getMessage()) . "');
+                window.location.href = 'adreservation.php';
+            </script>";
+        }
     }
 }
 
@@ -1173,9 +1227,9 @@ tbody tr:hover {
                                              DATE_FORMAT(rl.created_at, '%M %d, %Y %h:%i %p') as action_date
                                              FROM reservations r 
                                              LEFT JOIN user u ON r.student_id = u.IDNO 
-                                             LEFT JOIN reservation_logs rl ON r.id = rl.reservation_id
+                                             INNER JOIN reservation_logs rl ON r.id = rl.reservation_id
                                              WHERE r.status IN ('approved', 'rejected')
-                                             ORDER BY r.date DESC, r.created_at DESC";
+                                             ORDER BY rl.created_at DESC, r.date DESC";
                                 $logs_result = mysqli_query($con, $logs_query);
 
                                 while ($row = mysqli_fetch_assoc($logs_result)) {
@@ -1189,6 +1243,11 @@ tbody tr:hover {
                                         $fullName = 'N/A';
                                     }
 
+                                    // Format the action date using the timestamp from reservation_logs
+                                    $actionDate = !empty($row['action_date']) ? 
+                                                 date('M d, Y h:i A', strtotime($row['action_date'])) : 
+                                                 'N/A';
+
                                     echo "<tr>";
                                     echo "<td>" . htmlspecialchars($row['student_id']) . "</td>";
                                     echo "<td>" . htmlspecialchars($fullName) . "</td>";
@@ -1198,7 +1257,7 @@ tbody tr:hover {
                                     echo "<td>Room " . htmlspecialchars($row['room']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['purpose']) . "</td>";
                                     echo "<td><span class='status-badge status-" . htmlspecialchars($row['status']) . "'>" . ucfirst(htmlspecialchars($row['status'])) . "</span></td>";
-                                    echo "<td>" . htmlspecialchars($row['action_date']) . "</td>";
+                                    echo "<td>" . $actionDate . "</td>";
                                     echo "</tr>";
                                 }
                                 ?>

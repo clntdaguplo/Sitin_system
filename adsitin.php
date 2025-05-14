@@ -790,7 +790,7 @@ table td {
     padding: 5px;
 }
 
-/* Add these new styles */
+/* Update the status badge styles */
 .status-badge {
     padding: 6px 12px;
     border-radius: 20px;
@@ -800,13 +800,37 @@ table td {
 }
 
 .status-badge.active {
-    background: rgb(2, 126, 29);
+    background: #28a745;
     color: white;
+}
+
+.status-badge.completed {
+    background-color: #6c757d;
+    color: white;
+}
+
+/* Update the currently sitting status style */
+.status-badge.currently-sitting {
+    background: #2ecc71;  /* Brighter green color */
+    color: white;
+    font-weight: 600;
+    animation: pulse 2s infinite;
+    box-shadow: 0 2px 5px rgba(46, 204, 113, 0.3);
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
 }
 
 .active-session {
     background-color: #f8f9fa;
-    border-left: 4px solid #28a745;
+    border-left: 4px solid #2ecc71;  /* Match the new green color */
+}
+
+.active-session:hover {
+    background-color: #e9ecef;
 }
 
 .empty-state {
@@ -832,11 +856,6 @@ table td {
 }
 
 /* Add these new styles */
-.status-badge.completed {
-    background-color: #6c757d;
-    color: white;
-}
-
 .duration-column {
     text-align: center;
     font-family: monospace;
@@ -1015,7 +1034,7 @@ table td {
                             ?>
                                 <tr class="active-session">
                                     <td>
-                                        <span class="status-badge active">Currently Sitting</span>
+                                        <span class="status-badge currently-sitting">Currently Sitting</span>
                                     </td>
                                     <td><?php echo htmlspecialchars($sitin_row['IDNO']); ?></td>
                                     <td><?php echo htmlspecialchars($sitin_row['FULLNAME']); ?></td>
@@ -1068,6 +1087,7 @@ table td {
                 <table id="dailyTable">
                     <thead>
                         <tr>
+                            <th>Status</th>
                             <th>ID Number</th>
                             <th>Name</th>
                             <th>Date</th>
@@ -1076,22 +1096,28 @@ table td {
                             <th>Duration</th>
                             <th>Purpose</th>
                             <th>Lab Room</th>
-                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        $daily_query = "SELECT * FROM login_records ORDER BY TIME_IN DESC";
+                        // Update the query to order by active sessions first
+                        $daily_query = "SELECT * FROM login_records 
+                                      ORDER BY 
+                                        CASE WHEN TIME_OUT IS NULL THEN 0 ELSE 1 END,
+                                        TIME_IN DESC";
                         $daily_result = mysqli_query($con, $daily_query);
 
                         while ($row = mysqli_fetch_assoc($daily_result)) {
                             $time_in = strtotime($row['TIME_IN']);
                             $time_out = $row['TIME_OUT'] ? strtotime($row['TIME_OUT']) : null;
+                            $is_active = is_null($row['TIME_OUT']); // Check if session is active
                             
                             // Calculate duration in minutes
                             $duration = '';
+                            $total_minutes = 0;
+                            
                             if ($time_out) {
-                                $diff = max(0, $time_out - $time_in); // Prevent negative values
+                                $diff = max(0, $time_out - $time_in);
                                 $total_minutes = floor($diff / 60);
                                 if ($total_minutes >= 60) {
                                     $hours = floor($total_minutes / 60);
@@ -1102,7 +1128,7 @@ table td {
                                 }
                             } else {
                                 $current_time = time();
-                                $diff = max(0, $current_time - $time_in); // Prevent negative values
+                                $diff = max(0, $current_time - $time_in);
                                 $total_minutes = floor($diff / 60);
                                 if ($total_minutes >= 60) {
                                     $hours = floor($total_minutes / 60);
@@ -1113,17 +1139,23 @@ table td {
                                 }
                             }
                             
-                            echo "<tr>";
+                            // Determine if we should show "Currently Sitting"
+                            $show_currently_sitting = $is_active || $total_minutes === 0;
+                            
+                            // Add active-session class for currently sitting students
+                            $rowClass = $show_currently_sitting ? 'active-session' : '';
+                            
+                            echo "<tr class='$rowClass'>";
+                            echo "<td><span class='status-badge " . ($show_currently_sitting ? 'currently-sitting' : 'completed') . "'>" . 
+                                 ($show_currently_sitting ? 'Currently Sitting' : 'Completed') . "</span></td>";
                             echo "<td>" . htmlspecialchars($row['IDNO']) . "</td>";
                             echo "<td>" . htmlspecialchars($row['FULLNAME']) . "</td>";
                             echo "<td>" . date('M d, Y', $time_in) . "</td>";
                             echo "<td>" . date('h:i A', $time_in) . "</td>";
-                            echo "<td>" . ($time_out ? date('h:i A', $time_out) : 'Active') . "</td>";
+                            echo "<td>" . ($show_currently_sitting ? 'Active' : date('h:i A', $time_out)) . "</td>";
                             echo "<td class='duration-column'>" . $duration . "</td>";
                             echo "<td>" . htmlspecialchars($row['PURPOSE']) . "</td>";
                             echo "<td>" . htmlspecialchars($row['LAB_ROOM']) . "</td>";
-                            echo "<td><span class='status-badge " . ($time_out ? 'completed' : 'active') . "'>" . 
-                                 ($time_out ? 'Completed' : 'Active') . "</span></td>";
                             echo "</tr>";
                         }
                         ?>
@@ -1206,8 +1238,7 @@ table td {
                                 echo "<td class='duration-column'>" . $duration . "</td>";
                                 echo "<td>" . htmlspecialchars($row['PURPOSE']) . "</td>";
                                 echo "<td>" . htmlspecialchars($row['LAB_ROOM']) . "</td>";
-                                echo "<td><span class='status-badge " . ($time_out ? 'completed' : 'active') . "'>" . 
-                                     ($time_out ? 'Completed' : 'Active') . "</span></td>";
+                                echo "<td>" . ($time_out ? '<span class="status-badge completed">Completed</span>' : '') . "</td>";
                                 echo "</tr>";
                             }
                             ?>
@@ -1347,7 +1378,6 @@ function exportReportToExcel() {
             { wch: 15 }, // Duration
             { wch: 40 }, // Purpose
             { wch: 15 }, // Lab Room
-            { wch: 15 }  // Status
         ];
         
         // Style the header
@@ -1377,40 +1407,42 @@ function exportReportToPDF() {
         const pageWidth = doc.internal.pageSize.width;
         const pageCenter = pageWidth / 2;
         
-        // Add header information with styling and UC branding colors
+        // Define colors
         const ucBlue = [20, 86, 155];  // UC Blue color
-        const ucGold = [218, 170, 0];  // UC Gold color
+        const ucGold = [255, 215, 0];  // Gold/Yellow color
         
-        // Draw decorative top border
-        doc.setDrawColor(...ucBlue);
-        doc.setLineWidth(1);
-        doc.line(20, 15, pageWidth - 20, 15);
+        // Add decorative header with gradient effect
+        doc.setFillColor(...ucBlue);
+        doc.rect(0, 0, pageWidth, 40, 'F');
         
-        // Add header text
-        doc.setTextColor(...ucBlue);
-        doc.setFontSize(22);
-        doc.text('UNIVERSITY OF CEBU - MAIN', pageCenter, 30, { align: 'center' });
+        // Add yellow accent line
+        doc.setFillColor(...ucGold);
+        doc.rect(0, 40, pageWidth, 5, 'F');
         
-        doc.setFontSize(18);
-        doc.text('COLLEGE OF COMPUTER STUDIES', pageCenter, 40, { align: 'center' });
+        // Add header text with shadow effect
+        doc.setTextColor(255, 255, 255);  // White text
+        doc.setFontSize(24);
+        doc.text('UNIVERSITY OF CEBU - MAIN', pageCenter, 25, { align: 'center' });
         
+        doc.setFontSize(20);
+        doc.text('COLLEGE OF COMPUTER STUDIES', pageCenter, 35, { align: 'center' });
+        
+        // Add report title with yellow background
+        doc.setFillColor(...ucGold);
+        doc.rect(20, 55, pageWidth - 40, 15, 'F');
+        doc.setTextColor(0, 0, 0);  // Black text
         doc.setFontSize(16);
-        doc.text('COMPUTER LABORATORY SITIN MONITORING SYSTEM REPORT', pageCenter, 50, { align: 'center' });
+        doc.text('COMPUTER LABORATORY SITIN MONITORING SYSTEM REPORT', pageCenter, 65, { align: 'center' });
         
-        // Draw bottom border for header
-        doc.setDrawColor(...ucBlue);
-        doc.setLineWidth(1);
-        doc.line(20, 55, pageWidth - 20, 55);
-        
-        // Get current date and time
+        // Add date and time with blue background
+        doc.setFillColor(...ucBlue);
+        doc.rect(20, 80, pageWidth - 40, 10, 'F');
         const now = new Date();
         const dateStr = now.toLocaleDateString();
         const timeStr = now.toLocaleTimeString();
-        
-        // Add date and time
+        doc.setTextColor(255, 255, 255);  // White text
         doc.setFontSize(10);
-        doc.setTextColor(0, 0, 0);
-        doc.text(`Generated on: ${dateStr} ${timeStr}`, pageCenter, 65, { align: 'center' });
+        doc.text(`Generated on: ${dateStr} ${timeStr}`, pageCenter, 87, { align: 'center' });
         
         // Set font size for table content
         doc.setFontSize(10);
@@ -1419,46 +1451,71 @@ function exportReportToPDF() {
         const visibleRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => row.style.display !== 'none');
         
         // Define column widths and positions
-        const colWidths = [20, 40, 20, 20, 20, 40, 20];
-        let yPos = 75; // Starting position for table
+        const colWidths = [25, 40, 25, 25, 25, 25, 40, 25];  // Adjusted widths
+        let yPos = 100; // Starting position for table
         
         // Calculate total width of the table
         const totalWidth = colWidths.reduce((a, b) => a + b, 0);
         // Calculate starting X position to center the table
         let startX = (pageWidth - totalWidth) / 2;
         
-        // Draw headers
+        // Draw headers with blue background
         const headers = Array.from(table.querySelectorAll('th'));
         let xPos = startX;
         headers.forEach((header, index) => {
-            doc.setFillColor(...ucBlue);
-            doc.setTextColor(255, 255, 255);
-            doc.rect(xPos, yPos, colWidths[index], 10, 'F');
-            doc.text(header.innerText, xPos + 2, yPos + 7);
-            xPos += colWidths[index];
+            if (index < colWidths.length) {
+                doc.setFillColor(...ucBlue);
+                doc.setTextColor(255, 255, 255);
+                doc.rect(xPos, yPos, colWidths[index], 10, 'F');
+                doc.text(header.innerText, xPos + 2, yPos + 7);
+                xPos += colWidths[index];
+            }
         });
         
         yPos += 10;
         
-        // Draw rows
+        // Draw rows with alternating colors
+        let rowCount = 0;
         visibleRows.forEach(row => {
-            xPos = startX;
-            const cells = row.querySelectorAll('td');
-            cells.forEach((cell, index) => {
-                doc.setFillColor(255, 255, 255);
-                doc.setTextColor(0, 0, 0);
-                doc.rect(xPos, yPos, colWidths[index], 10, 'F');
-                doc.text(cell.innerText, xPos + 2, yPos + 7);
-                xPos += colWidths[index];
-            });
-            yPos += 10;
-            
             // Check if we need a new page
             if (yPos > doc.internal.pageSize.height - 20) {
                 doc.addPage();
                 yPos = 20;
+                rowCount = 0;
             }
+            
+            // Alternate row colors
+            const isEvenRow = rowCount % 2 === 0;
+            doc.setFillColor(isEvenRow ? 240 : 255, isEvenRow ? 240 : 255, isEvenRow ? 240 : 255);
+            
+            xPos = startX;
+            const cells = row.querySelectorAll('td');
+            cells.forEach((cell, index) => {
+                if (index < colWidths.length) {
+                    doc.rect(xPos, yPos, colWidths[index], 10, 'F');
+                    doc.setTextColor(0, 0, 0);
+                    
+                    // Handle text overflow
+                    let text = cell.innerText;
+                    if (text.length > 20) {
+                        text = text.substring(0, 17) + '...';
+                    }
+                    
+                    doc.text(text, xPos + 2, yPos + 7);
+                    xPos += colWidths[index];
+                }
+            });
+            yPos += 10;
+            rowCount++;
         });
+        
+        // Add footer with blue background
+        const footerY = doc.internal.pageSize.height - 15;
+        doc.setFillColor(...ucBlue);
+        doc.rect(0, footerY, pageWidth, 15, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(8);
+        doc.text('© University of Cebu - Computer Laboratory Sitin Monitoring System', pageCenter, footerY + 10, { align: 'center' });
         
         // Save the PDF
         doc.save('sitin_report.pdf');

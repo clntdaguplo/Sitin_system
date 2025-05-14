@@ -509,9 +509,70 @@ $result = mysqli_query($con, $query);
         }
 
         .file-info {
-            margin-top: 8px;
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-info i {
+            color: #0d6efd;
+        }
+
+        .file-type {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .action-btn i {
+            margin-right: 5px;
+        }
+
+        .resource-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
             font-size: 0.9rem;
-            color: rgba(0, 0, 0, 0.6);
+        }
+
+        .download-btn {
+            background: #0d6efd;
+        }
+
+        .download-btn:hover {
+            background: #0b5ed7;
+            transform: translateY(-2px);
+        }
+
+        .edit-btn {
+            background: #28a745;
+        }
+
+        .edit-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .delete-btn {
+            background: #dc3545;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -595,17 +656,27 @@ $result = mysqli_query($con, $query);
                                     <div class="resource-title"><?php echo htmlspecialchars($row['title']); ?></div>
                                     <div class="resource-description"><?php echo htmlspecialchars($row['description']); ?></div>
                                     <div class="resource-meta">
-                                        
+                                        <?php if (!empty($row['file_name'])): ?>
+                                            <div class="file-info">
+                                                <i class="fas fa-file"></i> File: <?php echo htmlspecialchars($row['file_name']); ?>
+                                                <span class="file-type">(<?php echo strtoupper(htmlspecialchars($row['file_type'])); ?>)</span>
+                                            </div>
+                                        <?php endif; ?>
                                         <br>
                                         Uploaded: <?php echo date('M d, Y', strtotime($row['upload_date'])); ?>
                                     </div>
                                 </div>
                                 <div class="resource-actions">
+                                    <?php if (!empty($row['file_path'])): ?>
+                                        <a href="download_resource.php?id=<?php echo $row['id']; ?>" class="action-btn download-btn" title="Download File">
+                                            <i class="fas fa-download"></i> Download
+                                        </a>
+                                    <?php endif; ?>
                                     <a href="edit_resource.php?id=<?php echo $row['id']; ?>" class="action-btn edit-btn" title="Edit Resource">
-                                        Edit
+                                        <i class="fas fa-edit"></i> Edit
                                     </a>
                                     <a href="?delete=<?php echo $row['id']; ?>" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this resource?')" title="Delete Resource">
-                                        Delete
+                                        <i class="fas fa-trash"></i> Delete
                                     </a>
                                 </div>
                             </div>
