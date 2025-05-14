@@ -1152,6 +1152,7 @@ tbody tr:hover {
                                     <th>Date Time</th>
                                     <th>Date Time to Reserve</th>
                                     <th>Lab Room</th>
+                                    <th>PC Number</th>
                                     <th>Purpose</th>
                                     <th>Status</th>
                                     <th>Action</th>
@@ -1190,6 +1191,7 @@ tbody tr:hover {
                                     echo "<td>" . htmlspecialchars($row['request_datetime']) . "</td>";
                                     echo "<td>" . $reserveDateTime . "</td>";
                                     echo "<td>Room " . htmlspecialchars($row['room']) . "</td>";
+                                    echo "<td>PC " . htmlspecialchars($row['seat_number']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['purpose']) . "</td>";
                                     echo "<td><span class='status-badge status-" . htmlspecialchars($row['status']) . "'>" . ucfirst(htmlspecialchars($row['status'])) . "</span></td>";
                                     echo "<td class='action-buttons'>";
@@ -1216,6 +1218,7 @@ tbody tr:hover {
                                     <th>Date to Reserve</th>
                                     <th>Time</th>
                                     <th>Lab Room</th>
+                                    <th>PC Number</th>
                                     <th>Purpose</th>
                                     <th>Status</th>
                                     <th>Action Date</th>
@@ -1259,6 +1262,7 @@ tbody tr:hover {
                                     echo "<td>" . date('M d, Y', strtotime($row['date'])) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['time']) . "</td>";
                                     echo "<td>Room " . htmlspecialchars($row['room']) . "</td>";
+                                    echo "<td>PC " . htmlspecialchars($row['seat_number']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['purpose']) . "</td>";
                                     echo "<td><span class='status-badge status-" . htmlspecialchars($row['status']) . "'>" . ucfirst(htmlspecialchars($row['status'])) . "</span></td>";
                                     echo "<td>" . $actionDate . "</td>";
