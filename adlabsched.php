@@ -185,7 +185,7 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
         .schedule-container {
             background: white;
             border-radius: 15px;
-            padding: 25px;
+            padding: 30px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
             margin: 0 auto;
@@ -196,88 +196,129 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             height: 100%;
             display: flex;
             flex-direction: column;
+            gap: 20px;
         }
 
         .schedule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+        }
+
+        .schedule-header h1 {
+            color: rgb(26, 19, 46);
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
         }
 
         .room-buttons {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
             margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
         }
 
         .room-btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
-            background: #e9ecef;
+            background: white;
             color: #495057;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid #e9ecef;
         }
 
         .room-btn:hover {
-            background: #dee2e6;
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         .room-btn.active {
             background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
             color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(47, 0, 177, 0.2);
         }
 
         .schedule-table {
             flex: 1;
             overflow-y: auto;
             background: white;
-            border-radius: 8px;
+            border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e9ecef;
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
-            min-width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
         }
 
         th, td {
             padding: 15px;
             text-align: center;
-            border: 1px solid #dee2e6;
+            border: 1px solid #e9ecef;
         }
 
         th {
             background: rgb(26, 19, 46);
             color: white;
             font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 12px;
         }
 
         .time-slot {
             font-weight: 500;
             color: #495057;
+            background: #f8f9fa;
         }
 
         .status-btn {
             width: 100%;
-            padding: 8px 12px;
+            padding: 10px 15px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 500;
+            font-size: 14px;
         }
 
         .status-btn.available {
-            background: #d4edda;
-            color: #155724;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
         }
 
         .status-btn.unavailable {
-            background: #f8d7da;
-            color: #721c24;
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .status-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .schedule-actions {
@@ -288,9 +329,9 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
         }
 
         .save-btn {
-            background: #155724;
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
             color: white;
-            padding: 12px 25px;
+            padding: 12px 30px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -299,11 +340,13 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             align-items: center;
             gap: 8px;
             font-weight: 500;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(47, 0, 177, 0.2);
         }
 
         .save-btn:hover {
-            background: #155724;
             transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(47, 0, 177, 0.3);
         }
 
         .popup {
@@ -317,16 +360,19 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             gap: 10px;
             animation: slideIn 0.3s ease-out;
             z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .popup.success {
-            background: #d4edda;
-            color: #155724;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
         }
 
         .popup.error {
-            background: #f8d7da;
-            color: #721c24;
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
         }
 
         @keyframes slideIn {

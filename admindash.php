@@ -506,7 +506,7 @@ html, body {
 
 .points-badge:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(3, 105, 161, 0.4);
+    box-shadow: 0 4px 12px rgba(197, 162, 6, 0.4);
 }
 @keyframes sparkle {
     0%, 100% { transform: scale(1); }
@@ -1108,7 +1108,7 @@ html, body {
 }
 
 .chart-title {
-    color: #14569b;
+    color: #000000;
     font-size: 1.5rem;
     margin-bottom: 20px;
     text-align: center;
@@ -1394,7 +1394,7 @@ html, body {
         </div>
         <div class="div3">
             <div class="announcement-header">
-                <h2 style="color: #14569b; font-size: 1.8rem; display: flex; align-items: center; gap: 10px;">
+                <h2 style="color: #000000; font-size: 1.8rem; display: flex; align-items: center; gap: 10px;">
                      Latest Announcements
                 </h2>
                 <a href="adannouncement.php" class="new-announcement-btn">

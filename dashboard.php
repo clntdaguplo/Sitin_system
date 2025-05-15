@@ -36,21 +36,21 @@ if ($result && mysqli_num_rows($result) > 0) {
 <title>Dashboard</title>
 <style>
 * {
-    margin: 0;
+    margin: 0;  
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 html, body {
-    background: linear-gradient(135deg, #14569b, #2a3f5f);
+    background: #f5f5f5;
     min-height: 100vh;
     width: 100%;
 }
 
 /* Top Navigation Bar Styles */
 .top-nav {
-    background-color: rgba(42, 63, 95, 0.9);
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
@@ -122,7 +122,8 @@ html, body {
     margin-top: 80px;
     padding: 20px;
     min-height: calc(100vh - 80px);
-    background: #f0f2f5;
+    background: #f5f5f5;
+    width: 100%;
 }
 
 /* Remove old sidebar styles */
@@ -133,8 +134,8 @@ html, body {
 /* Content Area */
 .dashboard-grid {
     width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     padding: 0;
 }
 
@@ -144,7 +145,7 @@ html, body {
     margin: 0;
     padding: 30px;
     min-height: 100vh;
-    background: white;
+    background: #f5f5f5;
     border-radius: 0;
     box-shadow: none;
 }
@@ -156,6 +157,7 @@ html, body {
     margin-top: 30px;
     width: 100%;
     max-width: 100%;
+    padding: 0 20px;
 }
 
 .dashboard-left {
@@ -171,11 +173,12 @@ html, body {
 }
 
 .greeting-card {
-    background: linear-gradient(135deg, #14569b, #2a3f5f);
+    background:  rgb(26, 19, 46);
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     color: white;
+    width: 100%;
 }
 
 .greeting-content {
@@ -221,14 +224,14 @@ html, body {
 }
 
 .welcome-container h1 {
-    font-size: 2rem;
-    color: #14569b;
-    margin-bottom: 15px;
+    font-size: 32px;
+    color: #000000;
+    margin-bottom: 20px;
     font-weight: 600;
 }
 
 .welcome-container p {
-    color: #4a5568;
+    color: #000000;
     font-size: 1.1rem;
     line-height: 1.6;
     margin-bottom: 25px;
@@ -239,13 +242,15 @@ html, body {
 }
 
 .leaderboard-section {
-    background: linear-gradient(135deg, #14569b, #2a3f5f);
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
     border-radius: 15px;
     padding: 20px;
     height: auto;
     max-height: 800px;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .leaderboard-header {
@@ -308,13 +313,13 @@ html, body {
 }
 
 .user-name {
-    color: white;
+    color: #000000;
     font-size: 0.95rem;
     font-weight: 500;
 }
 
 .user-points {
-    color: rgba(255, 255, 255, 0.7);
+    color: #333333;
     font-size: 0.8rem;
 }
 
@@ -327,7 +332,7 @@ html, body {
     justify-content: center;
     font-size: 1rem;
     font-weight: 600;
-    color: red;
+    color: white;
 }
 
 .rank i {
@@ -354,13 +359,13 @@ html, body {
 
 .welcome-container h1 {
     font-size: 32px;
-    color: #2d3748;
+    color: #000000;
     margin-bottom: 20px;
     font-weight: 600;
 }
 
 .welcome-container p {
-    color: #718096;
+    color: #000000;
     font-size: 1.1rem;
     line-height: 1.6;
     margin-bottom: 25px;
@@ -370,6 +375,7 @@ html, body {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
+    width: 100%;
 }
 
 /* Update the stat-card styles */
@@ -379,6 +385,7 @@ html, body {
     border-radius: 12px;
     text-align: left;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .stat-card:hover {
@@ -387,7 +394,7 @@ html, body {
 }
 
 .stat-card h3 {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.9);
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -409,6 +416,7 @@ html, body {
 @media (max-width: 1024px) {
     .dashboard-content {
         grid-template-columns: 1fr;
+        padding: 0 15px;
     }
     
     .dashboard-right {
@@ -431,6 +439,10 @@ html, body {
     
     .leaderboard-section {
         max-height: 500px;
+    }
+    
+    .dashboard-content {
+        padding: 0 10px;
     }
 }
 
@@ -553,11 +565,13 @@ html, body {
 
 /* Add these new styles to your existing CSS */
 .announcements-section {
-    background: #f8fafc;
+    background: #ffffff;
     border-radius: 12px;
     padding: 20px;
     margin: 0;
     border: 1px solid #e2e8f0;
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .section-header {
@@ -568,7 +582,7 @@ html, body {
 }
 
 .section-header h2 {
-    color: #14569b;
+    color: #000000;
     font-size: 1.2rem;
     display: flex;
     align-items: center;
@@ -580,7 +594,7 @@ html, body {
 }
 
 .view-all {
-    color: #14569b;
+    color: #000000;
     text-decoration: none;
     font-size: 0.9rem;
     padding: 5px 10px;
@@ -613,20 +627,20 @@ html, body {
 }
 
 .announcement-card h3 {
-    color: #14569b;
+    color: #000000;
     font-size: 1.1rem;
     margin-bottom: 8px;
 }
 
 .announcement-card p {
-    color: #4a5568;
+    color: #000000;
     line-height: 1.5;
     margin-bottom: 10px;
     font-size: 0.95rem;
 }
 
 .announcement-card small {
-    color: #718096;
+    color: #333333;
     font-size: 0.85rem;
     display: block;
     margin-top: 5px;
@@ -634,11 +648,121 @@ html, body {
 
 .no-announcements {
     text-align: center;
-    color: #718096;
+    color: #000000;
     padding: 15px;
     background: white;
     border-radius: 8px;
     border: 1px dashed #e2e8f0;
+}
+
+.page-title {
+    color: #000000;
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* Add modal styles */
+.points-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    color: #000000;
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.points-details {
+    margin-top: 20px;
+}
+
+.points-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.points-item:last-child {
+    border-bottom: none;
+}
+
+.points-label {
+    color: #333;
+    font-weight: 500;
+}
+
+.points-value {
+    color: #000;
+    font-weight: 600;
+}
+
+.points-summary {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #eee;
+}
+
+.points-summary .total {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #000;
+}
+
+.points-history {
+    margin-top: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.history-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-date {
+    color: #666;
+    font-size: 0.8rem;
 }
 </style>
 </head>
@@ -822,8 +946,9 @@ html, body {
                                                     break;
                                                 case 12:
                                                     echo '<i>12th</i>';
-                                                        break;case 13:
-                                                     echo '<i>13th</i>';
+                                                    break;
+                                                case 13:
+                                                    echo '<i>13th</i>';
                                                     break;
                                                 case 14:
                                                     echo '<i>14th</i>';
@@ -1034,6 +1159,100 @@ document.addEventListener('click', function(event) {
     const bell = document.querySelector('.notification-bell');
     if (!bell.contains(event.target) && !dropdown.contains(event.target)) {
         dropdown.style.display = 'none';
+    }
+});
+</script>
+
+<!-- Add modal HTML before closing body tag -->
+<div class="points-modal" id="pointsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Points Details</h2>
+            <button class="close-modal" onclick="closePointsModal()">&times;</button>
+        </div>
+        <div class="points-details">
+            <div class="points-item">
+                <span class="points-label">Current Points</span>
+                <span class="points-value" id="currentPoints">0</span>
+            </div>
+            <div class="points-item">
+                <span class="points-label">Points Earned Today</span>
+                <span class="points-value" id="todayPoints">0</span>
+            </div>
+            <div class="points-item">
+                <span class="points-label">Points This Week</span>
+                <span class="points-value" id="weekPoints">0</span>
+            </div>
+            <div class="points-item">
+                <span class="points-label">Points This Month</span>
+                <span class="points-value" id="monthPoints">0</span>
+            </div>
+            <div class="points-summary">
+                <div class="points-item">
+                    <span class="points-label total">Total Points</span>
+                    <span class="points-value total" id="totalPoints">0</span>
+                </div>
+            </div>
+            <div class="points-history">
+                <h3>Recent Points History</h3>
+                <div id="pointsHistory"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add this to your existing script section
+function showPointsModal() {
+    const modal = document.getElementById('pointsModal');
+    modal.style.display = 'flex';
+    
+    // Fetch points data
+    fetchPointsData();
+}
+
+function closePointsModal() {
+    const modal = document.getElementById('pointsModal');
+    modal.style.display = 'none';
+}
+
+function fetchPointsData() {
+    // Fetch points data from the server
+    fetch('get_points_data.php')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('currentPoints').textContent = data.current_points;
+            document.getElementById('todayPoints').textContent = data.today_points;
+            document.getElementById('weekPoints').textContent = data.week_points;
+            document.getElementById('monthPoints').textContent = data.month_points;
+            document.getElementById('totalPoints').textContent = data.total_points;
+            
+            // Update points history
+            const historyContainer = document.getElementById('pointsHistory');
+            historyContainer.innerHTML = data.history.map(item => `
+                <div class="history-item">
+                    <div>${item.description}</div>
+                    <div class="history-date">${item.date}</div>
+                </div>
+            `).join('');
+        })
+        .catch(error => console.error('Error fetching points data:', error));
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('pointsModal');
+    if (event.target == modal) {
+        closePointsModal();
+    }
+}
+
+// Update the points display to be clickable
+document.addEventListener('DOMContentLoaded', function() {
+    const pointsDisplay = document.querySelector('.stat-card .value');
+    if (pointsDisplay) {
+        pointsDisplay.style.cursor = 'pointer';
+        pointsDisplay.addEventListener('click', showPointsModal);
     }
 });
 </script>

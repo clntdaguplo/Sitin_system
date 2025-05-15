@@ -33,8 +33,6 @@ $stmt->close();
 if (isset($_POST['submit'])) {
     $title = mysqli_real_escape_string($con, $_POST['title']);
     $description = mysqli_real_escape_string($con, $_POST['description']);
-    $category = mysqli_real_escape_string($con, $_POST['category']);
-    $link = !empty($_POST['link']) ? mysqli_real_escape_string($con, $_POST['link']) : '';
     
     // File upload handling
     $file_path = '';
@@ -65,23 +63,32 @@ if (isset($_POST['submit'])) {
             id INT AUTO_INCREMENT PRIMARY KEY,
             title VARCHAR(255) NOT NULL,
             description TEXT,
-            category VARCHAR(100) NOT NULL,
-            link TEXT NOT NULL,
             file_name VARCHAR(255),
             file_path TEXT,
             file_type VARCHAR(50),
             upload_date DATETIME NOT NULL
         )";
         mysqli_query($con, $create_table);
+    } else {
+        // Check if id column is already AUTO_INCREMENT
+        $check_column = mysqli_query($con, "SHOW COLUMNS FROM lab_resources WHERE Field = 'id'");
+        $column_info = mysqli_fetch_assoc($check_column);
+        
+        if ($column_info && $column_info['Extra'] !== 'auto_increment') {
+            // First remove any existing primary key
+            mysqli_query($con, "ALTER TABLE lab_resources DROP PRIMARY KEY");
+            // Then modify the id column
+            mysqli_query($con, "ALTER TABLE lab_resources MODIFY id INT AUTO_INCREMENT PRIMARY KEY");
+        }
     }
 
     // Insert the resource with file information
-    $query = "INSERT INTO lab_resources (title, description, category, link, file_name, file_path, file_type, upload_date) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+    $query = "INSERT INTO lab_resources (title, description, file_name, file_path, file_type, upload_date) 
+              VALUES (?, ?, ?, ?, ?, NOW())";
     $stmt = mysqli_prepare($con, $query);
     
     if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "sssssss", $title, $description, $category, $link, $file_name, $file_path, $file_type);
+        mysqli_stmt_bind_param($stmt, "sssss", $title, $description, $file_name, $file_path, $file_type);
         
         if (mysqli_stmt_execute($stmt)) {
             $success_message = "Resource added successfully!";
@@ -129,7 +136,7 @@ $result = mysqli_query($con, $query);
         }
 
         html, body {
-            background: linear-gradient(45deg, #ff4757, #ffae42);
+            background: white;
             min-height: 100vh;
             width: 100%;
         }
@@ -219,7 +226,9 @@ $result = mysqli_query($con, $query);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
             margin: 0 auto;
-            height: calc(100vh - 100px);
+            min-height: calc(100vh - 100px);
+            display: flex;
+            flex-direction: column;
         }
 
         h1 {
@@ -235,7 +244,7 @@ $result = mysqli_query($con, $query);
             grid-template-columns: 1fr 2fr;
             gap: 25px;
             margin-top: 20px;
-            height: calc(100% - 80px);
+            flex: 1;
         }
 
         .div1, .div2 {
@@ -244,6 +253,7 @@ $result = mysqli_query($con, $query);
             padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             height: 100%;
+            overflow-y: auto;
         }
 
         .div2 {
@@ -593,7 +603,7 @@ $result = mysqli_query($con, $query);
             <a href="adlabsched.php"> Lab Schedule</a>
             <a href="adreservation.php"> Reservations</a>
             <a href="adfeedback.php"> Feedback</a>
-            <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+            <a href="admindash.php?logout=true" class="logout-button"> Log Out</a>
         </div>
     </div>
 
@@ -623,11 +633,7 @@ $result = mysqli_query($con, $query);
                                 <textarea id="description" name="description" required></textarea>
                             </div>
 
-                            
-
                             <div class="form-row">
-                                
-
                                 <div class="form-group">
                                     <label for="resource_file">Upload File (Optional)</label>
                                     <div class="file-upload">

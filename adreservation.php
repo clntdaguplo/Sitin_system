@@ -1076,7 +1076,8 @@ tbody tr:hover {
                 <?php endif; ?>
             </a>
             <a href="adfeedback.php"></i> Feedback</a>
-            <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+            <a href="admindash.php?logout=true" class="logout-button">
+                 Log Out</a>
         </div>
     </div>
 
@@ -1208,6 +1209,12 @@ tbody tr:hover {
 
                 <!-- Reservation Logs Tab -->
                 <div id="logs" class="tab-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0; color: rgb(26, 19, 46);">Reservation Logs</h3>
+                        <button onclick="printAllLogs()" style="background: rgb(6, 128, 77); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-print"></i> Print All Logs
+                        </button>
+                    </div>
                     <div class="table-container">
                         <table>
                             <thead>
@@ -1462,6 +1469,160 @@ tbody tr:hover {
             changeRoom(roomSelect.value);
         }
     });
+
+    function printAllLogs() {
+        // Create a new window for printing
+        let printWindow = window.open("", "_blank");
+        
+        // Create the print content with enhanced styling
+        let printContent = `
+            <html>
+            <head>
+                <title>All Reservation Logs Report</title>
+                <style>
+                    @page {
+                        size: landscape;
+                        margin: 1cm;
+                    }
+                    body { 
+                        font-family: Arial, sans-serif;
+                        margin: 0;
+                        padding: 20px;
+                    }
+                    .header {
+                        text-align: center;
+                        margin-bottom: 20px;
+                        padding-bottom: 10px;
+                        border-bottom: 2px solid rgb(26, 19, 46);
+                    }
+                    .header h2 {
+                        color: rgb(26, 19, 46);
+                        margin: 0;
+                        font-size: 24px;
+                    }
+                    .header p {
+                        color: #666;
+                        margin: 5px 0 0 0;
+                        font-size: 14px;
+                    }
+                    table { 
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 20px;
+                        font-size: 12px;
+                    }
+                    th, td { 
+                        border: 1px solid #ddd;
+                        padding: 8px;
+                        text-align: left;
+                    }
+                    th { 
+                        background: rgb(26, 19, 46);
+                        color: white;
+                        font-weight: 500;
+                    }
+                    tr:nth-child(even) { 
+                        background-color: #f8f9fa;
+                    }
+                    .status-badge { 
+                        padding: 4px 8px;
+                        border-radius: 12px;
+                        font-size: 0.8rem;
+                        display: inline-block;
+                    }
+                    .status-approved { 
+                        background: #dcfce7;
+                        color: #166534;
+                    }
+                    .status-rejected { 
+                        background: #fee2e2;
+                        color: #991b1b;
+                    }
+                    .footer {
+                        text-align: center;
+                        margin-top: 20px;
+                        padding-top: 10px;
+                        border-top: 1px solid #ddd;
+                        font-size: 12px;
+                        color: #666;
+                    }
+                    @media print {
+                        body { margin: 0; }
+                        .no-print { display: none; }
+                        table { page-break-inside: auto; }
+                        tr { page-break-inside: avoid; page-break-after: auto; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h2>All Reservation Logs Report</h2>
+                    <p>Generated on: ${new Date().toLocaleString()}</p>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Number</th>
+                            <th>Name</th>
+                            <th>Date Requested</th>
+                            <th>Date to Reserve</th>
+                            <th>Time</th>
+                            <th>Lab Room</th>
+                            <th>PC Number</th>
+                            <th>Purpose</th>
+                            <th>Status</th>
+                            <th>Action Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+        // Fetch all logs from the database using AJAX
+        fetch('get_all_logs.php')
+            .then(response => response.json())
+            .then(logs => {
+                logs.forEach(log => {
+                    printContent += '<tr>';
+                    printContent += `<td>${log.student_id}</td>`;
+                    printContent += `<td>${log.full_name}</td>`;
+                    printContent += `<td>${log.date_requested}</td>`;
+                    printContent += `<td>${log.reserve_date}</td>`;
+                    printContent += `<td>${log.time}</td>`;
+                    printContent += `<td>Room ${log.room}</td>`;
+                    printContent += `<td>PC ${log.seat_number}</td>`;
+                    printContent += `<td>${log.purpose}</td>`;
+                    printContent += `<td><span class="status-badge status-${log.status}">${log.status.charAt(0).toUpperCase() + log.status.slice(1)}</span></td>`;
+                    printContent += `<td>${log.action_date}</td>`;
+                    printContent += '</tr>';
+                });
+
+                printContent += `
+                    </tbody>
+                </table>
+                <div class="footer">
+                    <p>This is a computer-generated report. No signature is required.</p>
+                </div>
+            </body>
+            </html>`;
+
+                // Write the content to the new window
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+
+                // Wait for content to load then print
+                printWindow.onload = function() {
+                    printWindow.print();
+                    // Close the window after printing
+                    printWindow.onafterprint = function() {
+                        printWindow.close();
+                    };
+                };
+            })
+            .catch(error => {
+                console.error('Error fetching logs:', error);
+                alert('Error generating print report. Please try again.');
+                printWindow.close();
+            });
+    }
     </script>
 </body>
 </html>

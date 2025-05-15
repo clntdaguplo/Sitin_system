@@ -49,9 +49,6 @@ if (isset($_GET['id'])) {
 if (isset($_POST['submit'])) {
     $title = mysqli_real_escape_string($con, $_POST['title']);
     $description = mysqli_real_escape_string($con, $_POST['description']);
-    $category = mysqli_real_escape_string($con, $_POST['category']);
-    $resource_type = mysqli_real_escape_string($con, $_POST['resource_type']);
-    $link = mysqli_real_escape_string($con, $_POST['link']);
 
     // Handle file upload if a new file is selected
     $file_path = $resource['file_path']; // Keep existing file if no new one uploaded
@@ -84,21 +81,15 @@ if (isset($_POST['submit'])) {
     $query = "UPDATE lab_resources SET 
               title = ?, 
               description = ?, 
-              category = ?, 
-              resource_type = ?,
-              link = ?, 
               file_path = ?,
               file_name = ?,
               file_type = ?
               WHERE id = ?";
               
     $stmt = mysqli_prepare($con, $query);
-    mysqli_stmt_bind_param($stmt, "ssssssssi", 
+    mysqli_stmt_bind_param($stmt, "sssssi", 
         $title, 
         $description, 
-        $category, 
-        $resource_type,
-        $link, 
         $file_path,
         $file_name,
         $file_type,
@@ -132,72 +123,94 @@ if (isset($_POST['submit'])) {
     }
 
     html, body {
-        background: linear-gradient(135deg, #14569b, #2a3f5f);
+        background: 
         display: flex;
         min-height: 100vh;
         width: 100%;
     }
 
-    /* Sidebar Styles */
+    /* Remove old sidebar styles */
     .sidebar {
-    width: 250px;
-    background-color: rgba(42, 63, 95, 0.9);
-    height: 100vh;
-    padding: 20px;
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    transform: translateX(0);
-}
+        display: none;
+    }
 
-.sidebar img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    margin-bottom: 15px;
-}
+    /* Top Navigation Bar Styles */
+    .top-nav {
+        background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+    }
 
-.sidebar a {
-    width: 100%;
-    color: white;
-    text-decoration: none;
-    padding: 12px 15px;
-    border-radius: 8px;
-    margin: 5px 0;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+    .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
 
-.sidebar a i {
-    width: 20px;
-    text-align: center;
-}
+    .nav-left img {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }
 
-.sidebar a:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(5px);
-}
+    .nav-left .user-name {
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
 
-.sidebar .logout-button {
-    margin-top: auto;
-    background: rgba(220, 53, 69, 0.1);
-}
+    .nav-right {
+        display: flex;
+        gap: 15px;
+    }
+
+    .nav-right a {
+        color: white;
+        text-decoration: none;
+        padding: 8px 15px;
+        border-radius: 8px;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+    }
+
+    .nav-right a i {
+        font-size: 1rem;
+    }
+
+    .nav-right a:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .nav-right .logout-button {
+        background: rgba(247, 162, 5, 0.88);
+        margin-left: 10px;
+    }
+
+    .nav-right .logout-button:hover {
+        background: rgba(255, 251, 0, 0.93);
+    }
 
     /* Content Area */
     .content {
-        flex-grow: 1;
-        margin-left: 250px;
+        margin-top: 80px;
         padding: 30px;
-        min-height: 100vh;
+        min-height: calc(100vh - 80px);
         background: #f0f2f5;
-        transition: margin-left 0.3s ease-in-out;
-        width: calc(100% - 250px);
+        width: 100%;
     }
 
     .container {
@@ -210,7 +223,7 @@ if (isset($_POST['submit'])) {
     }
 
     h1 {
-        color: #14569b;
+        color: #000000;
         font-size: 1.8rem;
         font-weight: 600;
         margin-bottom: 25px;
@@ -224,7 +237,7 @@ if (isset($_POST['submit'])) {
     label {
         display: block;
         margin-bottom: 8px;
-        color: #14569b;
+        color: #000000;
         font-weight: 500;
     }
 
@@ -243,9 +256,9 @@ if (isset($_POST['submit'])) {
     input[type="text"]:focus,
     textarea:focus,
     select:focus {
-        border-color: #14569b;
+        border-color: rgb(47, 0, 177);
         outline: none;
-        box-shadow: 0 0 0 3px rgba(20, 86, 155, 0.1);
+        box-shadow: 0 0 0 3px rgba(47, 0, 177, 0.1);
     }
 
     textarea {
@@ -254,7 +267,7 @@ if (isset($_POST['submit'])) {
     }
 
     button {
-        background: #14569b;
+        background: rgb(2, 141, 76);
         color: white;
         padding: 12px 25px;
         border: none;
@@ -269,7 +282,7 @@ if (isset($_POST['submit'])) {
     }
 
     button:hover {
-        background: #0f4578;
+        background: linear-gradient(45deg,rgb(47, 0, 177),rgb(150, 145, 79));
         transform: translateY(-1px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
@@ -292,50 +305,42 @@ if (isset($_POST['submit'])) {
         border: 1px solid #f5c6cb;
     }
 
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .sidebar {
-            transform: translateX(-100%);
-            z-index: 1000;
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+        .nav-right {
+            flex-wrap: wrap;
+            justify-content: center;
         }
         
-        .sidebar.active {
-            transform: translateX(0);
+        .nav-right a {
+            font-size: 0.8rem;
+            padding: 6px 12px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .top-nav {
+            flex-direction: column;
+            padding: 10px;
+        }
+        
+        .nav-left {
+            margin-bottom: 10px;
+        }
+        
+        .nav-right {
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .nav-right a {
+            font-size: 0.8rem;
+            padding: 6px 10px;
         }
         
         .content {
-            margin-left: 0;
-            width: 100%;
-            padding: 15px;
-        }
-        
-        .container {
-            margin: 0;
-            padding: 20px;
-        }
-    }
-
-    /* Burger Menu */
-    .burger {
-        display: none;
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        cursor: pointer;
-        z-index: 1001;
-    }
-
-    .burger div {
-        width: 25px;
-        height: 3px;
-        background-color: #14569b;
-        margin: 5px;
-        transition: 0.3s;
-    }
-
-    @media (max-width: 768px) {
-        .burger {
-            display: block;
+            margin-top: 120px;
         }
     }
 
@@ -385,28 +390,53 @@ if (isset($_POST['submit'])) {
     .popup i {
         font-size: 1.2rem;
     }
+
+    .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .cancel-btn {
+        background: #dc3545;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1rem;
+        text-decoration: none;
+    }
+
+    .cancel-btn:hover {
+        background: #c82333;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
     </style>
 </head>
 <body>
-    <div class="burger" onclick="toggleSidebar()">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    
-    <div class="sidebar">
-        <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" onerror="this.src='assets/default.png';">
-        <center><div class="user-name" style="font-size: x-large; color: white;"><?php echo htmlspecialchars($user_name); ?></div></center>
-        <a href="admindash.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="adannouncement.php"><i class="fas fa-bullhorn"></i> Announcements</a>
-        <a href="adsitin.php"><i class="fas fa-chair"></i> Current Sitin</a>
-        <a href="addaily.php"><i class="fas fa-calendar-day"></i> Daily Reports</a>
-        <a href="adviewsitin.php"><i class="fas fa-eye"></i> Generate Reports</a>
-        <a href="adreservation.php"><i class="fas fa-chair"></i> Reservation</a>
-        <a href="adlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-        <a href="adlabsched.php"><i class="fas fa-calendar"></i> Lab Schedule</a>
-        <a href="adfeedback.php"><i class="fas fa-book-open"></i> Feedback Reports</a>
-        <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+    <div class="top-nav">
+        <div class="nav-left">
+            <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" onerror="this.src='assets/default.jpg';">
+            <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
+        </div>
+        <div class="nav-right">
+            <a href="admindash.php"> Dashboard</a>
+            <a href="adannouncement.php"> Announcements</a>
+            <a href="liststudent.php"> Students</a>
+            <a href="adsitin.php"> Current Sitin</a>
+            <a href="adlabresources.php"> LAB RESOURCES</a>
+            <a href="adlabsched.php"> Lab Schedule</a>
+            <a href="adreservation.php"> Reservations</a>
+            <a href="adfeedback.php"> Feedback</a>
+            <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        </div>
     </div>
 
     <div class="content">
@@ -429,22 +459,6 @@ if (isset($_POST['submit'])) {
                 </div>
 
                 <div class="form-group">
-                    <label for="category">Category</label>
-                    <select id="category" name="category" required>
-                        <option value="Programming" <?php echo $resource['category'] == 'Programming' ? 'selected' : ''; ?>>Programming</option>
-                        <option value="Web Development" <?php echo $resource['category'] == 'Web Development' ? 'selected' : ''; ?>>Web Development</option>
-                        <option value="Database" <?php echo $resource['category'] == 'Database' ? 'selected' : ''; ?>>Database</option>
-                        <option value="Networking" <?php echo $resource['category'] == 'Networking' ? 'selected' : ''; ?>>Networking</option>
-                        <option value="Other" <?php echo $resource['category'] == 'Other' ? 'selected' : ''; ?>>Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="link">Resource Link (Optional)</label>
-                    <input type="text" id="link" name="link" value="<?php echo htmlspecialchars($resource['link']); ?>">
-                </div>
-
-                <div class="form-group">
                     <label for="resource_file">Resource File (Optional)</label>
                     <div class="file-upload">
                         <input type="file" id="resource_file" name="resource_file" class="file-input">
@@ -454,9 +468,14 @@ if (isset($_POST['submit'])) {
                     </div>
                 </div>
 
-                <button type="submit" name="submit">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
+                <div class="button-group">
+                    <button type="submit" name="submit">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <a href="adlabresources.php" class="cancel-btn">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
             </form>
         </div>
     </div>
@@ -467,11 +486,6 @@ if (isset($_POST['submit'])) {
     </div>
 
     <script>
-        function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('active');
-            document.querySelector('.content').classList.toggle('sidebar-active');
-        }
-
         // Add this new code for popup handling
         <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
             const popup = document.getElementById('successPopup');

@@ -31,15 +31,25 @@ $result = mysqli_query($con, $query);
             body {
                 margin: 0;
                 padding: 0;
+                background: white;
             }
             .feedback-container {
                 box-shadow: none;
-                padding: 0;
+                padding: 20px;
+                width: 100%;
+                margin: 0;
+            }
+            .feedback-item {
+                page-break-inside: avoid;
+                border: 1px solid #ddd;
+                margin-bottom: 20px;
+                padding: 15px;
+                width: 100%;
             }
         }
         
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
             background: #f5f5f5;
@@ -49,20 +59,25 @@ $result = mysqli_query($con, $query);
         .header {
             text-align: center;
             margin-bottom: 30px;
-            padding: 20px;
-            background: #14569b;
+            padding: 30px;
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
             color: white;
             width: 100%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         .header h1 {
             margin: 0;
-            font-size: 24px;
+            font-size: 28px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .header p {
             margin: 10px 0 0;
-            font-size: 14px;
+            font-size: 16px;
+            opacity: 0.9;
         }
         
         .button-container {
@@ -76,71 +91,88 @@ $result = mysqli_query($con, $query);
         }
         
         .action-button {
-            background: #14569b;
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 25px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             display: flex;
             align-items: center;
             gap: 8px;
             text-decoration: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
         }
         
         .action-button:hover {
-            background: #0f4578;
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
         }
         
         .feedback-container {
             background: white;
-            padding: 20px;
+            padding: 30px;
             width: 100%;
             min-height: calc(100vh - 100px);
+            max-width: 100%;
+            margin: 0;
         }
         
         .feedback-item {
-            border-bottom: 1px solid #eee;
-            padding: 15px 0;
-            margin-bottom: 15px;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+            width: 100%;
         }
         
-        .feedback-item:last-child {
-            border-bottom: none;
+        .feedback-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         
         .student-info {
-            margin-bottom: 10px;
-            color: #14569b;
-            font-weight: bold;
-            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: rgb(47, 0, 177);
+            font-weight: 600;
+            font-size: 1.2em;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
         }
         
         .feedback-content {
-            margin: 10px 0;
-            line-height: 1.6;
-            font-size: 1.05em;
+            margin: 15px 0;
+            line-height: 1.8;
+            font-size: 1.1em;
             color: #333;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid rgb(150, 145, 79);
         }
         
         .feedback-date {
             color: #666;
             font-size: 0.9em;
-            margin-top: 10px;
+            margin-top: 15px;
+            text-align: right;
+            font-style: italic;
         }
         
         .no-feedback {
             text-align: center;
-            padding: 40px;
+            padding: 50px;
             color: #666;
             font-style: italic;
             font-size: 1.2em;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 20px 0;
         }
 
         @media (max-width: 768px) {
@@ -153,13 +185,21 @@ $result = mysqli_query($con, $query);
             .feedback-item {
                 padding: 15px;
             }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>Student Feedback Report</h1>
-        <p>Generated on: <?php echo date('M d, Y h:i A'); ?></p>
+        <p>Generated on: <?php echo date('F d, Y h:i A'); ?></p>
     </div>
     
     <div class="button-container no-print">
@@ -184,13 +224,13 @@ $result = mysqli_query($con, $query);
                         <?php echo nl2br(htmlspecialchars($row['FEEDBACK'])); ?>
                     </div>
                     <div class="feedback-date">
-                        Submitted on: <?php echo date('M d, Y h:i A', strtotime($row['CREATED_AT'])); ?>
+                        Submitted on: <?php echo date('F d, Y h:i A', strtotime($row['CREATED_AT'])); ?>
                     </div>
                 </div>
             <?php endwhile; ?>
         <?php else: ?>
             <div class="no-feedback">
-                No feedback submissions found.
+                <i class="fas fa-info-circle"></i> No feedback submissions found.
             </div>
         <?php endif; ?>
     </div>

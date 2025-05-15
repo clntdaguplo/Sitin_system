@@ -197,9 +197,10 @@ html, body {
 /* Content Area */
 .content {
     margin-top: 80px;
-    padding: 30px;
+    padding: 20px;
     min-height: calc(100vh - 80px);
     background: #f0f2f5;
+    width: 100%;
 }
 
 .container {
@@ -207,9 +208,10 @@ html, body {
     border-radius: 15px;
     padding: 25px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    height: calc(100vh - 60px);
-    max-width: 1400px;
-    margin: 0 auto;
+    height: calc(100vh - 100px);
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
     overflow: hidden;
 }
 
@@ -218,10 +220,12 @@ html, body {
 }
 
 .header h1 {
-    color: #14569b;
-    font-size: 16px;
-    font-weight: normal;
+    color: #000000;
+    font-size: 32px;
+    font-weight: bold;
     margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .controls-container {
@@ -282,7 +286,7 @@ html, body {
 }
 
 .reset-button {
-    background:  rgb(219, 99, 0);
+    background:  rgb(134, 5, 15);
     color: white;
     padding: 10px 20px;
     border: none;
@@ -361,7 +365,7 @@ tbody tr:hover {
 }
 
 .delete-btn {
-    background:  rgb(219, 99, 0);
+    background:  rgb(161, 12, 1);
     color: white;
 }
 
@@ -507,17 +511,24 @@ if (isset($_GET['reset_success'])) {
           </div>';
 }
 ?>
-<div class="search-box">
-<input type="text" id="searchInput" placeholder="Search by ID, Name, or Course...">
-<button type="button">
-<i class="fas fa-search"></i>
-</button>
+<div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search by ID, Name, or Course...">
+        <button type="button">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <button onclick="printAllStudents()" style="background: rgb(2, 141, 56); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-print"></i> Print All Students
+        </button>
+        <form method="POST" style="margin: 0;">
+            <button type="submit" name="reset_sessions" class="reset-button">
+                <i class="fas fa-sync-alt"></i> Reset All Sessions
+            </button>
+        </form>
+    </div>
 </div>
-<form method="POST" style="margin: 0;">
-<button type="submit" name="reset_sessions" class="reset-button">
-<i class="fas fa-sync-alt"></i> Reset All Sessions
-</button>
-</form>
 </div>
 <div class="table-container">
 <table>
@@ -574,6 +585,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 </div>
 </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script>
 document.getElementById('searchInput').addEventListener('keyup', function() {
 let searchValue = this.value.toLowerCase();
@@ -597,6 +609,163 @@ function deleteStudent(idno) {
 if (confirm('Are you sure you want to delete this student? This action cannot be undone.')) {
 window.location.href = 'delete_student.php?id=' + idno;
 }
+}
+
+function printAllStudents() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'mm', 'a4');
+        
+        // Set font and size
+        doc.setFont('helvetica', 'bold');
+        
+        // Center everything on the page
+        const pageWidth = doc.internal.pageSize.width;
+        const pageCenter = pageWidth / 2;
+        
+        // Define colors
+        const ucBlue = [20, 86, 155];  // UC Blue color
+        
+        // Add header text
+        doc.setTextColor(0, 0, 0);  // Black text
+        doc.setFontSize(28);
+        doc.text('UNIVERSITY OF CEBU - MAIN', pageCenter, 25, { align: 'center' });
+        
+        doc.setFontSize(22);
+        doc.text('COLLEGE OF COMPUTER STUDIES', pageCenter, 35, { align: 'center' });
+        
+        // Add report title
+        doc.setFontSize(18);
+        doc.text('STUDENT RECORDS REPORT', pageCenter, 50, { align: 'center' });
+        
+        // Add date and time
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        const timeStr = now.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+        doc.setFontSize(12);
+        doc.text(`Generated on: ${dateStr} ${timeStr}`, pageCenter, 60, { align: 'center' });
+        
+        // Add a decorative line
+        doc.setDrawColor(...ucBlue);
+        doc.setLineWidth(0.5);
+        doc.line(20, 65, pageWidth - 20, 65);
+        
+        // Set font size for table content
+        doc.setFontSize(10);
+        
+        const table = document.querySelector('table');
+        const visibleRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => row.style.display !== 'none');
+        
+        // Define column widths and positions
+        const colWidths = [25, 30, 30, 30, 30, 20, 25, 40, 15, 25];  // Adjusted widths for all columns
+        let yPos = 80; // Starting position for table
+        
+        // Calculate total width of the table
+        const totalWidth = colWidths.reduce((a, b) => a + b, 0);
+        // Calculate starting X position to center the table
+        let startX = (pageWidth - totalWidth) / 2;
+        
+        // Draw headers
+        const headers = Array.from(table.querySelectorAll('th')).slice(0, -1); // Exclude Actions column
+        let xPos = startX;
+        headers.forEach((header, index) => {
+            if (index < colWidths.length) {
+                doc.setTextColor(0, 0, 0);
+                doc.setFont('helvetica', 'bold');
+                doc.text(header.innerText, xPos + 2, yPos + 8);
+                xPos += colWidths[index];
+            }
+        });
+        
+        // Add header underline
+        doc.setDrawColor(...ucBlue);
+        doc.setLineWidth(0.5);
+        doc.line(startX, yPos + 10, startX + totalWidth, yPos + 10);
+        
+        yPos += 15;
+        
+        // Draw rows
+        let rowCount = 0;
+        visibleRows.forEach(row => {
+            // Check if we need a new page
+            if (yPos > doc.internal.pageSize.height - 20) {
+                doc.addPage();
+                yPos = 20;
+                rowCount = 0;
+            }
+            
+            xPos = startX;
+            const cells = Array.from(row.querySelectorAll('td')).slice(0, -1); // Exclude Actions column
+            cells.forEach((cell, index) => {
+                if (index < colWidths.length) {
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    
+                    // Handle text overflow
+                    let text = cell.innerText;
+                    if (text.length > 20) {
+                        text = text.substring(0, 17) + '...';
+                    }
+                    
+                    // Special handling for points column
+                    if (index === 8) { // Points column
+                        const points = parseInt(text);
+                        if (points >= 2) {
+                            doc.setTextColor(40, 167, 69); // Green for high points
+                        } else if (points === 1) {
+                            doc.setTextColor(255, 193, 7); // Yellow for medium points
+                        } else {
+                            doc.setTextColor(108, 117, 125); // Gray for low points
+                        }
+                    }
+                    
+                    doc.text(text, xPos + 2, yPos + 8);
+                    xPos += colWidths[index];
+                }
+            });
+            
+            // Add row separator
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.2);
+            doc.line(startX, yPos + 12, startX + totalWidth, yPos + 12);
+            
+            yPos += 15;
+            rowCount++;
+        });
+        
+        // Add footer
+        const footerY = doc.internal.pageSize.height - 20;
+        doc.setDrawColor(...ucBlue);
+        doc.setLineWidth(0.5);
+        doc.line(20, footerY, pageWidth - 20, footerY);
+        
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10);
+        doc.text('© University of Cebu - Computer Laboratory Sitin Monitoring System', pageCenter, footerY + 10, { align: 'center' });
+        
+        // Add page numbers
+        const totalPages = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            doc.setPage(i);
+            doc.setFontSize(10);
+            doc.setTextColor(128, 128, 128);
+            doc.text(`Page ${i} of ${totalPages}`, pageWidth - 20, doc.internal.pageSize.height - 10);
+        }
+        
+        // Save the PDF
+        doc.save('student_records_report.pdf');
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('There was an error generating the PDF. Please try again.');
+    }
 }
 </script>
 </body>

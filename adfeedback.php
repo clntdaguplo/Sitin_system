@@ -70,7 +70,7 @@ mysqli_data_seek($feedback_result, 0);
 }
 
 html, body {
-    background: linear-gradient(45deg, #ff4757, #ffae42);
+    background: white;
     min-height: 100vh;
     width: 100%;
 }
@@ -147,7 +147,7 @@ html, body {
 
 .content {
     margin-top: 80px;
-    padding: 30px;
+    padding: 20px;
     min-height: calc(100vh - 80px);
     background: #f0f2f5;
     width: 100%;
@@ -164,8 +164,8 @@ html, body {
     padding: 25px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     height: calc(100vh - 60px);
 }
 
@@ -183,6 +183,7 @@ h1 {
     border-radius: 12px;
     background: white;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    width: 100%;
 }
 
 /* Table Styles */
@@ -190,6 +191,7 @@ table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
+    table-layout: fixed;
 }
 
 thead {
@@ -207,11 +209,16 @@ th {
     border: none;
 }
 
+th:nth-child(1) { width: 10%; }  /* ID No. */
+th:nth-child(2) { width: 20%; }  /* Name */
+th:nth-child(3) { width: 40%; }  /* Feedback */
+th:nth-child(4) { width: 15%; }  /* Lab Room */
+th:nth-child(5) { width: 15%; }  /* Date & Time */
+
 td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #e2e8f0;
-    background: transparent;
-    transition: all 0.3s ease;
+    padding: 15px;
+    text-align: left;
+    word-wrap: break-word;
 }
 
 tbody tr:hover {
@@ -353,10 +360,73 @@ tbody tr:nth-child(2) { animation-delay: 0.2s; }
 tbody tr:nth-child(3) { animation-delay: 0.3s; }
 tbody tr:nth-child(4) { animation-delay: 0.4s; }
 tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+/* Add print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    body {
+        background: white !important;
+    }
+    .content {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .container {
+        box-shadow: none !important;
+        height: auto !important;
+    }
+    .feedback-container {
+        height: auto !important;
+        overflow: visible !important;
+    }
+    table {
+        width: 100% !important;
+    }
+    th {
+        background: rgb(26, 19, 46) !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    tbody tr:hover {
+        background: none !important;
+        transform: none !important;
+    }
+}
+
+/* Update button container styles */
+.button-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.print-button {
+    background: #45a049;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.print-button:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(20, 86, 155, 0.2);
+}
 </style>
 </head>
 <body>
-    <div class="top-nav">
+    <div class="top-nav no-print">
         <div class="nav-left">
             <img src="uploads/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" onerror="this.src='assets/default.png';">
             <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
@@ -381,9 +451,9 @@ tbody tr:nth-child(5) { animation-delay: 0.5s; }
             <div class="header">
                 <h1>Student Feedbacks</h1>
                 <div class="button-container">
-                    <a href="print_feedback.php" target="_blank" class="print-button">
-                        <i class="fas fa-print"></i> Print All Feedbacks
-                    </a>
+                    <button onclick="printFeedback()" class="print-button">
+                        <i class="fas fa-print"></i> Print Feedbacks
+                    </button>
                 </div>
             </div>
             <div class="feedback-container">
@@ -421,24 +491,24 @@ tbody tr:nth-child(5) { animation-delay: 0.5s; }
 
     <script>
     function printFeedback() {
-        const printContent = document.querySelector('.feedback-container').innerHTML;
-        const originalContent = document.body.innerHTML;
-        
-        document.body.innerHTML = `
-            <div style="padding: 20px;">
-                <h1 style="color: #14569b; margin-bottom: 20px;">Feedback Report</h1>
-                <div style="margin-bottom: 20px;">
-                    <p><strong>Generated on:</strong> ${new Date().toLocaleString()}</p>
-                </div>
-                ${printContent}
-            </div>
+        // Add print header
+        const printHeader = document.createElement('div');
+        printHeader.style.textAlign = 'center';
+        printHeader.style.marginBottom = '20px';
+        printHeader.innerHTML = `
+            <h2 style="color: rgb(26, 19, 46); margin-bottom: 10px;">Student Feedback Report</h2>
+            <p style="color: #666;">Generated on: ${new Date().toLocaleString()}</p>
         `;
         
-        window.print();
-        document.body.innerHTML = originalContent;
+        // Insert header before the table
+        const table = document.querySelector('table');
+        table.parentNode.insertBefore(printHeader, table);
         
-        // Reattach event listeners after printing
-        document.querySelector('button[onclick="printFeedback()"]').addEventListener('click', printFeedback);
+        // Print the page
+        window.print();
+        
+        // Remove the header after printing
+        printHeader.remove();
     }
     </script>
 </body>

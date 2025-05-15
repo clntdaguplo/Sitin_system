@@ -337,12 +337,12 @@ html, body {
 }
 
 .nav-right .logout-button {
-    background: rgba(220, 53, 69, 0.1);
+    background: rgba(247, 162, 5, 0.88);
     margin-left: 10px;
 }
 
 .nav-right .logout-button:hover {
-    background: rgba(220, 53, 69, 0.2);
+    background: rgba(255, 251, 0, 0.93);
 }
 
 .content {
@@ -919,7 +919,7 @@ table td {
         <a href="adlabsched.php"></i> Lab Schedule</a>
         <a href="adreservation.php"></i> Reservations</a>
         <a href="adfeedback.php"></i> Feedback</a>
-        <a href="admindash.php?logout=true" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        <a href="admindash.php?logout=true" class="logout-button"> Log Out</a>
     </div>
 </div>
 
@@ -1078,10 +1078,15 @@ table td {
             <div class="header">
                 <h1>Daily Sit-in Records</h1>
             </div>
-            <div class="search-container">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search by ID Number, Name, Purpose, or Lab Room..." onkeyup="searchTable()">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div class="search-container">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search by ID Number, Name, Purpose, or Lab Room..." onkeyup="searchTable()">
+                    </div>
                 </div>
+                <button onclick="printDailyRecords()" style="background: rgb(2, 141, 56); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-print"></i> Print Daily Records
+                </button>
             </div>
             <div class="table-container">
                 <table id="dailyTable">
@@ -1322,6 +1327,21 @@ function exportReportToCSV() {
     csv.push('"                                                                  "');
     csv.push(''); // Empty line for spacing
     
+    // Add generation date and time
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    const timeStr = now.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+    csv.push(`"Generated on: ${dateStr} ${timeStr}"`);
+    csv.push(''); // Empty line for spacing
+    
     const headers = Array.from(table.querySelectorAll('thead th')).map(th => `"${th.innerText}"`);
     csv.push(headers.join(','));
     
@@ -1329,13 +1349,52 @@ function exportReportToCSV() {
     const visibleRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => row.style.display !== 'none');
     
     visibleRows.forEach(row => {
-        const rowData = Array.from(row.querySelectorAll('td')).map(cell => `"${cell.innerText.replace(/"/g, '""')}"`);
+        const rowData = Array.from(row.querySelectorAll('td')).map(cell => {
+            let text = cell.innerText;
+            
+            // Format date columns (assuming date is in column 2)
+            if (cell.cellIndex === 2) {
+                const date = new Date(text);
+                if (!isNaN(date)) {
+                    text = date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                }
+            }
+            
+            // Format time columns (assuming time is in columns 3 and 4)
+            if (cell.cellIndex === 3 || cell.cellIndex === 4) {
+                const time = new Date(text);
+                if (!isNaN(time)) {
+                    text = time.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                    });
+                }
+            }
+            
+            // Handle status badges
+            const statusBadge = cell.querySelector('.status-badge');
+            if (statusBadge) {
+                text = statusBadge.innerText;
+            }
+            
+            // Escape quotes and wrap in quotes
+            return `"${text.replace(/"/g, '""')}"`;
+        });
         csv.push(rowData.join(','));
     });
 
+    // Add footer
+    csv.push(''); // Empty line for spacing
+    csv.push('"© University of Cebu - Computer Laboratory Sitin Monitoring System"');
+    
     const csvFile = new Blob(['\ufeff' + csv.join('\n')], { type: 'text/csv;charset=utf-8' });
     const downloadLink = document.createElement('a');
-    downloadLink.download = 'sitin_report.csv';
+    downloadLink.download = 'all_sitin_records.csv';
     downloadLink.href = window.URL.createObjectURL(csvFile);
     downloadLink.style.display = 'none';
     document.body.appendChild(downloadLink);
@@ -1411,38 +1470,37 @@ function exportReportToPDF() {
         const ucBlue = [20, 86, 155];  // UC Blue color
         const ucGold = [255, 215, 0];  // Gold/Yellow color
         
-        // Add decorative header with gradient effect
-        doc.setFillColor(...ucBlue);
-        doc.rect(0, 0, pageWidth, 40, 'F');
-        
-        // Add yellow accent line
-        doc.setFillColor(...ucGold);
-        doc.rect(0, 40, pageWidth, 5, 'F');
-        
-        // Add header text with shadow effect
-        doc.setTextColor(255, 255, 255);  // White text
-        doc.setFontSize(24);
+        // Add header text
+        doc.setTextColor(0, 0, 0);  // Black text
+        doc.setFontSize(28);
         doc.text('UNIVERSITY OF CEBU - MAIN', pageCenter, 25, { align: 'center' });
         
-        doc.setFontSize(20);
+        doc.setFontSize(22);
         doc.text('COLLEGE OF COMPUTER STUDIES', pageCenter, 35, { align: 'center' });
         
-        // Add report title with yellow background
-        doc.setFillColor(...ucGold);
-        doc.rect(20, 55, pageWidth - 40, 15, 'F');
-        doc.setTextColor(0, 0, 0);  // Black text
-        doc.setFontSize(16);
-        doc.text('COMPUTER LABORATORY SITIN MONITORING SYSTEM REPORT', pageCenter, 65, { align: 'center' });
+        // Add report title
+        doc.setFontSize(18);
+        doc.text('ALL SIT-IN RECORDS REPORT', pageCenter, 50, { align: 'center' });
         
-        // Add date and time with blue background
-        doc.setFillColor(...ucBlue);
-        doc.rect(20, 80, pageWidth - 40, 10, 'F');
+        // Add date and time
         const now = new Date();
-        const dateStr = now.toLocaleDateString();
-        const timeStr = now.toLocaleTimeString();
-        doc.setTextColor(255, 255, 255);  // White text
-        doc.setFontSize(10);
-        doc.text(`Generated on: ${dateStr} ${timeStr}`, pageCenter, 87, { align: 'center' });
+        const dateStr = now.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        const timeStr = now.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+        doc.setFontSize(12);
+        doc.text(`Generated on: ${dateStr} ${timeStr}`, pageCenter, 60, { align: 'center' });
+        
+        // Add a decorative line
+        doc.setDrawColor(...ucBlue);
+        doc.setLineWidth(0.5);
+        doc.line(20, 65, pageWidth - 20, 65);
         
         // Set font size for table content
         doc.setFontSize(10);
@@ -1451,30 +1509,34 @@ function exportReportToPDF() {
         const visibleRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => row.style.display !== 'none');
         
         // Define column widths and positions
-        const colWidths = [25, 40, 25, 25, 25, 25, 40, 25];  // Adjusted widths
-        let yPos = 100; // Starting position for table
+        const colWidths = [25, 40, 25, 25, 25, 25, 40, 25, 25];  // Adjusted widths for all columns
+        let yPos = 80; // Starting position for table
         
         // Calculate total width of the table
         const totalWidth = colWidths.reduce((a, b) => a + b, 0);
         // Calculate starting X position to center the table
         let startX = (pageWidth - totalWidth) / 2;
         
-        // Draw headers with blue background
+        // Draw headers
         const headers = Array.from(table.querySelectorAll('th'));
         let xPos = startX;
         headers.forEach((header, index) => {
             if (index < colWidths.length) {
-                doc.setFillColor(...ucBlue);
-                doc.setTextColor(255, 255, 255);
-                doc.rect(xPos, yPos, colWidths[index], 10, 'F');
-                doc.text(header.innerText, xPos + 2, yPos + 7);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont('helvetica', 'bold');
+                doc.text(header.innerText, xPos + 2, yPos + 8);
                 xPos += colWidths[index];
             }
         });
         
-        yPos += 10;
+        // Add header underline
+        doc.setDrawColor(...ucBlue);
+        doc.setLineWidth(0.5);
+        doc.line(startX, yPos + 10, startX + totalWidth, yPos + 10);
         
-        // Draw rows with alternating colors
+        yPos += 15;
+        
+        // Draw rows
         let rowCount = 0;
         visibleRows.forEach(row => {
             // Check if we need a new page
@@ -1484,15 +1546,11 @@ function exportReportToPDF() {
                 rowCount = 0;
             }
             
-            // Alternate row colors
-            const isEvenRow = rowCount % 2 === 0;
-            doc.setFillColor(isEvenRow ? 240 : 255, isEvenRow ? 240 : 255, isEvenRow ? 240 : 255);
-            
             xPos = startX;
             const cells = row.querySelectorAll('td');
             cells.forEach((cell, index) => {
                 if (index < colWidths.length) {
-                    doc.rect(xPos, yPos, colWidths[index], 10, 'F');
+                    doc.setFont('helvetica', 'normal');
                     doc.setTextColor(0, 0, 0);
                     
                     // Handle text overflow
@@ -1501,24 +1559,76 @@ function exportReportToPDF() {
                         text = text.substring(0, 17) + '...';
                     }
                     
-                    doc.text(text, xPos + 2, yPos + 7);
+                    // Special handling for status badges
+                    if (index === 8) { // Status column
+                        const statusBadge = cell.querySelector('.status-badge');
+                        if (statusBadge) {
+                            text = statusBadge.innerText;
+                            // Add color based on status
+                            if (text === 'Completed') {
+                                doc.setTextColor(108, 117, 125); // Gray color for completed
+                            } else {
+                                doc.setTextColor(40, 167, 69); // Green color for active
+                            }
+                        }
+                    }
+                    
+                    // Format date and time columns
+                    if (index === 2) { // Date column
+                        const date = new Date(text);
+                        if (!isNaN(date)) {
+                            text = date.toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            });
+                        }
+                    } else if (index === 3 || index === 4) { // Time columns
+                        const time = new Date(text);
+                        if (!isNaN(time)) {
+                            text = time.toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true
+                            });
+                        }
+                    }
+                    
+                    doc.text(text, xPos + 2, yPos + 8);
                     xPos += colWidths[index];
                 }
             });
-            yPos += 10;
+            
+            // Add row separator
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.2);
+            doc.line(startX, yPos + 12, startX + totalWidth, yPos + 12);
+            
+            yPos += 15;
             rowCount++;
         });
         
-        // Add footer with blue background
-        const footerY = doc.internal.pageSize.height - 15;
-        doc.setFillColor(...ucBlue);
-        doc.rect(0, footerY, pageWidth, 15, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(8);
+        // Add footer
+        const footerY = doc.internal.pageSize.height - 20;
+        doc.setDrawColor(...ucBlue);
+        doc.setLineWidth(0.5);
+        doc.line(20, footerY, pageWidth - 20, footerY);
+        
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10);
         doc.text('© University of Cebu - Computer Laboratory Sitin Monitoring System', pageCenter, footerY + 10, { align: 'center' });
         
+        // Add page numbers
+        const totalPages = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            doc.setPage(i);
+            doc.setFontSize(10);
+            doc.setTextColor(128, 128, 128);
+            doc.text(`Page ${i} of ${totalPages}`, pageWidth - 20, doc.internal.pageSize.height - 10);
+        }
+        
         // Save the PDF
-        doc.save('sitin_report.pdf');
+        doc.save('all_sitin_records_report.pdf');
     } catch (error) {
         console.error('Error generating PDF:', error);
         alert('There was an error generating the PDF. Please try again.');
@@ -1566,6 +1676,187 @@ function updateTimeAndDuration() {
 setInterval(updateTimeAndDuration, 1000);
 // Initial update
 updateTimeAndDuration();
+
+// Add this new function for printing daily records
+function printDailyRecords() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'mm', 'a4');
+        
+        // Set font and size
+        doc.setFont('helvetica', 'bold');
+        
+        // Center everything on the page
+        const pageWidth = doc.internal.pageSize.width;
+        const pageCenter = pageWidth / 2;
+        
+        // Define colors
+        const ucBlue = [20, 86, 155];  // UC Blue color
+        
+        // Add header text
+        doc.setTextColor(0, 0, 0);  // Black text
+        doc.setFontSize(28);
+        doc.text('UNIVERSITY OF CEBU - MAIN', pageCenter, 25, { align: 'center' });
+        
+        doc.setFontSize(22);
+        doc.text('COLLEGE OF COMPUTER STUDIES', pageCenter, 35, { align: 'center' });
+        
+        // Add report title
+        doc.setFontSize(18);
+        doc.text('DAILY SIT-IN RECORDS REPORT', pageCenter, 50, { align: 'center' });
+        
+        // Add date and time
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        const timeStr = now.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+        doc.setFontSize(12);
+        doc.text(`Generated on: ${dateStr} ${timeStr}`, pageCenter, 60, { align: 'center' });
+        
+        // Add a decorative line
+        doc.setDrawColor(...ucBlue);
+        doc.setLineWidth(0.5);
+        doc.line(20, 65, pageWidth - 20, 65);
+        
+        // Set font size for table content
+        doc.setFontSize(10);
+        
+        const table = document.querySelector('#dailyTable');
+        const visibleRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => row.style.display !== 'none');
+        
+        // Define column widths and positions
+        const colWidths = [25, 25, 40, 25, 25, 25, 25, 40, 25];  // Adjusted widths for all columns
+        let yPos = 80; // Starting position for table
+        
+        // Calculate total width of the table
+        const totalWidth = colWidths.reduce((a, b) => a + b, 0);
+        // Calculate starting X position to center the table
+        let startX = (pageWidth - totalWidth) / 2;
+        
+        // Draw headers
+        const headers = Array.from(table.querySelectorAll('th'));
+        let xPos = startX;
+        headers.forEach((header, index) => {
+            if (index < colWidths.length) {
+                doc.setTextColor(0, 0, 0);
+                doc.setFont('helvetica', 'bold');
+                doc.text(header.innerText, xPos + 2, yPos + 8);
+                xPos += colWidths[index];
+            }
+        });
+        
+        // Add header underline
+        doc.setDrawColor(...ucBlue);
+        doc.setLineWidth(0.5);
+        doc.line(startX, yPos + 10, startX + totalWidth, yPos + 10);
+        
+        yPos += 15;
+        
+        // Draw rows
+        let rowCount = 0;
+        visibleRows.forEach(row => {
+            // Check if we need a new page
+            if (yPos > doc.internal.pageSize.height - 20) {
+                doc.addPage();
+                yPos = 20;
+                rowCount = 0;
+            }
+            
+            xPos = startX;
+            const cells = row.querySelectorAll('td');
+            cells.forEach((cell, index) => {
+                if (index < colWidths.length) {
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    
+                    // Handle text overflow
+                    let text = cell.innerText;
+                    if (text.length > 20) {
+                        text = text.substring(0, 17) + '...';
+                    }
+                    
+                    // Special handling for status badges
+                    if (index === 0) { // Status column
+                        const statusBadge = cell.querySelector('.status-badge');
+                        if (statusBadge) {
+                            text = statusBadge.innerText;
+                            // Add color based on status
+                            if (text === 'Completed') {
+                                doc.setTextColor(108, 117, 125); // Gray color for completed
+                            } else {
+                                doc.setTextColor(40, 167, 69); // Green color for active
+                            }
+                        }
+                    }
+                    
+                    // Format date and time columns
+                    if (index === 3) { // Date column
+                        const date = new Date(text);
+                        if (!isNaN(date)) {
+                            text = date.toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            });
+                        }
+                    } else if (index === 4 || index === 5) { // Time columns
+                        const time = new Date(text);
+                        if (!isNaN(time)) {
+                            text = time.toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true
+                            });
+                        }
+                    }
+                    
+                    doc.text(text, xPos + 2, yPos + 8);
+                    xPos += colWidths[index];
+                }
+            });
+            
+            // Add row separator
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.2);
+            doc.line(startX, yPos + 12, startX + totalWidth, yPos + 12);
+            
+            yPos += 15;
+            rowCount++;
+        });
+        
+        // Add footer
+        const footerY = doc.internal.pageSize.height - 20;
+        doc.setDrawColor(...ucBlue);
+        doc.setLineWidth(0.5);
+        doc.line(20, footerY, pageWidth - 20, footerY);
+        
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10);
+        doc.text('© University of Cebu - Computer Laboratory Sitin Monitoring System', pageCenter, footerY + 10, { align: 'center' });
+        
+        // Add page numbers
+        const totalPages = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            doc.setPage(i);
+            doc.setFontSize(10);
+            doc.setTextColor(128, 128, 128);
+            doc.text(`Page ${i} of ${totalPages}`, pageWidth - 20, doc.internal.pageSize.height - 10);
+        }
+        
+        // Save the PDF
+        doc.save('daily_sitin_records.pdf');
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('There was an error generating the PDF. Please try again.');
+    }
+}
 </script>
 </body>
 </html>
