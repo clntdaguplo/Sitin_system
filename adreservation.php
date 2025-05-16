@@ -47,7 +47,7 @@ if(isset($_POST['action']) && $_POST['action'] === 'approve') {
     $reservation_id = $_POST['reservation_id'];
     
     // Get reservation details
-    $query = "SELECT r.*, u.EMAIL FROM reservations r 
+    $query = "SELECT r.*, u.EMAIL, u.IDNO FROM reservations r 
               JOIN user u ON r.student_id = u.IDNO 
               WHERE r.id = ?";
     $stmt = $con->prepare($query);
@@ -81,6 +81,17 @@ if(isset($_POST['action']) && $_POST['action'] === 'approve') {
             $log_stmt->bind_param("i", $reservation_id);
             $log_stmt->execute();
             
+            // Add notification for the student
+            $notification_message = "Your reservation for Room " . $reservation['room'] . 
+                                  " (PC " . $reservation['seat_number'] . ") on " . 
+                                  date('F j, Y', strtotime($reservation['date'])) . 
+                                  " at " . $reservation['time'] . " has been approved.";
+            
+            $notification_query = "INSERT INTO notifications (user_id, message, type) VALUES (?, ?, 'reservation')";
+            $notification_stmt = $con->prepare($notification_query);
+            $notification_stmt->bind_param("ss", $reservation['IDNO'], $notification_message);
+            $notification_stmt->execute();
+            
             // Send email notification
             $to = $reservation['EMAIL'];
             $subject = "Reservation Approved - Lab Room " . $reservation['room'];
@@ -95,14 +106,18 @@ if(isset($_POST['action']) && $_POST['action'] === 'approve') {
             
             $headers = "From: labmanagement@example.com";
             
-            mail($to, $subject, $message, $headers);
+            // Try to send email, but don't fail if it doesn't work
+            $mail_sent = @mail($to, $subject, $message, $headers);
+            if (!$mail_sent) {
+                error_log("Failed to send email to: " . $to);
+            }
             
             // Commit transaction
             $con->commit();
             
             // Update the PC display immediately
             echo "<script>
-                alert('Reservation approved and PC status updated. Notification sent to student.');
+                alert('Reservation approved and notification sent to student.');
                 // Update PC status in the UI
                 const pcItem = document.querySelector('#pcItem" . $reservation['seat_number'] . "');
                 if (pcItem) {
@@ -118,10 +133,10 @@ if(isset($_POST['action']) && $_POST['action'] === 'approve') {
                     .then(data => {
                         if (data.success) {
                             // Update all PCs based on their status
-                            data.data.forEach(pc => {
-                                const pcItem = document.querySelector(`#pcItem${pc.pc_number}`);
+                            data.data.forEach(function(pc) {
+                                const pcItem = document.querySelector('#pcItem' + pc.pc_number);
                                 if (pcItem) {
-                                    pcItem.className = `pc-item ${pc.status}`;
+                                    pcItem.className = 'pc-item ' + pc.status;
                                     const statusLabel = pcItem.querySelector('.pc-status');
                                     if (statusLabel) {
                                         statusLabel.textContent = pc.status.charAt(0).toUpperCase() + pc.status.slice(1);
@@ -131,8 +146,8 @@ if(isset($_POST['action']) && $_POST['action'] === 'approve') {
                             
                             // Update pending reservations
                             if (data.pending_reservations) {
-                                data.pending_reservations.forEach(pcNumber => {
-                                    const pcItem = document.querySelector(`#pcItem${pcNumber}`);
+                                data.pending_reservations.forEach(function(pcNumber) {
+                                    const pcItem = document.querySelector('#pcItem' + pcNumber);
                                     if (pcItem) {
                                         pcItem.className = 'pc-item reserved';
                                         const statusLabel = pcItem.querySelector('.pc-status');
@@ -145,8 +160,8 @@ if(isset($_POST['action']) && $_POST['action'] === 'approve') {
                             
                             // Update approved reservations
                             if (data.approved_reservations) {
-                                data.approved_reservations.forEach(pcNumber => {
-                                    const pcItem = document.querySelector(`#pcItem${pcNumber}`);
+                                data.approved_reservations.forEach(function(pcNumber) {
+                                    const pcItem = document.querySelector('#pcItem' + pcNumber);
                                     if (pcItem) {
                                         pcItem.className = 'pc-item used';
                                         const statusLabel = pcItem.querySelector('.pc-status');
@@ -216,7 +231,11 @@ if(isset($_POST['action']) && $_POST['action'] === 'reject') {
             
             $headers = "From: labmanagement@example.com";
             
-            mail($to, $subject, $message, $headers);
+            // Try to send email, but don't fail if it doesn't work
+            $mail_sent = @mail($to, $subject, $message, $headers);
+            if (!$mail_sent) {
+                error_log("Failed to send email to: " . $to);
+            }
             
             // Commit transaction
             $con->commit();

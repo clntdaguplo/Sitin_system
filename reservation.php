@@ -906,6 +906,28 @@ while ($row = $approved_result->fetch_assoc()) {
     </div>
 </div>
 
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>PC Reservation</h2>
+            <!-- Existing reservation form -->
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Notifications</h5>
+                    <span class="badge bg-primary" id="notification-count">0</span>
+                </div>
+                <div class="card-body">
+                    <div id="notifications-list" class="list-group">
+                        <!-- Notifications will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 // Global variables
 let selectedRoom = '';
@@ -1131,6 +1153,62 @@ function cancelReservation(reservationId) {
         });
     }
 }
+
+// Function to load notifications
+function loadNotifications() {
+    fetch('get_notifications.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const notificationsList = document.getElementById('notifications-list');
+                const notificationCount = document.getElementById('notification-count');
+                
+                notificationsList.innerHTML = '';
+                notificationCount.textContent = data.notifications.length;
+                
+                data.notifications.forEach(notification => {
+                    const notificationItem = document.createElement('div');
+                    notificationItem.className = 'list-group-item list-group-item-action';
+                    notificationItem.innerHTML = `
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">${notification.message}</h6>
+                            <small>${new Date(notification.created_at).toLocaleString()}</small>
+                        </div>
+                        <small class="text-muted">${notification.type}</small>
+                    `;
+                    
+                    notificationItem.addEventListener('click', () => markAsRead(notification.id));
+                    notificationsList.appendChild(notificationItem);
+                });
+            }
+        })
+        .catch(error => console.error('Error loading notifications:', error));
+}
+
+// Function to mark notification as read
+function markAsRead(notificationId) {
+    const formData = new FormData();
+    formData.append('notification_id', notificationId);
+    
+    fetch('mark_notification_read.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadNotifications(); // Reload notifications after marking as read
+        }
+    })
+    .catch(error => console.error('Error marking notification as read:', error));
+}
+
+// Load notifications when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    loadNotifications();
+    // Refresh notifications every 30 seconds
+    setInterval(loadNotifications, 30000);
+});
 </script>
 
 <?php
