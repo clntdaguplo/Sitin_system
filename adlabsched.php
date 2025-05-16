@@ -178,154 +178,181 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             margin-top: 80px;
             padding: 20px;
             min-height: calc(100vh - 80px);
-            background: #f0f2f5;
+            background: #f5f5f5;
             width: 100%;
         }
 
         .schedule-container {
             background: white;
             border-radius: 15px;
-            padding: 30px;
+            padding: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            margin: 0 auto;
             height: calc(100vh - 100px);
-        }
-
-        .schedule-content {
-            height: 100%;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 20px;
         }
 
-        .schedule-header {
+        .resources-header {
+            background: rgb(26, 19, 46);
+            color: white;
+            padding: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            border-radius: 15px 15px 0 0;
         }
 
-        .schedule-header h1 {
-            color: rgb(26, 19, 46);
+        .resources-header h1 {
             font-size: 24px;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .room-buttons {
             display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 12px;
+            align-items: center;
+            gap: 10px;
         }
 
-        .room-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
+        .filter-section {
             background: white;
-            color: #495057;
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .room-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .room-tab {
+            padding: 12px 24px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             font-weight: 500;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid #e9ecef;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .room-btn:hover {
-            background: #f8f9fa;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        .room-tab i {
+            font-size: 1.1rem;
+            color: rgb(47, 0, 177);
         }
 
-        .room-btn.active {
+        .room-tab:hover {
             background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+            border-color: transparent;
             color: white;
-            border: none;
-            box-shadow: 0 4px 12px rgba(47, 0, 177, 0.2);
+        }
+
+        .room-tab.active {
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+            border-color: transparent;
+            color: white;
+        }
+
+        .room-tab.active i {
+            color: white;
         }
 
         .schedule-table {
             flex: 1;
-            overflow-y: auto;
+            overflow: auto;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        table {
+        .schedule-table table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
         }
 
-        th, td {
-            padding: 15px;
-            text-align: center;
-            border: 1px solid #e9ecef;
-        }
-
-        th {
+        .schedule-table th {
             background: rgb(26, 19, 46);
             color: white;
-            font-weight: 600;
+            padding: 15px;
+            text-align: center;
+            font-weight: 500;
             position: sticky;
             top: 0;
-            z-index: 1;
+            z-index: 10;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        th:first-child {
-            border-top-left-radius: 12px;
+        .schedule-table td {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            transition: all 0.3s ease;
         }
 
-        th:last-child {
-            border-top-right-radius: 12px;
+        .schedule-table td:hover {
+            background: #f8fafc;
         }
 
         .time-slot {
+            background: #f8fafc;
             font-weight: 500;
-            color: #495057;
-            background: #f8f9fa;
+            color: #2d3748;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            border-right: 2px solid #e2e8f0;
         }
 
         .status-btn {
-            width: 100%;
             padding: 10px 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
-            font-size: 14px;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 2px solid transparent;
+            width: 100%;
         }
 
         .status-btn.available {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
+            background: #dcfce7;
+            color: #166534;
+            border-color: #86efac;
         }
 
         .status-btn.unavailable {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #fca5a5;
         }
 
         .status-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-btn.available:hover {
+            background: #bbf7d0;
+            border-color: #4ade80;
+        }
+
+        .status-btn.unavailable:hover {
+            background: #fecaca;
+            border-color: #f87171;
         }
 
         .schedule-actions {
-            margin-top: 20px;
             display: flex;
             justify-content: flex-end;
-            padding: 10px 0;
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            margin-top: auto;
         }
 
         .save-btn {
@@ -335,12 +362,12 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 8px;
             font-weight: 500;
-            font-size: 16px;
+            font-size: 1rem;
             box-shadow: 0 4px 12px rgba(47, 0, 177, 0.2);
         }
 
@@ -349,66 +376,11 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             box-shadow: 0 6px 15px rgba(47, 0, 177, 0.3);
         }
 
-        .popup {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideIn 0.3s ease-out;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .save-btn i {
+            font-size: 1.1rem;
         }
 
-        .popup.success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
-        }
-
-        .popup.error {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @media (max-width: 1200px) {
-            .content {
-                padding: 15px;
-            }
-            
-            .schedule-container {
-                padding: 20px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .content {
-                margin-top: 120px;
-                padding: 10px;
-            }
-            
-            .schedule-container {
-                padding: 15px;
-                height: calc(100vh - 140px);
-            }
-        }
-
-        /* Update scrollbar colors */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -425,6 +397,25 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
 
         ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(45deg,rgb(47, 0, 177),rgb(150, 145, 79));
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 15px;
+            }
+            
+            .schedule-container {
+                padding: 15px;
+            }
+            
+            .room-tabs {
+                gap: 8px;
+            }
+            
+            .room-tab {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
         }
 
         /* Notification badge */
@@ -473,7 +464,12 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
 
     <div class="content">
         <div class="schedule-container">
-            <h1> Laboratory Schedule </h1>
+            <div class="resources-header">
+                <h1>
+                    <i class="fas fa-calendar-alt"></i>
+                    Laboratory Schedule Management
+                </h1>
+            </div>
             
             <?php if (isset($success_message)): ?>
                 <div class="popup success">
@@ -482,69 +478,70 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
                 </div>
             <?php endif; ?>
 
-            <div class="schedule-content">
-                <div class="schedule-header">
-                    <div class="room-buttons">
-                        <button class="room-btn" data-room="524">Room 524</button>
-                        <button class="room-btn" data-room="526">Room 526</button>
-                        <button class="room-btn" data-room="528">Room 528</button>
-                        <button class="room-btn" data-room="530">Room 530</button>
-                        <button class="room-btn" data-room="542">Room 542</button>
-                        <button class="room-btn" data-room="544">Room 544</button>
-                    </div>
+            <div class="filter-section">
+                <div class="room-tabs">
+                    <?php
+                    $rooms = ['524', '526', '528', '530', '542', '544'];
+                    foreach ($rooms as $room): ?>
+                        <div class="room-tab <?php echo (!isset($_GET['room']) && $room == '524') || (isset($_GET['room']) && $_GET['room'] == $room) ? 'active' : ''; ?>" 
+                             onclick="filterRoom('<?php echo $room; ?>')">
+                            <i class="fas fa-door-open"></i>
+                            Room <?php echo $room; ?>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
+            </div>
 
-                <div class="schedule-table">
-                    <table>
-                        <thead>
+            <div class="schedule-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time Slot</th>
+                            <th>Monday</th>
+                            <th>Tuesday</th>
+                            <th>Wednesday</th>
+                            <th>Thursday</th>
+                            <th>Friday</th>
+                            <th>Saturday</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $time_slots = [
+                            '7:30AM-9:00AM',
+                            '9:00AM-10:30AM',
+                            '10:30AM-12:00PM',
+                            '12:00PM-1:00PM',
+                            '1:00PM-3:00PM',
+                            '3:00PM-4:30PM',
+                            '4:30PM-6:00PM',
+                            '6:00PM-7:30PM',
+                            '7:30PM-9:00PM'
+                        ];
+                        
+                        foreach ($time_slots as $time_slot): ?>
                             <tr>
-                                <th>Time Slot</th>
-                                <th>Monday</th>
-                                <th>Tuesday</th>
-                                <th>Wednesday</th>
-                                <th>Thursday</th>
-                                <th>Friday</th>
-                                <th>Saturday</th>
+                                <td class="time-slot"><?php echo $time_slot; ?></td>
+                                <?php foreach (['M', 'T', 'W', 'TH', 'F', 'S'] as $day): ?>
+                                    <td>
+                                        <button class="status-btn available" 
+                                                data-time="<?php echo $time_slot; ?>" 
+                                                data-day="<?php echo $day; ?>"
+                                                onclick="toggleStatus(this)">
+                                            Available
+                                        </button>
+                                    </td>
+                                <?php endforeach; ?>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $time_slots = [
-                                '7:30AM-9:00AM',
-                                '9:00AM-10:30AM',
-                                '10:30AM-12:00PM',
-                                '12:00PM-1:00PM',
-                                '1:00PM-3:00PM',
-                                '3:00PM-4:30PM',
-                                '4:30PM-6:00PM',
-                                '6:00PM-7:30PM',
-                                '7:30PM-9:00PM'
-                            ];
-                            
-                            foreach ($time_slots as $time_slot): ?>
-                                <tr>
-                                    <td class="time-slot"><?php echo $time_slot; ?></td>
-                                    <?php foreach (['M', 'T', 'W', 'TH', 'F', 'S'] as $day): ?>
-                                        <td>
-                                            <button class="status-btn available" 
-                                                    data-time="<?php echo $time_slot; ?>" 
-                                                    data-day="<?php echo $day; ?>"
-                                                    onclick="toggleStatus(this)">
-                                                Available
-                                            </button>
-                                        </td>
-                                    <?php endforeach; ?>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
 
-                <div class="schedule-actions">
-                    <button class="save-btn" onclick="saveSchedule()">
-                        <i class="fas fa-save"></i> Save Schedule
-                    </button>
-                </div>
+            <div class="schedule-actions">
+                <button class="save-btn" onclick="saveSchedule()">
+                    <i class="fas fa-save"></i> Save Schedule
+                </button>
             </div>
         </div>
     </div>
@@ -569,6 +566,7 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
                 }
             } catch (error) {
                 console.error('Error loading schedules:', error);
+                showPopup('Error loading schedules', 'error');
             }
         }
 
@@ -602,25 +600,38 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             button.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
         }
 
-        // Update room filter functionality
-        document.querySelectorAll('.room-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                loadSchedules(btn.dataset.room);
+        function filterRoom(room) {
+            window.location.href = 'adlabsched.php?room=' + room;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const room = urlParams.get('room') || '524';
+            
+            // Update active tab
+            const tabs = document.querySelectorAll('.room-tab');
+            tabs.forEach(tab => {
+                if (tab.textContent.includes('Room ' + room)) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
             });
+
+            // Load initial schedules
+            loadSchedules(room);
         });
 
         async function saveSchedule() {
-            const activeRoom = document.querySelector('.room-btn.active').dataset.room;
+            const activeRoom = document.querySelector('.room-tab.active').textContent.trim().split(' ')[1];
             const scheduleData = [];
             const buttons = document.querySelectorAll('.status-btn');
             
             buttons.forEach(btn => {
                 scheduleData.push({
                     room: activeRoom,
-                    time: btn.dataset.time,
                     day: btn.dataset.day,
+                    time: btn.dataset.time,
                     status: btn.classList.contains('available') ? 'Available' : 'Unavailable'
                 });
             });
@@ -635,13 +646,16 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
                 });
                 
                 const result = await response.json();
-                showPopup(result.message, result.success ? 'success' : 'error');
                 
                 if (result.success) {
+                    showPopup('Schedule saved successfully!', 'success');
                     // Reload schedules after successful save
                     loadSchedules(activeRoom);
+                } else {
+                    showPopup(result.message || 'Error saving schedule', 'error');
                 }
             } catch (error) {
+                console.error('Error:', error);
                 showPopup('Error saving schedule', 'error');
             }
         }
@@ -656,14 +670,6 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             document.body.appendChild(popup);
             setTimeout(() => popup.remove(), 3000);
         }
-
-        // Load schedules when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            // Set Room 524 as active by default
-            const room524Btn = document.querySelector('.room-btn[data-room="524"]');
-            room524Btn.classList.add('active');
-            loadSchedules('524'); // Load Room 524 schedules by default
-        });
     </script>
 </body>
 </html>

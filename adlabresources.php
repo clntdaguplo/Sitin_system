@@ -218,7 +218,7 @@ $result = mysqli_query($con, $query);
             margin-top: 80px;
             padding: 20px;
             min-height: calc(100vh - 80px);
-            background: #f0f2f5;
+            background: #f5f5f5;
             width: 100%;
         }
 
@@ -227,19 +227,27 @@ $result = mysqli_query($con, $query);
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            margin: 0 auto;
-            min-height: calc(100vh - 100px);
+            height: calc(100vh - 100px);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
-        h1 {
-            color: black;
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 25px;
-            text-align: left;
+        .resources-header {
+            background: rgb(26, 19, 46);
+            color: white;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .resources-header h1 {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .content-wrapper {
@@ -248,10 +256,11 @@ $result = mysqli_query($con, $query);
             gap: 25px;
             margin-top: 20px;
             flex: 1;
+            overflow: hidden;
         }
 
         .div1, .div2 {
-            background: rgb(216, 213, 213);
+            background: white;
             border-radius: 12px;
             padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -259,148 +268,192 @@ $result = mysqli_query($con, $query);
             overflow-y: auto;
         }
 
-        .div2 {
-            overflow-y: auto;
-        }
-
         .resource-form {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 8px;
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            color: black;
+            margin-bottom: 10px;
+            color: #2d3748;
             font-weight: 500;
+            font-size: 1rem;
         }
 
         input[type="text"],
         textarea,
         select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.9);
-            transition: all 0.2s;
+            background: white;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            color: #4a5568;
         }
 
         input[type="text"]:focus,
         textarea:focus,
         select:focus {
-            border-color: white;
+            border-color: rgb(47, 0, 177);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(47, 0, 177, 0.1);
         }
 
         .submit-btn {
-            background: #45a049;
+            background: rgb(3, 138, 86);
             color: white;
             padding: 12px 24px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             width: 100%;
             margin-top: 10px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .submit-btn:hover {
-            background: #45a049;
-            transform: translateY(-1px);
+            background: rgb(3, 138, 86);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .resource-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: white;
             border-radius: 12px;
             padding: 20px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .resource-info {
-            flex: 1;
+            margin-bottom: 15px;
         }
 
         .resource-title {
-            color: black;
-            font-size: 1.1rem;
+            color: rgb(47, 0, 177);
+            font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .resource-description {
-            color: rgba(0, 0, 0, 0.8);
-            margin-bottom: 10px;
+            color: #4a5568;
+            margin-bottom: 15px;
             font-size: 0.95rem;
+            line-height: 1.6;
         }
 
         .resource-meta {
-            font-size: 0.85rem;
-            color: rgba(0, 0, 0, 0.6);
+            font-size: 0.9rem;
+            color: #718096;
+            margin-bottom: 15px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .file-info i {
+            color: rgb(47, 0, 177);
+            font-size: 1.1rem;
+        }
+
+        .file-type {
+            color: #64748b;
+            font-size: 0.9em;
         }
 
         .resource-actions {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .action-btn {
-            padding: 8px 15px;
-            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
             color: white;
             text-decoration: none;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .download-btn {
+            background: rgb(47, 0, 177);
+        }
+
+        .download-btn:hover {
+            background: rgb(37, 0, 137);
+            transform: translateY(-2px);
         }
 
         .edit-btn {
-            background: #45a049;
+            background: rgb(3, 138, 86);
         }
 
         .edit-btn:hover {
-            background: #0f4578;
+            background: rgb(3, 138, 86);
             transform: translateY(-2px);
         }
 
         .delete-btn {
-            background: rgba(220, 53, 69, 0.8);
+            background: #dc3545;
         }
 
-        .action-btn:hover {
+        .delete-btn:hover {
+            background: #c82333;
             transform: translateY(-2px);
-            opacity: 0.9;
         }
 
         .message {
-            padding: 12px;
+            padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
+            font-weight: 500;
         }
 
         .success {
-            background: rgba(40, 167, 69, 0.1);
-            color: black;
-            border: 1px solid rgba(40, 167, 69, 0.3);
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
         }
 
         .error {
-            background: rgba(220, 53, 69, 0.1);
-            color: black;
-            border: 1px solid rgba(220, 53, 69, 0.3);
-        }
-
-        .resources-list {
-            height: 100%;
-            overflow-y: auto;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
         }
 
         /* Custom Scrollbar */
@@ -414,178 +467,45 @@ $result = mysqli_query($con, $query);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #14569b;
+            background: rgb(47, 0, 177);
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #0f4578;
+            background: rgb(37, 0, 137);
         }
 
-        /* Responsive Design */
         @media (max-width: 1200px) {
-            .content {
-                padding: 15px;
-            }
-            
-            .container {
-                padding: 20px;
-            }
-            
             .content-wrapper {
                 grid-template-columns: 1fr;
-                height: auto;
             }
             
-            .div1 {
+            .div1, .div2 {
                 height: auto;
-            }
-            
-            .div2 {
-                height: 500px;
             }
         }
 
         @media (max-width: 768px) {
             .content {
-                margin-top: 120px;
-                padding: 10px;
+                padding: 15px;
             }
             
             .container {
                 padding: 15px;
-                height: calc(100vh - 140px);
             }
             
-            .top-nav {
+            .resources-header {
+                padding: 20px;
+            }
+            
+            .resource-actions {
                 flex-direction: column;
-                padding: 10px;
             }
             
-            .nav-left {
-                margin-bottom: 10px;
-            }
-            
-            .nav-right {
+            .action-btn {
                 width: 100%;
                 justify-content: center;
-                flex-wrap: wrap;
             }
-            
-            .nav-right a {
-                font-size: 0.8rem;
-                padding: 6px 10px;
-            }
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .file-upload {
-            position: relative;
-            width: 100%;
-        }
-
-        .file-input {
-            position: absolute;
-            width: 0.1px;
-            height: 0.1px;
-            opacity: 0;
-            overflow: hidden;
-            z-index: -1;
-        }
-
-        .file-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 20px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px dashed rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: black;
-        }
-
-        .file-label:hover {
-            background: rgba(255, 255, 255, 1);
-            border-color: rgba(0, 0, 0, 0.3);
-        }
-
-        .file-label i {
-            font-size: 1.2rem;
-            color: black;
-        }
-
-        .file-info {
-            margin: 8px 0;
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .file-info i {
-            color: #0d6efd;
-        }
-
-        .file-type {
-            color: #6c757d;
-            font-size: 0.9em;
-        }
-
-        .action-btn i {
-            margin-right: 5px;
-        }
-
-        .resource-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            display: flex;
-            align-items: center;
-            padding: 8px 15px;
-            border-radius: 6px;
-            color: white;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .download-btn {
-            background: #0d6efd;
-        }
-
-        .download-btn:hover {
-            background: #0b5ed7;
-            transform: translateY(-2px);
-        }
-
-        .edit-btn {
-            background: #28a745;
-        }
-
-        .edit-btn:hover {
-            background: #218838;
-            transform: translateY(-2px);
-        }
-
-        .delete-btn {
-            background: #dc3545;
-        }
-
-        .delete-btn:hover {
-            background: #c82333;
-            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -612,7 +532,12 @@ $result = mysqli_query($con, $query);
 
     <div class="content">
         <div class="container">
-            <h1>Laboratory Resources </h1>
+            <div class="resources-header">
+                <h1>
+                    <i class="fas fa-book"></i>
+                    Laboratory Resources Management
+                </h1>
+            </div>
             
             <?php if (isset($success_message)): ?>
                 <div class="message success"><?php echo $success_message; ?></div>
@@ -672,7 +597,7 @@ $result = mysqli_query($con, $query);
                                             </div>
                                         <?php endif; ?>
                                         <br>
-                                        Uploaded: <?php echo date('M d, Y', strtotime($row['upload_date'])); ?>
+                                        Uploaded: <?php echo date('M d, Y g:i A', strtotime($row['upload_date'])); ?>
                                     </div>
                                 </div>
                                 <div class="resource-actions">

@@ -401,6 +401,137 @@ if (!empty($search) || !empty($category_filter) || !empty($type_filter)) {
                 width: 100%;
             }
         }
+
+        .resource-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: rgb(47, 0, 177);
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #718096;
+            cursor: pointer;
+            padding: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: rgb(47, 0, 177);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            color: #4a5568;
+            line-height: 1.6;
+            padding: 20px 0;
+        }
+
+        .modal-description {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 1.1rem;
+        }
+
+        .modal-description::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-description::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .modal-description::-webkit-scrollbar-thumb {
+            background: rgb(47, 0, 177);
+            border-radius: 4px;
+        }
+
+        .modal-description::-webkit-scrollbar-thumb:hover {
+            background: rgb(37, 0, 137);
+        }
+
+        .file-preview {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 2px dashed #e2e8f0;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .file-info i {
+            color: rgb(47, 0, 177);
+            font-size: 1.2rem;
+        }
+
+        .file-info span {
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        .view-btn {
+            background: rgb(5, 128, 76);
+            color: white !important;
+        }
     </style>
 </head>
 <body>
@@ -452,11 +583,7 @@ if (!empty($search) || !empty($category_filter) || !empty($type_filter)) {
             </h1>
         </div>
         
-        <div class="filters">
-            <div class="search-box">
-                <input type="text" id="search" placeholder="Search resources..." 
-                       value="<?php echo htmlspecialchars($search); ?>">
-            </div>
+        
             
         
         <div class="section-content">
@@ -465,12 +592,10 @@ if (!empty($search) || !empty($category_filter) || !empty($type_filter)) {
                     <?php while ($row = mysqli_fetch_assoc($resources_result)): ?>
                         <div class="resource-card">
                             <div class="resource-header">
-                                <div class="category-badge">
-                                    <i class="fas fa-tag"></i> <?php echo htmlspecialchars($row['category']); ?>
-                                </div>
+                                
                                 <div class="resource-date">
                                     <i class="fas fa-calendar-alt"></i>
-                                    <?php echo date('F j, Y', strtotime($row['upload_date'])); ?>
+                                    <?php echo date('F j, Y g:i A', strtotime($row['upload_date'])); ?>
                                 </div>
                             </div>
                             
@@ -488,6 +613,13 @@ if (!empty($search) || !empty($category_filter) || !empty($type_filter)) {
                                 $hasLink = isset($row['link']) && !empty(trim($row['link']));
                                 $hasFile = isset($row['file_path']) && !empty(trim($row['file_path']));
                                 ?>
+
+                                <?php if ($hasFile): ?>
+                                    <button onclick="viewResource(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['title']); ?>', '<?php echo htmlspecialchars($row['description']); ?>', '<?php echo htmlspecialchars($row['file_path']); ?>')" 
+                                            class="resource-btn view-btn">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                <?php endif; ?>
 
                                 <?php if ($hasLink): ?>
                                     <a href="<?php echo htmlspecialchars($row['link']); ?>" 
@@ -518,6 +650,24 @@ if (!empty($search) || !empty($category_filter) || !empty($type_filter)) {
     </div>
 </div>
 
+<!-- Add Modal HTML -->
+<div class="modal" id="viewModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-description" id="modalDescription"></div>
+            <div class="file-info">
+                <i class="fas fa-file-alt"></i>
+                <span id="fileInfo"></span>
+            </div>
+            <div class="file-preview" id="filePreview"></div>
+        </div>
+    </div>
+</div>
+
 <script>
     const searchInput = document.getElementById('search');
     const categorySelect = document.getElementById('category');
@@ -528,6 +678,47 @@ if (!empty($search) || !empty($category_filter) || !empty($type_filter)) {
         const category = categorySelect.value;
         const type = typeSelect.value;
         window.location.href = `viewAnnouncement.php?search=${encodeURIComponent(search)}&category=${encodeURIComponent(category)}&type=${encodeURIComponent(type)}`;
+    }
+
+    function viewResource(id, title, description, filePath) {
+        const modal = document.getElementById('viewModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDescription = document.getElementById('modalDescription');
+        const filePreview = document.getElementById('filePreview');
+        const fileInfo = document.getElementById('fileInfo');
+
+        modalTitle.textContent = title;
+        modalDescription.textContent = description;
+        
+        // Handle different file types
+        const fileExtension = filePath.split('.').pop().toLowerCase();
+        const fileName = filePath.split('/').pop();
+        
+        // Set file info
+        fileInfo.textContent = `File: ${fileName}`;
+        
+        if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+            filePreview.innerHTML = `<img src="uploads/resources/${filePath}" alt="${title}">`;
+        } else if (['pdf'].includes(fileExtension)) {
+            filePreview.innerHTML = `<iframe src="uploads/resources/${filePath}" type="application/pdf"></iframe>`;
+        } else {
+            filePreview.innerHTML = `<p>Preview not available for this file type. Please download to view.</p>`;
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('viewModal');
+        modal.style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('viewModal');
+        if (event.target == modal) {
+            closeModal();
+        }
     }
 
     searchInput.addEventListener('keyup', function(e) {

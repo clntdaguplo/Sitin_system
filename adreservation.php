@@ -67,7 +67,15 @@ if(isset($_POST['action']) && $_POST['action'] === 'approve') {
             $update_stmt->bind_param("i", $reservation_id);
             $update_stmt->execute();
             
-            // Log the approval with current timestamp
+            // Update PC status to used
+            $pc_status_query = "INSERT INTO pc_status (room_number, pc_number, status) 
+                              VALUES (?, ?, 'used') 
+                              ON DUPLICATE KEY UPDATE status = 'used'";
+            $pc_status_stmt = $con->prepare($pc_status_query);
+            $pc_status_stmt->bind_param("si", $reservation['room'], $reservation['seat_number']);
+            $pc_status_stmt->execute();
+            
+            // Log the approval
             $log_query = "INSERT INTO reservation_logs (reservation_id, status, created_at) VALUES (?, 'approved', NOW())";
             $log_stmt = $con->prepare($log_query);
             $log_stmt->bind_param("i", $reservation_id);
@@ -92,8 +100,65 @@ if(isset($_POST['action']) && $_POST['action'] === 'approve') {
             // Commit transaction
             $con->commit();
             
+            // Update the PC display immediately
             echo "<script>
-                alert('Reservation approved and notification sent to student.');
+                alert('Reservation approved and PC status updated. Notification sent to student.');
+                // Update PC status in the UI
+                const pcItem = document.querySelector('#pcItem" . $reservation['seat_number'] . "');
+                if (pcItem) {
+                    pcItem.className = 'pc-item used';
+                    const statusLabel = pcItem.querySelector('.pc-status');
+                    if (statusLabel) {
+                        statusLabel.textContent = 'In Use';
+                    }
+                }
+                // Fetch updated PC status
+                fetch('get_pc_status.php?room=" . $reservation['room'] . "')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update all PCs based on their status
+                            data.data.forEach(pc => {
+                                const pcItem = document.querySelector(`#pcItem${pc.pc_number}`);
+                                if (pcItem) {
+                                    pcItem.className = `pc-item ${pc.status}`;
+                                    const statusLabel = pcItem.querySelector('.pc-status');
+                                    if (statusLabel) {
+                                        statusLabel.textContent = pc.status.charAt(0).toUpperCase() + pc.status.slice(1);
+                                    }
+                                }
+                            });
+                            
+                            // Update pending reservations
+                            if (data.pending_reservations) {
+                                data.pending_reservations.forEach(pcNumber => {
+                                    const pcItem = document.querySelector(`#pcItem${pcNumber}`);
+                                    if (pcItem) {
+                                        pcItem.className = 'pc-item reserved';
+                                        const statusLabel = pcItem.querySelector('.pc-status');
+                                        if (statusLabel) {
+                                            statusLabel.textContent = 'Reserved';
+                                        }
+                                    }
+                                });
+                            }
+                            
+                            // Update approved reservations
+                            if (data.approved_reservations) {
+                                data.approved_reservations.forEach(pcNumber => {
+                                    const pcItem = document.querySelector(`#pcItem${pcNumber}`);
+                                    if (pcItem) {
+                                        pcItem.className = 'pc-item used';
+                                        const statusLabel = pcItem.querySelector('.pc-status');
+                                        if (statusLabel) {
+                                            statusLabel.textContent = 'In Use';
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error fetching PC status:', error));
                 window.location.href = 'adreservation.php';
             </script>";
         } catch (Exception $e) {
@@ -191,6 +256,14 @@ if (!empty($room_filter)) {
 
 $query .= " ORDER BY r.date DESC, r.time DESC";
 $result = mysqli_query($con, $query);
+
+// Get pending reservations for PC status
+$pending_reservations = [];
+$pending_query = "SELECT room, seat_number FROM reservations WHERE status = 'pending'";
+$pending_result = mysqli_query($con, $pending_query);
+while ($row = mysqli_fetch_assoc($pending_result)) {
+    $pending_reservations[$row['room']][] = $row['seat_number'];
+}
 
 // Debug logging
 error_log("Reservations query: " . $query);
@@ -712,30 +785,47 @@ if ($result) {
 .pc-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 15px;
-    padding: 20px;
+    gap: 20px;
+    padding: 25px;
     margin-top: 20px;
+    background: #f8fafc;
+    border-radius: 15px;
 }
 
 .pc-item {
-    background: #f8fafc;
+    background: white;
     border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 15px;
+    border-radius: 12px;
+    padding: 20px;
     text-align: center;
     transition: all 0.3s ease;
     position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
-.pc-item {
-    position: relative;
-    cursor: pointer;
+.pc-item i {
+    font-size: 24px;
+    color: #4a5568;
     transition: all 0.3s ease;
+}
+
+.pc-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .pc-item.selected {
     background: #3b82f6 !important;
     border-color: #2563eb !important;
+    color: white;
+    transform: scale(1.05);
+}
+
+.pc-item.selected i {
     color: white;
 }
 
@@ -744,9 +834,17 @@ if ($result) {
     border-color: #22c55e;
 }
 
+.pc-item.available i {
+    color: #166534;
+}
+
 .pc-item.used {
     background: #fee2e2;
     border-color: #ef4444;
+}
+
+.pc-item.used i {
+    color: #991b1b;
 }
 
 .pc-item.maintenance {
@@ -754,23 +852,46 @@ if ($result) {
     border-color: #f59e0b;
 }
 
-.control-btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin: 0 5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.pc-item.maintenance i {
+    color: #92400e;
 }
 
-.control-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.pc-label {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #4a5568;
+    transition: all 0.3s ease;
 }
 
-/* Add to your existing <style> section in adreservation.php */
+.pc-item.selected .pc-label {
+    color: white;
+}
+
+.pc-status {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pc-item.available .pc-status {
+    background: #22c55e;
+    color: white;
+}
+
+.pc-item.used .pc-status {
+    background: #ef4444;
+    color: white;
+}
+
+.pc-item.maintenance .pc-status {
+    background: #f59e0b;
+    color: white;
+}
+
+/* Add these styles to your existing CSS */
 .notification {
     position: fixed;
     top: 20px;
@@ -1052,6 +1173,67 @@ tbody tr:hover {
         min-width: 800px;
     }
 }
+
+.left-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.room-tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.room-tab {
+    padding: 12px 24px;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: #4a5568;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.room-tab i {
+    font-size: 1.1rem;
+    color: rgb(47, 0, 177);
+}
+
+.room-tab:hover {
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+    border-color: transparent;
+    color: white;
+}
+
+.room-tab.active {
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+    border-color: transparent;
+    color: white;
+}
+
+.room-tab.active i {
+    color: white;
+}
+
+.pc-item.reserved {
+    background: #dbeafe;
+    border-color: #3b82f6;
+}
+
+.pc-item.reserved i {
+    color: #1e40af;
+}
+
+.pc-item.reserved .pc-status {
+    background: #3b82f6;
+    color: white;
+}
     </style>
 </head>
 <body>
@@ -1102,15 +1284,32 @@ tbody tr:hover {
                     <div class="pc-management">
                         <div class="control-panel">
                             <div class="left-controls">
-                                <select class="room-select" onchange="changeRoom(this.value)">
-                                    <option value="">Select Laboratory Room</option>
-                                    <option value="524">Room 524</option>
-                                    <option value="526">Room 526</option>
-                                    <option value="528">Room 528</option>
-                                    <option value="530">Room 530</option>
-                                    <option value="542">Room 542</option>
-                                    <option value="544">Room 544</option>
-                                </select>
+                                <div class="room-tabs">
+                                    <div class="room-tab active" onclick="changeRoom('524')">
+                                        <i class="fas fa-door-open"></i>
+                                        Room 524
+                                    </div>
+                                    <div class="room-tab" onclick="changeRoom('526')">
+                                        <i class="fas fa-door-open"></i>
+                                        Room 526
+                                    </div>
+                                    <div class="room-tab" onclick="changeRoom('528')">
+                                        <i class="fas fa-door-open"></i>
+                                        Room 528
+                                    </div>
+                                    <div class="room-tab" onclick="changeRoom('530')">
+                                        <i class="fas fa-door-open"></i>
+                                        Room 530
+                                    </div>
+                                    <div class="room-tab" onclick="changeRoom('542')">
+                                        <i class="fas fa-door-open"></i>
+                                        Room 542
+                                    </div>
+                                    <div class="room-tab" onclick="changeRoom('544')">
+                                        <i class="fas fa-door-open"></i>
+                                        Room 544
+                                    </div>
+                                </div>
                             </div>
                             <div class="right-controls">
                                 <button onclick="selectAllPCs()" class="control-btn select-all">
@@ -1133,8 +1332,9 @@ tbody tr:hover {
                             $totalPCs = 40;
                             for ($i = 1; $i <= $totalPCs; $i++) {
                                 echo '<div class="pc-item available" id="pcItem' . $i . '" onclick="togglePC(' . $i . ')">';
-                                echo '<i class="fas fa-desktop"></i><br>';
-                                echo 'PC' . $i;
+                                echo '<i class="fas fa-desktop"></i>';
+                                echo '<span class="pc-label">PC' . $i . '</span>';
+                                echo '<span class="pc-status">Available</span>';
                                 echo '</div>';
                             }
                             ?>
@@ -1357,6 +1557,10 @@ tbody tr:hover {
                 selectedPCs.forEach(item => {
                     item.classList.remove('selected', 'available', 'used', 'maintenance');
                     item.classList.add(status);
+                    const statusLabel = item.querySelector('.pc-status');
+                    if (statusLabel) {
+                        statusLabel.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                    }
                 });
                 clearSelections();
                 showNotification(`PCs updated to ${status} successfully`, 'success');
@@ -1376,6 +1580,16 @@ tbody tr:hover {
         }
 
         selectedRoom = roomId;
+        
+        // Update active tab
+        document.querySelectorAll('.room-tab').forEach(tab => {
+            if (tab.textContent.includes('Room ' + roomId)) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+
         try {
             const response = await fetch(`get_pc_status.php?room=${roomId}`);
             const data = await response.json();
@@ -1391,7 +1605,23 @@ tbody tr:hover {
             data.data.forEach(pc => {
                 const pcItem = document.querySelector(`#pcItem${pc.pc_number}`);
                 if (pcItem) {
-                    pcItem.className = `pc-item ${pc.status}`;
+                    // Check if PC is in pending reservations
+                    const isPending = data.pending_reservations && 
+                                    data.pending_reservations.includes(pc.pc_number);
+                    
+                    if (isPending) {
+                        pcItem.className = 'pc-item reserved';
+                        const statusLabel = pcItem.querySelector('.pc-status');
+                        if (statusLabel) {
+                            statusLabel.textContent = 'Reserved';
+                        }
+                    } else {
+                        pcItem.className = `pc-item ${pc.status}`;
+                        const statusLabel = pcItem.querySelector('.pc-status');
+                        if (statusLabel) {
+                            statusLabel.textContent = pc.status.charAt(0).toUpperCase() + pc.status.slice(1);
+                        }
+                    }
                 }
             });
 

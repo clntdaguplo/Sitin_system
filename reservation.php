@@ -96,6 +96,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
 
     mysqli_close($conn);
 }
+
+// Add this after your database connection
+$pc_statuses = [];
+$pending_reservations = [];
+$approved_reservations = [];
+
+// Fetch PC statuses
+$status_query = "SELECT room_number, pc_number, status FROM pc_status";
+$status_result = $con->query($status_query);
+while ($row = $status_result->fetch_assoc()) {
+    $pc_statuses[$row['room_number']][$row['pc_number']] = $row['status'];
+}
+
+// Fetch pending reservations
+$pending_query = "SELECT room, seat_number FROM reservations WHERE status = 'pending'";
+$pending_result = $con->query($pending_query);
+while ($row = $pending_result->fetch_assoc()) {
+    $pending_reservations[$row['room']][] = $row['seat_number'];
+}
+
+// Fetch approved reservations
+$approved_query = "SELECT room, seat_number FROM reservations WHERE status = 'approved'";
+$approved_result = $con->query($approved_query);
+while ($row = $approved_result->fetch_assoc()) {
+    $approved_reservations[$row['room']][] = $row['seat_number'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -395,67 +421,143 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
 
         .seat-grid {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 12px;
-            padding: 20px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            padding: 25px;
             background: #f8fafc;
-            border-radius: 10px;
+            border-radius: 15px;
             margin: 0 auto;
             max-width: 1000px;
         }
 
         .seat {
-            aspect-ratio: 1;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 10px;
-            border-radius: 8px;
+            gap: 10px;
             cursor: pointer;
+        }
+
+        .seat i {
+            font-size: 24px;
+            color: #4a5568;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
-            font-weight: 500;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        .seat small {
-            font-size: 0.75rem;
-            margin-top: 4px;
-            opacity: 0.8;
+        .seat:hover:not(.used):not(.maintenance):not(.reserved) {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        /* Status-specific styles */
         .seat.available {
             background: #dcfce7;
-            border: 2px solid #22c55e;
+            border-color: #22c55e;
+        }
+
+        .seat.available i {
             color: #166534;
         }
 
         .seat.used {
             background: #fee2e2;
-            border: 2px solid #ef4444;
-            color: #991b1b;
+            border-color: #ef4444;
             cursor: not-allowed;
+        }
+
+        .seat.used i {
+            color: #991b1b;
         }
 
         .seat.maintenance {
             background: #fef3c7;
-            border: 2px solid #f59e0b;
-            color: #92400e;
+            border-color: #f59e0b;
             cursor: not-allowed;
+        }
+
+        .seat.maintenance i {
+            color: #92400e;
         }
 
         .seat.reserved {
             background: #e0e7ff;
-            border: 2px solid rgb(3, 7, 202);
-            color:rgb(90, 178, 255);
+            border-color: #6366f1;
             cursor: not-allowed;
         }
 
-        .seat:hover:not(.used):not(.maintenance):not(.reserved) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        .seat.reserved i {
+            color: #4338ca;
+        }
+
+        .seat-label {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #4a5568;
+            transition: all 0.3s ease;
+        }
+
+        .seat-status {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .seat.available .seat-status {
+            background: #22c55e;
+            color: white;
+        }
+
+        .seat.used .seat-status {
+            background: #ef4444;
+            color: white;
+        }
+
+        .seat.maintenance .seat-status {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .seat.reserved .seat-status {
+            background: #6366f1;
+            color: white;
+        }
+
+        /* Update the legend styles */
+        .seat-legend {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+        }
+
+        .legend-item span {
+            font-size: 0.9rem;
+            color: #4a5568;
         }
 
         /* Responsive adjustments */
@@ -702,9 +804,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
                                 </div>
                             </div>
                             <div class="seat-grid">
-                                <?php for($i = 1; $i <= 40; $i++): ?>
-                                    <div class="seat available" data-seat="<?php echo $i; ?>" onclick="selectSeat(<?php echo $i; ?>)">
-                                        PC<?php echo $i; ?>
+                                <?php for($i = 1; $i <= 40; $i++): 
+                                    $status = 'available';
+                                    $status_text = 'Available';
+                                    
+                                    // Check if PC is in pending reservations
+                                    if (isset($pending_reservations[$lab_classroom]) && in_array($i, $pending_reservations[$lab_classroom])) {
+                                        $status = 'reserved';
+                                        $status_text = 'Reserved';
+                                    }
+                                    // Check PC status from admin settings
+                                    elseif (isset($pc_statuses[$lab_classroom][$i])) {
+                                        $status = $pc_statuses[$lab_classroom][$i];
+                                        $status_text = ucfirst($status);
+                                    }
+                                ?>
+                                    <div class="seat <?php echo $status; ?>" data-seat="<?php echo $i; ?>" onclick="selectSeat(<?php echo $i; ?>)">
+                                        <i class="fas fa-desktop"></i>
+                                        <span class="seat-label">PC<?php echo $i; ?></span>
+                                        <span class="seat-status"><?php echo $status_text; ?></span>
                                     </div>
                                 <?php endfor; ?>
                             </div>
@@ -833,18 +951,9 @@ async function updateSeatAvailability() {
     }
 
     try {
-        // Get PC statuses AND reservations in one request
-        const response = await fetch('get_seat_status.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                room: room,
-                date: date,
-                time: time 
-            })
-        });
-        
+        const response = await fetch(`get_pc_status.php?room=${room}`);
         const data = await response.json();
+        
         if (!data.success) {
             throw new Error(data.message);
         }
@@ -857,49 +966,48 @@ async function updateSeatAvailability() {
             seat.className = 'seat available';
             seat.onclick = () => selectSeat(seatNumber);
 
-            // Check if seat has an approved reservation
-            const approvedReservation = data.reservations.find(r => 
-                r.seat_number === seatNumber && r.status === 'approved'
-            );
+            // Check if seat has an approved reservation (used)
+            const isApproved = data.approved_reservations && 
+                             data.approved_reservations.includes(seatNumber);
 
             // Check if seat has a pending reservation
-            const pendingReservation = data.reservations.find(r => 
-                r.seat_number === seatNumber && r.status === 'pending'
-            );
+            const isPending = data.pending_reservations && 
+                            data.pending_reservations.includes(seatNumber);
 
             // Check PC status from admin settings
-            const pcStatus = data.pcStatus.find(pc => 
+            const pcStatus = data.data.find(pc => 
                 parseInt(pc.pc_number) === seatNumber
             );
 
-            if (approvedReservation) {
-                // Show as used (red) if reservation is approved
+            let statusText = 'Available';
+
+            if (isApproved) {
                 seat.className = 'seat used';
                 seat.onclick = null;
                 statusText = 'In Use';
-            } else if (pendingReservation) {
-                // Show as reserved (blue) if reservation is pending
+            } else if (isPending) {
                 seat.className = 'seat reserved';
                 seat.onclick = null;
                 statusText = 'Reserved';
             } else if (pcStatus) {
-                // Use admin-set status if no reservation
                 seat.className = `seat ${pcStatus.status}`;
                 statusText = pcStatus.status.charAt(0).toUpperCase() + pcStatus.status.slice(1);
                 if (pcStatus.status === 'used' || pcStatus.status === 'maintenance') {
                     seat.onclick = null;
                 }
-            } else {
-                statusText = 'Available';
             }
 
-            // Update seat display
-            seat.innerHTML = `PC${seatNumber}<br><small>(${statusText})</small>`;
+            // Update seat content
+            seat.innerHTML = `
+                <i class="fas fa-desktop"></i>
+                <span class="seat-label">PC${seatNumber}</span>
+                <span class="seat-status">${statusText}</span>
+            `;
         });
 
     } catch (error) {
         console.error('Error:', error);
-        alert('Error loading seat availability');
+        alert('Error loading seat availability: ' + error.message);
     }
 }
 
@@ -1045,60 +1153,78 @@ if(isset($_POST['submit'])) {
     $seat_number = $_POST['seat_number'];
     $remaining_sessions = $user_data['REMAINING_SESSIONS'];
     
-    // Check lab schedule availability
-    $lab_availability = checkLabAvailability($con, $room, $date, $time);
-    if (!$lab_availability['available']) {
-        echo "<script>alert('" . $lab_availability['message'] . "');</script>";
-        exit;
-    }
-
-    // Check seat availability
-    if (!checkSeatAvailability($con, $room, $date, $time, $seat_number)) {
-        echo "<script>alert('This seat is already reserved for the selected date and time.');</script>";
-        exit;
-    }
-
-    // Check PC status
-    $status_query = "SELECT status FROM pc_status WHERE room_number = ? AND pc_number = ?";
-    $stmt = $con->prepare($status_query);
-    $stmt->bind_param("si", $room, $seat_number);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    // Start transaction
+    $con->begin_transaction();
     
-    if($result->num_rows > 0) {
-        $pc_status = $result->fetch_assoc()['status'];
-        if($pc_status !== 'available') {
-            echo "<script>alert('Selected PC is not available. Current status: " . 
-                  ucfirst($pc_status) . "');</script>";
-            exit;
+    try {
+        // Check lab schedule availability
+        $lab_availability = checkLabAvailability($con, $room, $date, $time);
+        if (!$lab_availability['available']) {
+            throw new Exception($lab_availability['message']);
         }
-    }
 
-    // Check if student has remaining sessions
-    if($remaining_sessions <= 0) {
-        echo "<script>alert('You have no remaining sessions.');</script>";
-        exit;
-    }
+        // Check seat availability
+        if (!checkSeatAvailability($con, $room, $date, $time, $seat_number)) {
+            throw new Exception('This seat is already reserved for the selected date and time.');
+        }
 
-    $insert_query = "INSERT INTO reservations 
-                    (student_id, fullname, room, date, time, purpose, 
-                     seat_number, remaining_sessions, status) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
-    $insert_stmt = $con->prepare($insert_query);
-    $insert_stmt->bind_param("ssssssii", 
-        $student_id, $fullname, $room, $date, $time, 
-        $purpose, $seat_number, $remaining_sessions
-    );
-    
-    if($insert_stmt->execute()) {
+        // Check PC status
+        $status_query = "SELECT status FROM pc_status WHERE room_number = ? AND pc_number = ?";
+        $stmt = $con->prepare($status_query);
+        $stmt->bind_param("si", $room, $seat_number);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if($result->num_rows > 0) {
+            $pc_status = $result->fetch_assoc()['status'];
+            if($pc_status !== 'available') {
+                throw new Exception('Selected PC is not available. Current status: ' . ucfirst($pc_status));
+            }
+        }
+
+        // Check if student has remaining sessions
+        if($remaining_sessions <= 0) {
+            throw new Exception('You have no remaining sessions.');
+        }
+
+        // Insert reservation
+        $insert_query = "INSERT INTO reservations 
+                        (student_id, fullname, room, date, time, purpose, 
+                         seat_number, remaining_sessions, status) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
+        $insert_stmt = $con->prepare($insert_query);
+        $insert_stmt->bind_param("ssssssii", 
+            $student_id, $fullname, $room, $date, $time, 
+            $purpose, $seat_number, $remaining_sessions
+        );
+        
+        if(!$insert_stmt->execute()) {
+            throw new Exception('Error submitting reservation. Please try again.');
+        }
+
+        // Update PC status to reserved
+        $pc_status_query = "INSERT INTO pc_status (room_number, pc_number, status) 
+                           VALUES (?, ?, 'reserved') 
+                           ON DUPLICATE KEY UPDATE status = 'reserved'";
+        $pc_status_stmt = $con->prepare($pc_status_query);
+        $pc_status_stmt->bind_param("si", $room, $seat_number);
+        
+        if(!$pc_status_stmt->execute()) {
+            throw new Exception('Error updating PC status.');
+        }
+
+        // Commit transaction
+        $con->commit();
+        
         echo "<script>
             alert('Reservation submitted successfully!'); 
             window.location.href='reservation.php';
         </script>";
-    } else {
-        echo "<script>
-            alert('Error submitting reservation. Please try again.');
-        </script>";
+        
+    } catch (Exception $e) {
+        // Rollback transaction on error
+        $con->rollback();
+        echo "<script>alert('" . addslashes($e->getMessage()) . "');</script>";
     }
 }
 ?>

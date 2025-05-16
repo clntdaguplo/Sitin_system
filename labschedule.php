@@ -25,6 +25,14 @@ if ($result && mysqli_num_rows($result) > 0) {
 // Fetch schedules
 $schedules = mysqli_query($con, "SELECT * FROM lab_schedules ORDER BY last_updated DESC");
 
+// Fetch PC statuses
+$pc_statuses = [];
+$pc_status_query = "SELECT room_number, pc_number, status FROM pc_status";
+$pc_status_result = mysqli_query($con, $pc_status_query);
+while ($row = mysqli_fetch_assoc($pc_status_result)) {
+    $pc_statuses[$row['room_number']][$row['pc_number']] = $row['status'];
+}
+
 // Define available rooms
 $rooms = ['524', '526', '528', '530', '542', '544'];
 ?>
@@ -181,41 +189,6 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
             transform: translateY(-2px);
         }
 
-        .filter-section {
-            background: white;
-            padding: 20px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-left: auto;
-        }
-
-        .filter-group select {
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            min-width: 200px;
-            color: #4a5568;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .filter-group select:hover {
-            border-color: #cbd5e0;
-        }
-
-        .filter-group select:focus {
-            outline: none;
-            border-color: rgb(47, 0, 177);
-            box-shadow: 0 0 0 3px rgba(47, 0, 177, 0.1);
-        }
-
         .schedule-table {
             flex: 1;
             overflow: auto;
@@ -226,7 +199,8 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
 
         .schedule-table table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
         }
 
         .schedule-table th {
@@ -238,12 +212,18 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
             position: sticky;
             top: 0;
             z-index: 10;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .schedule-table td {
             padding: 12px;
             border: 1px solid #e2e8f0;
             text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .schedule-table td:hover {
+            background: #f8fafc;
         }
 
         .time-slot {
@@ -253,60 +233,130 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
             position: sticky;
             left: 0;
             z-index: 5;
+            border-right: 2px solid #e2e8f0;
         }
 
         .status-btn {
-            padding: 8px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-weight: 500;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 2px solid transparent;
+            cursor: default;
+            pointer-events: none;
+            user-select: none;
         }
 
         .status-btn.available {
             background: #dcfce7;
             color: #166534;
+            border-color: #86efac;
+        }
+
+        .status-btn.unavailable {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #fca5a5;
+            font-weight: 600;
         }
 
         .status-btn.occupied {
             background: #fee2e2;
             color: #991b1b;
+            border-color: #fca5a5;
         }
 
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
+        /* Remove all hover effects */
+        .status-btn:hover {
+            transform: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
-        .status-btn.available .status-indicator {
-            background: #166534;
+        .status-btn.available:hover {
+            background: #dcfce7;
+            border-color: #86efac;
         }
 
-        .status-btn.occupied .status-indicator {
-            background: #991b1b;
+        .status-btn.unavailable:hover,
+        .status-btn.occupied:hover {
+            background: #fee2e2;
+            border-color: #fca5a5;
         }
 
-        /* Remove burger menu styles */
-        .burger {
-            display: none;
+        /* Add alternating row colors */
+        .schedule-table tbody tr:nth-child(even) {
+            background: #f8fafc;
         }
 
-        /* Responsive styles */
+        .schedule-table tbody tr:hover {
+            background: #f1f5f9;
+        }
+
+        /* Style the filter section */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .room-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .room-tab {
+            padding: 12px 24px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .room-tab i {
+            font-size: 1.1rem;
+            color: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));;
+        }
+
+        .room-tab:hover {
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+            border-color: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+            transform: translateY(-2px);
+        }
+
+        .room-tab.active {
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+            border-color: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+            color: white;
+        }
+
+        .room-tab.active i {
+            color: white;
+        }
+
         @media (max-width: 768px) {
             .content {
                 padding: 15px;
             }
             
-            .filter-group {
-                flex-direction: column;
-                align-items: stretch;
+            .room-tabs {
+                gap: 8px;
             }
             
-            .filter-group select {
-                width: 100%;
+            .room-tab {
+                padding: 10px 16px;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -341,14 +391,14 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
         </div>
 
         <div class="filter-section">
-            <div class="filter-group">
-                <select id="room_filter" onchange="filterRoom(this.value)">
-                    <?php foreach ($rooms as $room): ?>
-                        <option value="<?php echo $room; ?>" <?php echo (isset($_GET['room']) && $_GET['room'] == $room) || (!isset($_GET['room']) && $room == '524') ? 'selected' : ''; ?>>
-                            Room <?php echo $room; ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+            <div class="room-tabs">
+                <?php foreach ($rooms as $room): ?>
+                    <div class="room-tab <?php echo (!isset($_GET['room']) && $room == '524') || (isset($_GET['room']) && $_GET['room'] == $room) ? 'active' : ''; ?>" 
+                         onclick="filterRoom('<?php echo $room; ?>')">
+                        <i class="fas fa-door-open"></i>
+                        Room <?php echo $room; ?>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
 
@@ -357,8 +407,10 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
                 <thead>
                     <tr>
                         <th>Time Slot</th>
-                        <th>Monday/Wednesday</th>
-                        <th>Tuesday/Thursday</th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
                         <th>Friday</th>
                         <th>Saturday</th>
                     </tr>
@@ -380,7 +432,7 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
                     foreach ($time_slots as $time_slot): ?>
                         <tr>
                             <td class="time-slot"><?php echo $time_slot; ?></td>
-                            <?php foreach (['MW', 'TTH', 'F', 'S'] as $day): ?>
+                            <?php foreach (['M', 'T', 'W', 'TH', 'F', 'S'] as $day): ?>
                                 <td class="status-cell">
                                     <?php
                                     $query = "SELECT status FROM lab_schedules 
@@ -393,11 +445,26 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
                                     $stmt->execute();
                                     $result = $stmt->get_result();
                                     $schedule = $result->fetch_assoc();
+                                    
+                                    // Check if any PC in this room is marked as used
+                                    $has_used_pc = false;
+                                    if (isset($pc_statuses[$current_room])) {
+                                        foreach ($pc_statuses[$current_room] as $status) {
+                                            if ($status === 'used') {
+                                                $has_used_pc = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    
                                     $status = $schedule ? $schedule['status'] : 'Available';
+                                    // If any PC is used, override the status to show as occupied
+                                    if ($has_used_pc) {
+                                        $status = 'Occupied';
+                                    }
                                     $statusClass = strtolower($status);
                                     ?>
                                     <div class="status-btn <?php echo $statusClass; ?>">
-                                        <span class="status-indicator"></span>
                                         <?php echo $status; ?>
                                     </div>
                                 </td>
@@ -411,6 +478,7 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
 </div>
 
 <script>
+// Only allow room filtering, no schedule setting
 function filterRoom(room) {
     window.location.href = 'labschedule.php?room=' + room;
 }
@@ -418,7 +486,16 @@ function filterRoom(room) {
 document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const room = urlParams.get('room') || '524';
-    document.getElementById('room_filter').value = room;
+    
+    // Update active tab
+    const tabs = document.querySelectorAll('.room-tab');
+    tabs.forEach(tab => {
+        if (tab.textContent.includes('Room ' + room)) {
+            tab.classList.add('active');
+        } else {
+            tab.classList.remove('active');
+        }
+    });
 });
 </script>
 </body>

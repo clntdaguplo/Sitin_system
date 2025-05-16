@@ -296,127 +296,185 @@ button[type="submit"]:hover {
 }
 
 .div2 h2 {
-    color:rgb(0, 0, 0);
-    margin-bottom: 25px;
+    color: rgb(0, 0, 0);
+    margin-bottom: 30px;
     font-size: 1.8rem;
     display: flex;
     align-items: center;
     gap: 10px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid rgb(47, 0, 177);
 }
-
 
 .announcement {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 25px;
-    margin-bottom: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    margin-bottom: 30px;
     transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
     border: 1px solid #e2e8f0;
+    position: relative;
 }
 
-.announcement:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    border-color:rgb(0, 0, 0);
+.announcement:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgb(47, 0, 177), transparent);
 }
 
-.announcement h3 {
-    color:rgb(0, 0, 0);
-    margin-bottom: 15px;
-    font-size: 1.3em;
+.announcement-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.announcement-header h3 {
+    color: rgb(47, 0, 177);
+    font-size: 1.2em;
     font-weight: 600;
+    margin: 0;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.announcement h3::before {
+.announcement-header h3::before {
     content: '\f0a1';
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
     font-size: 0.9em;
+    color: rgb(150, 145, 79);
 }
 
-.announcement p {
+.announcement-content {
+    display: none;
+    padding: 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.announcement.active .announcement-content {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.announcement-content p {
     color: #4a5568;
-    margin-bottom: 20px;
-    line-height: 1.7;
+    line-height: 1.6;
     font-size: 1.05em;
+    padding: 25px;
+    margin: 0;
+    background: #ffffff;
 }
 
-.announcement .timestamp {
-    color: #718096;
-    font-size: 0.9em;
-    margin-bottom: 20px;
+.timestamp {
     display: flex;
     align-items: center;
     gap: 8px;
+    color: #718096;
+    font-size: 0.9em;
+    padding: 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e2e8f0;
 }
 
-.announcement .timestamp::before {
+.timestamp::before {
     content: '\f017';
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
+    color: rgb(150, 145, 79);
 }
 
 .actions {
     display: flex;
-    gap: 12px;
+    gap: 15px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e2e8f0;
 }
 
 .update, .delete {
     padding: 10px 20px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: 500;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    min-width: 100px;
+    justify-content: center;
 }
 
 .update {
-    background: #45a049;
+    background: rgb(47, 0, 177);
     color: white;
 }
 
 .delete {
-    background:rgba(245, 200, 1, 0.94);
+    background: rgb(150, 145, 79);
     color: white;
 }
 
-.update:hover, .delete:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
 .update:hover {
-    background: #45a049;
+    background: rgb(37, 0, 137);
+    transform: translateY(-2px);
 }
 
 .delete:hover {
-    background:rgb(134, 5, 15);
+    background: rgb(130, 125, 69);
+    transform: translateY(-2px);
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
+.announcement-toggle {
+    color: rgb(47, 0, 177);
+    font-size: 1.1em;
+    transition: transform 0.3s ease;
+    padding: 8px;
+    border-radius: 50%;
+    background: rgba(47, 0, 177, 0.1);
+}
+
+.announcement.active .announcement-toggle {
+    transform: rotate(180deg);
+    background: rgba(47, 0, 177, 0.2);
+}
+
+/* Custom scrollbar for announcements container */
+.div2::-webkit-scrollbar {
     width: 8px;
 }
 
-::-webkit-scrollbar-track {
+.div2::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb {
-    background:rgb(65, 0, 245);
+.div2::-webkit-scrollbar-thumb {
+    background: rgb(47, 0, 177);
     border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #0f4578;
+.div2::-webkit-scrollbar-thumb:hover {
+    background: rgb(37, 0, 137);
 }
 
 /* Responsive Design */
@@ -517,16 +575,21 @@ button[type="submit"]:hover {
             <h2>Announcements</h2>
             <?php while ($announcement = $announcements_result->fetch_assoc()): ?>
                 <div class="announcement">
-                    <h3><?php echo htmlspecialchars($announcement['TITLE']); ?></h3>
-                    <p><?php echo htmlspecialchars($announcement['CONTENT']); ?></p>
-                    <span class="timestamp"><?php echo htmlspecialchars($announcement['CREATED_AT']); ?></span>
-                    <div class="actions">
-                        <button class="update" onclick="updateAnnouncement('<?php echo htmlspecialchars($announcement['TITLE']); ?>')">
-                             Update
-                        </button>
-                        <button class="delete" onclick="deleteAnnouncement('<?php echo htmlspecialchars($announcement['TITLE']); ?>')">
-                             Delete
-                        </button>
+                    <div class="announcement-header">
+                        <h3><?php echo htmlspecialchars($announcement['TITLE']); ?></h3>
+                        <i class="fas fa-chevron-down announcement-toggle"></i>
+                    </div>
+                    <div class="announcement-content">
+                        <p><?php echo htmlspecialchars($announcement['CONTENT']); ?></p>
+                        <span class="timestamp"><?php echo htmlspecialchars($announcement['CREATED_AT']); ?></span>
+                        <div class="actions">
+                            <button class="update" onclick="updateAnnouncement('<?php echo htmlspecialchars($announcement['TITLE']); ?>')">
+                                Update
+                            </button>
+                            <button class="delete" onclick="deleteAnnouncement('<?php echo htmlspecialchars($announcement['TITLE']); ?>')">
+                                Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
             <?php endwhile; ?>
@@ -571,6 +634,23 @@ function updateDateTime() {
 // Update date and time immediately and then every second
 updateDateTime();
 setInterval(updateDateTime, 1000);
+
+// Add this new code for dropdown functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const announcements = document.querySelectorAll('.announcement');
+    
+    announcements.forEach(announcement => {
+        announcement.addEventListener('click', function(e) {
+            // Don't toggle if clicking on action buttons
+            if (e.target.closest('.actions')) {
+                return;
+            }
+            
+            // Toggle active class
+            this.classList.toggle('active');
+        });
+    });
+});
 </script>
 </body>
 </html>
