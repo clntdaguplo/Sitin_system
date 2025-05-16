@@ -70,16 +70,19 @@ if (isset($_POST['submit'])) {
         )";
         mysqli_query($con, $create_table);
     } else {
-        // Check if id column is already AUTO_INCREMENT
-        $check_column = mysqli_query($con, "SHOW COLUMNS FROM lab_resources WHERE Field = 'id'");
-        $column_info = mysqli_fetch_assoc($check_column);
-        
-        if ($column_info && $column_info['Extra'] !== 'auto_increment') {
-            // First remove any existing primary key
-            mysqli_query($con, "ALTER TABLE lab_resources DROP PRIMARY KEY");
-            // Then modify the id column
-            mysqli_query($con, "ALTER TABLE lab_resources MODIFY id INT AUTO_INCREMENT PRIMARY KEY");
+        // Check if PRIMARY KEY exists before dropping
+        $check_primary = "SHOW KEYS FROM lab_resources WHERE Key_name = 'PRIMARY'";
+        $primary_exists = mysqli_query($con, $check_primary);
+
+        if (mysqli_num_rows($primary_exists) > 0) {
+            // Only drop PRIMARY KEY if it exists
+            $drop_primary = "ALTER TABLE lab_resources DROP PRIMARY KEY";
+            mysqli_query($con, $drop_primary);
         }
+
+        // Now add the new PRIMARY KEY
+        $add_primary = "ALTER TABLE lab_resources ADD PRIMARY KEY (id)";
+        mysqli_query($con, $add_primary);
     }
 
     // Insert the resource with file information

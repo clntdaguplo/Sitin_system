@@ -56,119 +56,95 @@ body {
     position: relative;
 }
 
-/* Sidebar Styles */
-.sidebar {
-    width: 280px;
-    background: linear-gradient(135deg, #14569b, #2a3f5f);
-    height: 100vh;
-    padding: 25px;
+/* Top Navigation Bar Styles */
+.top-nav {
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
     position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.nav-left {
     display: flex;
-    flex-direction: column;
-    transform: translateX(0); /* Remove the initial transform */
-    transition: all 0.3s ease-in-out;
-    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.1);
-}
-
-.dashboard-header {
-    text-align: center;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.dashboard-header h2 {
-    color: white;
-    font-size: 26px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
-
-.profile-link {
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    padding: 15px;
-    margin-bottom: 25px;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.1);
+    gap: 20px;
 }
 
-.profile-link:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-}
-
-.profile-link img {
-    width: 90px;
-    height: 90px;
+.nav-left img {
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    margin-bottom: 12px;
-    object-fit: cover;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-.profile-link .user-name {
+.nav-left .user-name {
     color: white;
-    font-size: 18px;
-    font-weight: 500;
-    text-align: center;
-}
-
-.nav-links {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.nav-links a {
-    color: white;
-    text-decoration: none;
-    padding: 12px 15px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.nav-links a i {
-    width: 20px;
-    text-align: center;
+    font-weight: 600;
     font-size: 1.1rem;
 }
 
-.nav-links a:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateX(5px);
+.nav-right {
+    display: flex;
+    gap: 15px;
 }
 
-.logout-button {
-    margin-top: auto;
-    background: rgba(220, 53, 69, 0.1) !important;
+.nav-right a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
 }
 
-.logout-button:hover {
-    background: rgba(220, 53, 69, 0.2) !important;
+.nav-right a i {
+    font-size: 1rem;
 }
 
+.nav-right a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.nav-right .logout-button {
+    background: rgba(220, 53, 69, 0.1);
+    margin-left: 10px;
+}
+
+.nav-right .logout-button:hover {
+    background: rgba(220, 53, 69, 0.2);
+}
 
 /* Content Area */
 .content {
-    margin-left: 280px;
-    padding: 30px;
-    width: calc(100% - 280px);
-    min-height: 100vh;
+    margin-top: 80px;
+    padding: 20px;
+    min-height: calc(100vh - 80px);
+    background: #f5f5f5;
+    width: 100%;
+}
+
+/* Remove old sidebar styles */
+.sidebar {
+    display: none;
 }
 
 .rules-container {
     background: white;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    height: calc(100vh - 60px);
+    height: calc(100vh - 100px);
     width: 100%;
     overflow: hidden;
     display: flex;
@@ -176,7 +152,7 @@ body {
 }
 
 .rules-header {
-    background: linear-gradient(135deg, #14569b, #2a3f5f);
+    background: rgb(26, 19, 46);
     color: white;
     padding: 25px;
     display: flex;
@@ -199,9 +175,21 @@ body {
 }
 
 .rules-content h2 {
-    color: #14569b;
+    color: rgb(47, 0, 177);
     margin-bottom: 20px;
     font-size: 1.5rem;
+}
+
+.rules-content h5 {
+    color: rgb(47, 0, 177);
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.rules-content h6 {
+    color: rgb(150, 145, 79);
+    font-size: 1.1rem;
+    margin-bottom: 20px;
 }
 
 .rules-content p {
@@ -211,9 +199,24 @@ body {
 }
 
 .rules-content p strong {
-    color: #2d3748;
+    color: rgb(47, 0, 177);
     display: inline-block;
     margin-right: 10px;
+}
+
+.rules-content ol, .rules-content ul {
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+.rules-content li {
+    color: #4a5568;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.rules-content ul li strong {
+    color: rgb(47, 0, 177);
 }
 
 .back-button {
@@ -245,60 +248,58 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #14569b;
+    background: rgb(47, 0, 177);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #0f4578;
+    background: rgb(150, 145, 79);
 }
 
 @media (max-width: 768px) {
     .content {
-        margin-left: 280px;
+        margin-top: 80px;
         padding: 20px;
-        width: calc(100% - 280px);
+        width: 100%;
     }
 }
 </style>
 </head>
 <body>
-<div class="sidebar">
-    <a href="profile.php" class="profile-link">
-        <img src="uploads/<?php echo $profile_pic; ?>" alt="Profile Picture">
-        <div class="user-name"><?php echo $user_name; ?></div>
-    </a>
-    <div class="nav-links">
-        <a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="viewAnnouncement.php"><i class="fas fa-bullhorn"></i> Announcement</a>
-        <a href="labRules&Regulations.php"></i> Rules & Regulations</a>
+<div class="top-nav">
+    <div class="nav-left">
+        <img src="uploads/<?php echo $profile_pic; ?>" alt="Profile Picture" onerror="this.src='assets/default.jpg';">
+        <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
+    </div>
+    <div class="nav-right">
+        <a href="dashboard.php"> Dashboard</a>
+        <a href="viewAnnouncement.php"> Announcement</a>
+        <a href="profile.php"> Edit Profile</a>
+        <a href="labRules&Regulations.php"> Lab Rules</a>
+        <a href="labschedule.php"> Lab Schedules</a>
         
-        <a href="history.php"><i class="fas fa-history"></i> History</a>
-        <a href="reservation.php"><i class="fas fa-calendar-alt"></i> Reservation</a>
-        <a href="labschedule.php"><i class="fas fa-calendar-alt"></i> Lab Schedules</a>
-        <a href="viewlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-        <a href="login.php" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        <a href="reservation.php"> Reservation</a>
+        <a href="history.php"> History</a>
+
+        <a href="login.php" class="logout-button"> Log Out</a>
     </div>
 </div>
 
 <div class="content">
     <div class="rules-container">
-        
         <div class="rules-header">
             <h1>
-                <i ></i>
+                <i class="fas fa-gavel"></i>
                 Rules & Regulations
             </h1>
-            <a href="dashboard.php" class="back-button">
-                <i class="fas fa-arrow-left"></i>
-                Back to Dashboard
-            </a>
+            
         </div>
         <div class="rules-content">
             <center><h5 class="text-center">University of Cebu</h5></center>
                                 <center><h6 class="text-center">COLLEGE OF INFORMATION & COMPUTER STUDIES</h6></center>
                                 <center><p><strong>LABORATORY RULES AND REGULATIONS</strong></p></center>
-                                <p>To avoid embarrassment and maintain camaraderie with your friends and superiors at our laboratories, please observe the following:</p>
+                               
+                               
                                 <ol>
                                     <li>Maintain silence, proper decorum, and discipline inside the laboratory. Mobile phones, walkmans, and other personal equipment must be switched off.</li>
                                     <li>Games are not allowed inside the lab. This includes computer-related games, card games, and other games that may disturb the operation of the lab.</li>
@@ -321,7 +322,10 @@ body {
                                     <li>For serious offenses, the lab personnel may call the Civil Security Office (CSU) for assistance.</li>
                                     <li>Any technical problem or difficulty must be addressed to the laboratory supervisor, student assistant, or instructor immediately.</li>
                                 </ol>
-                                <p><strong>DISCIPLINARY ACTION</strong></p>
+                                
+
+                                
+                                <center><p><strong>DISCIPLINARY ACTION</strong></p></center>
                                 <ul>
                                     <li><strong>First Offense:</strong> The Head, Dean, or OIC recommends suspension from classes to the Guidance Center.</li>
                                     <li><strong>Second and Subsequent Offenses:</strong> A recommendation for a heavier sanction will be endorsed to the Guidance Center.</li>

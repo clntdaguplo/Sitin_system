@@ -24,6 +24,47 @@ if ($result && mysqli_num_rows($result) > 0) {
 
 // Fetch announcements
 $announcements = $con->query("SELECT * FROM announcements ORDER BY created_at DESC");
+
+// Fetch lab resources
+$resources_query = "SELECT * FROM lab_resources ORDER BY upload_date DESC";
+$resources_result = mysqli_query($con, $resources_query);
+
+// Fetch categories
+$categories_query = "SELECT DISTINCT category FROM lab_resources";
+$categories_result = mysqli_query($con, $categories_query);
+
+// Initialize filters
+$search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
+$category_filter = isset($_GET['category']) ? htmlspecialchars($_GET['category']) : '';
+$type_filter = isset($_GET['type']) ? htmlspecialchars($_GET['type']) : '';
+
+// Modify the query if filters are applied
+if (!empty($search) || !empty($category_filter) || !empty($type_filter)) {
+    $resources_query = "SELECT * FROM lab_resources WHERE 1=1";
+    
+    if (!empty($search)) {
+        $resources_query .= " AND (title LIKE '%" . mysqli_real_escape_string($con, $search) . "%' 
+                            OR description LIKE '%" . mysqli_real_escape_string($con, $search) . "%')";
+    }
+    
+    if (!empty($category_filter)) {
+        $resources_query .= " AND category = '" . mysqli_real_escape_string($con, $category_filter) . "'";
+    }
+    
+    if (!empty($type_filter)) {
+        switch($type_filter) {
+            case 'link':
+                $resources_query .= " AND link IS NOT NULL AND link != ''";
+                break;
+            case 'file':
+                $resources_query .= " AND file_path IS NOT NULL AND file_path != ''";
+                break;
+        }
+    }
+    
+    $resources_query .= " ORDER BY upload_date DESC";
+    $resources_result = mysqli_query($con, $resources_query);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,125 +88,106 @@ $announcements = $con->query("SELECT * FROM announcements ORDER BY created_at DE
             position: relative;
         }
 
-        /* Sidebar Styles */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(135deg, #14569b, #2a3f5f);
-            height: 100vh;
-            padding: 25px;
+        /* Top Navigation Bar Styles */
+        .top-nav {
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
             position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-left {
             display: flex;
-            flex-direction: column;
-            transform: translateX(0); /* Keep sidebar visible */
-            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .dashboard-header {
-            text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .dashboard-header h2 {
-            color: white;
-            font-size: 26px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .profile-link {
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            padding: 15px;
-            margin-bottom: 25px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.1);
+            gap: 20px;
         }
 
-        .profile-link:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .profile-link img {
-            width: 90px;
-            height: 90px;
+        .nav-left img {
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            margin-bottom: 12px;
-            object-fit: cover;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
-        .profile-link .user-name {
+        .nav-left .user-name {
             color: white;
-            font-size: 18px;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        .nav-links {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 12px 15px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .nav-links a i {
-            width: 20px;
-            text-align: center;
+            font-weight: 600;
             font-size: 1.1rem;
         }
 
-        .nav-links a:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateX(5px);
+        .nav-right {
+            display: flex;
+            gap: 15px;
         }
 
-        .logout-button {
-            margin-top: auto;
-            background: rgba(220, 53, 69, 0.1) !important;
+        .nav-right a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
         }
 
-        .logout-button:hover {
-            background: rgba(220, 53, 69, 0.2) !important;
+        .nav-right a i {
+            font-size: 1rem;
+        }
+
+        .nav-right a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-right .logout-button {
+            background: rgba(220, 53, 69, 0.1);
+            margin-left: 10px;
+        }
+
+        .nav-right .logout-button:hover {
+            background: rgba(220, 53, 69, 0.2);
+        }
+
+        .content {
+            margin-top: 80px;
+            padding: 20px;
+            min-height: calc(100vh - 80px);
+            background: #f5f5f5;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+
+        /* Remove old sidebar styles */
+        .sidebar {
+            display: none;
         }
 
         /* Content Area */
-        .content {
-            margin-left: 280px; /* Always show content with sidebar margin */
-            padding: 30px;
-            width: calc(100% - 280px);
-            min-height: 100vh;
-        }
-
-        .announcement-container {
+        .section-container {
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            height: calc(100vh - 60px);
-            width: 100%;
+            height: calc(100vh - 100px);
+            width: 50%;
             overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
-        .announcement-title {
-            background: linear-gradient(135deg, #14569b, #2a3f5f);
+        .section-header {
+            background: rgb(26, 19, 46);
             color: white;
             padding: 25px;
             display: flex;
@@ -174,86 +196,174 @@ $announcements = $con->query("SELECT * FROM announcements ORDER BY created_at DE
             border-radius: 15px 15px 0 0;
         }
 
-        .announcement-title h1 {
+        .section-header h1 {
             font-size: 24px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .announcements-list {
+        .section-content {
             padding: 25px;
             overflow-y: auto;
             flex-grow: 1;
             background: rgba(248, 250, 252, 0.8);
         }
 
-        .announcement {
+        /* Resources Grid Styles */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            padding: 10px;
+        }
+
+        .resource-card {
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
             transition: all 0.3s ease;
-            border: 1px solid rgba(226, 232, 240, 0.8);
-        }
-
-        .announcement:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .announcement h2 {
-            color: #14569b;
-            font-size: 1.4rem;
-            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
             display: flex;
+            flex-direction: column;
+            height: 220px;
+        }
+
+        .resource-header {
+            padding: 15px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
         }
 
-        .announcement h2 i {
-            font-size: 1.2rem;
-            color: #578FCA;
+        .resource-body {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        .announcement p {
-            color: #4a5568;
-            line-height: 1.8;
-            margin-bottom: 20px;
-            font-size: 1.05rem;
+        .resource-title {
+            font-size: 1.1rem;
+            color: rgb(47, 0, 177);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .announcement small {
+        .resource-description {
             color: #718096;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: auto;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .resource-actions {
+            padding: 15px;
             display: flex;
+            gap: 12px;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        .resource-btn {
+            flex: 1;
+            display: inline-flex;
             align-items: center;
-            gap: 5px;
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(226, 232, 240, 0.8);
-            padding-top: 15px;
-        }
-
-        .announcement small i {
-            color: #578FCA;
-        }
-
-        .back-button {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            padding: 8px 20px;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 15px;
             border-radius: 8px;
             text-decoration: none;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
+            cursor: pointer;
         }
 
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
+        .link-btn {
+            background: rgb(47, 0, 177);
+            color: white !important;
+        }
+
+        .download-btn {
+            background: #f8fafc;
+            color: rgb(47, 0, 177) !important;
+            border: 1px solid rgb(47, 0, 177);
+        }
+
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgb(47, 0, 177);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .resource-date {
+            color: #64748b;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Filters Styles */
+        .filters {
+            padding: 12px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            padding-left: 40px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .category-filter select,
+        .type-filter select {
+            min-width: 120px;
+            padding: 10px 30px 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #4a5568;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a0aec0'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
         }
 
         /* Remove these styles */
@@ -264,52 +374,65 @@ $announcements = $con->query("SELECT * FROM announcements ORDER BY created_at DE
         }
 
         /* Update responsive design */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 280px;
-                transform: translateX(0);
+        @media (max-width: 1200px) {
+            .content {
+                flex-direction: column;
             }
             
+            .section-container {
+                width: 100%;
+                height: calc(50vh - 50px);
+            }
+        }
+
+        @media (max-width: 768px) {
             .content {
-                margin-left: 280px;
-                padding: 20px;
-                width: calc(100% - 280px);
+                padding: 15px;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box,
+            .category-filter select,
+            .type-filter select {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-<div class="sidebar">
-    <a href="profile.php" class="profile-link">
-        <img src="uploads/<?php echo $profile_pic; ?>" alt="Profile Picture">
-        <div class="user-name"><?php echo $user_name; ?></div>
-    </a>
-    <div class="nav-links">
-        <a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="viewAnnouncement.php"><i class="fas fa-bullhorn"></i> Announcement</a>
-        <a href="labRules&Regulations.php"><i class="fas fa-flask"></i> Rules & Regulations</a>
-        <a href="sitinrules.php"><i class="fas fa-book"></i> Sit-in Rules</a>
-        <a href="history.php"><i class="fas fa-history"></i> History</a>
-        <a href="reservation.php"><i class="fas fa-calendar-alt"></i> Reservation</a>
-        <a href="labschedule.php"><i class="fas fa-calendar-alt"></i> Lab Schedules</a>
-        <a href="viewlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-        <a href="login.php" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+<div class="top-nav">
+    <div class="nav-left">
+        <img src="uploads/<?php echo $profile_pic; ?>" alt="Profile Picture" onerror="this.src='assets/default.jpg';">
+        <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
+    </div>
+    <div class="nav-right">
+        <a href="dashboard.php"> Dashboard</a>
+        <a href="viewAnnouncement.php"> Announcements and Resources</a>
+        <a href="profile.php"> Edit Profile</a>
+        <a href="labRules&Regulations.php">  Lab Rules</a>
+        <a href="labschedule.php"> Lab Schedules</a>
+        
+        <a href="reservation.php"> Reservation</a>
+        <a href="history.php"> History</a>
+
+        <a href="login.php" class="logout-button"> Log Out</a>
     </div>
 </div>
 
 <div class="content">
-    <div class="announcement-container">
-        <div class="announcement-title">
+    <!-- Announcements Section -->
+    <div class="section-container">
+        <div class="section-header">
             <h1>
                 <i class="fas fa-bullhorn"></i>
                 Announcements
             </h1>
-            <a href="dashboard.php" class="back-button">
-                <i class="fas fa-arrow-left"></i>
-                Back to Dashboard
-            </a>
         </div>
-        <div class="announcements-list">
+        <div class="section-content">
             <?php while ($announcement = $announcements->fetch_assoc()) { ?>
                 <div class="announcement">
                     <h2><?php echo htmlspecialchars($announcement['TITLE']); ?><i class="fas fa-bullhorn"></i></h2>
@@ -319,6 +442,102 @@ $announcements = $con->query("SELECT * FROM announcements ORDER BY created_at DE
             <?php } ?>
         </div>
     </div>
+
+    <!-- Lab Resources Section -->
+    <div class="section-container">
+        <div class="section-header">
+            <h1>
+                <i class="fas fa-book"></i>
+                Lab Resources
+            </h1>
+        </div>
+        
+        <div class="filters">
+            <div class="search-box">
+                <input type="text" id="search" placeholder="Search resources..." 
+                       value="<?php echo htmlspecialchars($search); ?>">
+            </div>
+            
+        
+        <div class="section-content">
+            <div class="resources-grid">
+                <?php if (mysqli_num_rows($resources_result) > 0): ?>
+                    <?php while ($row = mysqli_fetch_assoc($resources_result)): ?>
+                        <div class="resource-card">
+                            <div class="resource-header">
+                                <div class="category-badge">
+                                    <i class="fas fa-tag"></i> <?php echo htmlspecialchars($row['category']); ?>
+                                </div>
+                                <div class="resource-date">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <?php echo date('F j, Y', strtotime($row['upload_date'])); ?>
+                                </div>
+                            </div>
+                            
+                            <div class="resource-body">
+                                <h3 class="resource-title">
+                                    <?php echo htmlspecialchars($row['title']); ?>
+                                </h3>
+                                <p class="resource-description">
+                                    <?php echo htmlspecialchars($row['description']); ?>
+                                </p>
+                            </div>
+
+                            <div class="resource-actions">
+                                <?php 
+                                $hasLink = isset($row['link']) && !empty(trim($row['link']));
+                                $hasFile = isset($row['file_path']) && !empty(trim($row['file_path']));
+                                ?>
+
+                                <?php if ($hasLink): ?>
+                                    <a href="<?php echo htmlspecialchars($row['link']); ?>" 
+                                       target="_blank" 
+                                       class="resource-btn link-btn">
+                                        <i class="fas fa-external-link-alt"></i> Visit Link
+                                    </a>
+                                <?php endif; ?>
+                                
+                                <?php if ($hasFile): ?>
+                                    <a href="uploads/resources/<?php echo htmlspecialchars($row['file_path']); ?>" 
+                                       download="<?php echo htmlspecialchars($row['file_name']); ?>"
+                                       class="resource-btn download-btn">
+                                        <i class="fas fa-download"></i> Download File
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <div class="no-resources">
+                        <i class="fas fa-search"></i>
+                        <p>No resources found. Please try a different search or category.</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    const searchInput = document.getElementById('search');
+    const categorySelect = document.getElementById('category');
+    const typeSelect = document.getElementById('type');
+
+    function updateResults() {
+        const search = searchInput.value;
+        const category = categorySelect.value;
+        const type = typeSelect.value;
+        window.location.href = `viewAnnouncement.php?search=${encodeURIComponent(search)}&category=${encodeURIComponent(category)}&type=${encodeURIComponent(type)}`;
+    }
+
+    searchInput.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+            updateResults();
+        }
+    });
+
+    categorySelect.addEventListener('change', updateResults);
+    typeSelect.addEventListener('change', updateResults);
+</script>
 </body>
 </html>

@@ -120,114 +120,101 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
             position: relative;
         }
 
-        /* Sidebar Styles */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(135deg, #14569b, #2a3f5f);
-            height: 100vh;
-            padding: 25px;
+        /* Top Navigation Bar Styles */
+        .top-nav {
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
             position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-left {
             display: flex;
-            flex-direction: column;
-            transform: translateX(0);
-            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .dashboard-header {
-            text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .dashboard-header h2 {
-            color: white;
-            font-size: 26px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .profile-link {
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            padding: 15px;
-            margin-bottom: 25px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.1);
+            gap: 20px;
         }
 
-        .profile-link img {
-            width: 90px;
-            height: 90px;
+        .nav-left img {
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            margin-bottom: 12px;
-            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
-        .profile-link .user-name {
+        .nav-left .user-name {
             color: white;
-            font-size: 18px;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        .nav-links {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 12px 15px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .nav-links a i {
-            width: 20px;
-            text-align: center;
+            font-weight: 600;
             font-size: 1.1rem;
         }
 
-        .nav-links a:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateX(5px);
+        .nav-right {
+            display: flex;
+            gap: 15px;
         }
 
-        .logout-button {
-            margin-top: auto;
-            background: rgba(220, 53, 69, 0.1) !important;
+        .nav-right a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .nav-right a i {
+            font-size: 1rem;
+        }
+
+        .nav-right a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-right .logout-button {
+            background: rgba(220, 53, 69, 0.1);
+            margin-left: 10px;
+        }
+
+        .nav-right .logout-button:hover {
+            background: rgba(220, 53, 69, 0.2);
         }
 
         /* Content Area */
         .content {
-            margin-left: 280px;
+            margin-top: 80px;
             padding: 20px;
-            width: calc(100% - 280px);
-            height: 100vh;
-            overflow: hidden;
+            min-height: calc(100vh - 80px);
+            background: #f5f5f5;
+            width: 100%;
+        }
+
+        /* Remove old sidebar styles */
+        .sidebar {
+            display: none;
         }
 
         .reservation-container {
             background: white;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            height: 100%;
+            height: calc(100vh - 100px);
             display: flex;
             flex-direction: column;
         }
 
         .reservation-title {
-            background: linear-gradient(135deg, #14569b, #2a3f5f);
+            background: rgb(26, 19, 46);
             color: white;
             padding: 20px 25px;
             border-radius: 15px 15px 0 0;
@@ -259,6 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
 
         .back-button:hover {
             background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         .reservation-form {
@@ -315,9 +303,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
 
         .form-group input:focus,
         .form-group select:focus {
-            border-color: #14569b;
+            border-color: rgb(47, 0, 177);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(20, 86, 155, 0.1);
+            box-shadow: 0 0 0 3px rgba(47, 0, 177, 0.1);
         }
 
         .student-info input {
@@ -333,7 +321,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
         }
 
         .submit-btn {
-            background: #14569b;
+            background: rgb(3, 133, 57);
             color: white;
             border: none;
             padding: 12px 24px;
@@ -348,8 +336,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
         }
 
         .submit-btn:hover {
-            background: #1a4c8f;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(47, 0, 177, 0.2);
         }
 
         /* Modal Styles */
@@ -365,313 +353,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
             background-color: rgba(0, 0, 0, 0.4);
         }
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-            border-radius: 10px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-        }
-
-        .close {
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .seat-grid {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 10px;
-        }
-
-        .seat {
-            background: #14569b;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .seat:hover {
-            background: #1a4c8f;
-        }
-
-        .select-seat-btn {
-            background: #14569b;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .select-seat-btn:hover {
-            background: #1a4c8f;
-        }
-
-        .select-seat-btn {
-            background: #14569b;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .select-seat-btn:hover {
-            background: #1a4c8f;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 15px;
-            width: 80%;
-            max-width: 800px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .close {
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .seat-grid {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 10px;
-            padding: 20px;
-        }
-
-        .seat {
-            padding: 15px;
-            text-align: center;
-            border-radius: 8px;
-            cursor: pointer;
-            background: #4ade80;
-            color: white;
-            transition: all 0.3s ease;
-        }
-
-        .seat.taken {
-            background: #ef4444;
-            cursor: not-allowed;
-        }
-
-        .seat:hover:not(.taken) {
-            transform: scale(1.05);
-        }
-
-        /* Add these CSS rules to your existing styles */
-        .seat-input-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .seat-input-group input[type="number"] {
-            width: 55%; /* Reduced width */
-            flex-shrink: 0;
-        }
-
-        .select-seat-btn {
-            margin-top: 0 !important; /* Override existing margin */
-            height: 41px; /* Match input height */
-        }
-        
-        /* Reservation History Styles */
-        .reservation-history {
-            margin-top: 0;
-            padding: 0;
-            box-shadow: none;
-            background: transparent;
-        }
-
-        .history-header {
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .history-header h2 {
-            color: #14569b;
-            font-size: 1.2rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .history-table-container {
-            overflow-x: auto;
-        }
-
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        .history-table th {
-            background: #f8fafc;
-            color: #4a5568;
-            font-weight: 600;
-            padding: 12px;
-            text-align: left;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .history-table td {
-            padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
-            color: #2d3748;
-        }
-
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .status-approved {
-            background: #def7ec;
-            color: #046c4e;
-        }
-
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-rejected {
-            background: #fee2e2;
-            color: #981b1b;
-        }
-
-        .no-records {
-            text-align: center;
-            color: #718096;
-            font-style: italic;
-        }
-
-        .history-table tr:hover {
-            background: #f8fafc;
-        }
-
-        /* Add to your existing styles in reservation.php */
-        .seat {
-            padding: 15px;
-            text-align: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .seat.available {
-            background: #dcfce7;
-            border: 2px solid #22c55e;
-            color: #166534;
-        }
-
-        .seat.used {
-            background: #fee2e2;
-            border: 2px solid #ef4444;
-            color: #991b1b;
-            cursor: not-allowed;
-        }
-
-        .seat.maintenance {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
-            color: #92400e;
-            cursor: not-allowed;
-        }
-
-        .seat.reserved {
-            background: #e0e7ff;
-            border: 2px solid #6366f1;
-            color:rgb(48, 71, 163);
-            cursor: not-allowed;
-        }
-
-        .seat:hover:not(.used):not(.maintenance):not(.reserved) {
-            transform: scale(1.05);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Update the legend style */
-        .seat-legend {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #f8fafc;
-            border-radius: 8px;
-            flex-wrap: wrap;
-        }
-
-        /* Modal and Grid Styles */
         .modal-content {
             background-color: white;
             margin: 2% auto;
@@ -692,7 +373,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
         }
 
         .modal-header h2 {
-            color: #14569b;
+            color: rgb(47, 0, 177);
             font-size: 1.5rem;
             display: flex;
             align-items: center;
@@ -710,31 +391,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
 
         .close:hover {
             color: #2d3748;
-        }
-
-        .seat-legend {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            margin-bottom: 30px;
-            padding: 15px;
-            background: #f8fafc;
-            border-radius: 10px;
-            flex-wrap: wrap;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            color: #4a5568;
-        }
-
-        .legend-color {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
         }
 
         .seat-grid {
@@ -845,7 +501,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
         }
 
         .filter-btn.active {
-            background: #14569b;
+            background: rgb(26, 19, 46);
             color: white;
         }
 
@@ -893,21 +549,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
     </style>
 </head>
 <body>
-<div class="sidebar">
-    <a href="profile.php" class="profile-link">
-        <img src="uploads/<?php echo $profile_pic; ?>" alt="Profile Picture">
-        <div class="user-name"><?php echo $user_name; ?></div>
-    </a>
-    <div class="nav-links">
-        <a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="viewAnnouncement.php"><i class="fas fa-bullhorn"></i> Announcement</a>
-        <a href="labRules&Regulations.php"><i class="fas fa-flask"></i> Rules & Regulations</a>
-        <a href="sitinrules.php"><i class="fas fa-book"></i> Sit-in Rules</a>
-        <a href="history.php"><i class="fas fa-history"></i> History</a>
-        <a href="reservation.php"><i class="fas fa-calendar-alt"></i> Reservation</a>
-        <a href="labschedule.php"><i class="fas fa-calendar-alt"></i> Lab Schedules</a>
-        <a href="viewlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-        <a href="login.php" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+<div class="top-nav">
+    <div class="nav-left">
+        <img src="uploads/<?php echo $profile_pic; ?>" alt="Profile Picture" onerror="this.src='assets/default.jpg';">
+        <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
+    </div>
+    <div class="nav-right">
+        <a href="dashboard.php"> Dashboard</a>
+        <a href="viewAnnouncement.php"> Announcements and Resources</a>
+        <a href="profile.php"> Edit Profile</a>
+        <a href="labRules&Regulations.php"> Lab Rules</a>
+        <a href="labschedule.php"> Lab Schedules</a>
+        <a href="reservation.php"> Reservation</a>
+        <a href="history.php"> History</a>
+        <a href="login.php" class="logout-button"> Log Out</a>
     </div>
 </div>
 
@@ -918,9 +573,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
                 <i class="fas fa-calendar-alt"></i>
                 Reservation
             </h1>
-            <a href="dashboard.php" class="back-button">
-                <i class="fas fa-arrow-left"></i>
-                Back to Dashboard
+            <a>
             </a>
         </div>
         <div class="reservation-form-container">
@@ -1006,21 +659,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reserve'])) {
                     <div class="form-group">
                         <label for="purpose">Purpose:</label>
                         <select name="purpose" id="purpose" required>
-                            <<option value="">Select Time</option>
+                            <option value="">Select Time</option>
                             <option value="Select">Select</option>
-            <option value="C Programming">C Programming</option>
-            <option value="Java Programming">Java Programming</option>
-            <option value="C# Programming">C# Programming</option>
-            <option value="System Integration & Architecture">System Integration & Architecture</option>
-            <option value="Embedded System & IoT">Embedded System & IoT</option>
-            <option value="Digital logic & Design">Digital logic & Design</option>
-            <option value="Computer Application">Computer Application</option>
-            <option value="Database">Database</option>
-            <option value="Project Management">Project Management</option>
-            <option value="Python Programming">Python Programming</option>
-            <option value="Mobile Application">Mobile Application</option>
-            <option value="Others...">Others...</option>
-            
+                            <option value="C Programming">C Programming</option>
+                            <option value="Java Programming">Java Programming</option>
+                            <option value="C# Programming">C# Programming</option>
+                            <option value="System Integration & Architecture">System Integration & Architecture</option>
+                            <option value="Embedded System & IoT">Embedded System & IoT</option>
+                            <option value="Digital logic & Design">Digital logic & Design</option>
+                            <option value="Computer Application">Computer Application</option>
+                            <option value="Database">Database</option>
+                            <option value="Project Management">Project Management</option>
+                            <option value="Python Programming">Python Programming</option>
+                            <option value="Mobile Application">Mobile Application</option>
+                            <option value="Others...">Others...</option>
                         </select>
                     </div>
 

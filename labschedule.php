@@ -51,113 +51,88 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
             position: relative;
         }
 
-/* Sidebar Styles */
-.sidebar {
-    width: 280px;
-    background: linear-gradient(135deg, #14569b, #2a3f5f);
-    height: 100vh;
-    padding: 25px;
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    transform: translateX(0); /* Remove the initial transform */
-    transition: all 0.3s ease-in-out;
-    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.1);
-}
+        /* Top Navigation Bar Styles */
+        .top-nav {
+            background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
 
-.dashboard-header {
-    text-align: center;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
 
-.dashboard-header h2 {
-    color: white;
-    font-size: 26px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
+        .nav-left img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
 
-.profile-link {
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 15px;
-    margin-bottom: 25px;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.1);
-}
+        .nav-left .user-name {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
 
-.profile-link:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-}
+        .nav-right {
+            display: flex;
+            gap: 15px;
+        }
 
-.profile-link img {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    margin-bottom: 12px;
-    object-fit: cover;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
+        .nav-right a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
 
-.profile-link .user-name {
-    color: white;
-    font-size: 18px;
-    font-weight: 500;
-    text-align: center;
-}
+        .nav-right a i {
+            font-size: 1rem;
+        }
 
-.nav-links {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
+        .nav-right a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
 
-.nav-links a {
-    color: white;
-    text-decoration: none;
-    padding: 12px 15px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
+        .nav-right .logout-button {
+            background: rgba(220, 53, 69, 0.1);
+            margin-left: 10px;
+        }
 
-.nav-links a i {
-    width: 20px;
-    text-align: center;
-    font-size: 1.1rem;
-}
-
-.nav-links a:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateX(5px);
-}
-
-.logout-button {
-    margin-top: auto;
-    background: rgba(220, 53, 69, 0.1) !important;
-}
-
-.logout-button:hover {
-    background: rgba(220, 53, 69, 0.2) !important;
-}
-
+        .nav-right .logout-button:hover {
+            background: rgba(220, 53, 69, 0.2);
+        }
 
         /* Content Area */
         .content {
-            margin-left: 280px;
-            padding: 30px;
-            width: calc(100% - 280px);
-            min-height: 100vh;
-            background: #f8fafc;
+            margin-top: 80px;
+            padding: 20px;
+            min-height: calc(100vh - 80px);
+            background: #f5f5f5;
+            width: 100%;
+        }
+
+        /* Remove old sidebar styles */
+        .sidebar {
+            display: none;
         }
 
         .schedule-container {
@@ -165,61 +140,80 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            height: calc(100vh - 60px);
+            height: calc(100vh - 100px);
             overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
-        .schedule-header {
+        .resources-header {
+            background: rgb(26, 19, 46);
+            color: white;
+            padding: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e2e8f0;
-            margin-bottom: 25px;
+            border-radius: 15px 15px 0 0;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: #f1f5f9;
-            color: #475569;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .back-btn:hover {
-            background: #e2e8f0;
-            transform: translateX(-5px);
-        }
-
-        .schedule-header h1 {
-            color: #14569b;
-            font-size: 1.8rem;
+        .resources-header h1 {
+            font-size: 24px;
             display: flex;
             align-items: center;
             gap: 10px;
-            margin: 0;
         }
 
-        .header-controls select {
-            padding: 8px 15px;
+        .back-button {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: auto;
+        }
+
+        .filter-group select {
+            padding: 12px;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
+            font-size: 0.95rem;
+            min-width: 200px;
+            color: #4a5568;
             background: white;
-            color: #2d3748;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:hover {
+            border-color: #cbd5e0;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: rgb(47, 0, 177);
+            box-shadow: 0 0 0 3px rgba(47, 0, 177, 0.1);
         }
 
         .schedule-table {
@@ -236,7 +230,7 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
         }
 
         .schedule-table th {
-            background: #14569b;
+            background: rgb(26, 19, 46);
             color: white;
             padding: 15px;
             text-align: center;
@@ -295,120 +289,43 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
             background: #991b1b;
         }
 
-        /* Replace the existing header styles with these */
-        .resources-header {
-            background: linear-gradient(135deg, #14569b, #2a3f5f);
-            color: white;
-            padding: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 15px 15px 0 0;
+        /* Remove burger menu styles */
+        .burger {
+            display: none;
         }
 
-        .resources-header h1 {
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .back-button {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-        }
-
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
-        }
-
-        /* Move the room filter to match resources filter style */
-        .header-controls {
-            padding: 20px;
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .header-controls select {
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            min-width: 200px;
-            color: #4a5568;
-        }
-
-        /* Add to your existing styles */
-        .filter-section {
-            background: white;
-            padding: 20px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-left: auto; /* This will push it to the right */
-        }
-
-        .filter-group label {
-            color: #4a5568;
-            font-weight: 500;
-        }
-
-        .filter-group select {
-            padding: 10px 15px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            background: white;
-            color: #2d3748;
-            min-width: 200px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .filter-group select:hover {
-            border-color: #cbd5e0;
-        }
-
-        .filter-group select:focus {
-            outline: none;
-            border-color: #14569b;
-            box-shadow: 0 0 0 3px rgba(20, 86, 155, 0.1);
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .content {
+                padding: 15px;
+            }
+            
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-group select {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="burger" onclick="toggleSidebar()">
-        <div></div>
-        <div></div>
-        <div></div>
+<div class="top-nav">
+    <div class="nav-left">
+        <img src="uploads/<?php echo $profile_pic; ?>" alt="Profile Picture" onerror="this.src='assets/default.jpg';">
+        <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
     </div>
-    <div class="sidebar">
-    <a href="profile.php" class="profile-link">
-        <img src="uploads/<?php echo $profile_pic; ?>" alt="Profile Picture">
-        <div class="user-name"><?php echo $user_name; ?></div>
-    </a>
-    <div class="nav-links">
-        <a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="viewAnnouncement.php"><i class="fas fa-bullhorn"></i> Announcement</a>
-        <a href="labRules&Regulations.php"><i class="fas fa-flask"></i> Rules & Regulations</a>
-        <a href="sitinrules.php"><i class="fas fa-book"></i> Sit-in Rules</a>
-        <a href="history.php"><i class="fas fa-history"></i> History</a>
-        <a href="reservation.php"><i class="fas fa-calendar-alt"></i> Reservation</a>
-        <a href="labschedule.php"><i class="fas fa-calendar-alt"></i> Lab Schedules</a>
-        <a href="viewlabresources.php"><i class="fas fa-book"></i> Lab Resources</a>
-        <a href="login.php" class="logout-button"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+    <div class="nav-right">
+        <a href="dashboard.php"> Dashboard</a>
+        <a href="viewAnnouncement.php"> Announcements and Resources</a>
+        <a href="profile.php"> Edit Profile</a>
+        <a href="labRules&Regulations.php"> Lab Rules</a>
+        <a href="labschedule.php"> Lab Schedules</a>
+        <a href="reservation.php"> Reservation</a>
+        <a href="history.php"> History</a>
+        <a href="login.php" class="logout-button"> Log Out</a>
     </div>
 </div>
 
@@ -419,9 +336,7 @@ $rooms = ['524', '526', '528', '530', '542', '544'];
                 <i class="fas fa-calendar-alt"></i>
                 Laboratory Schedule
             </h1>
-            <a href="dashboard.php" class="back-button">
-                <i class="fas fa-arrow-left"></i>
-                Back to Dashboard
+            <a >
             </a>
         </div>
 

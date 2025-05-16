@@ -774,15 +774,16 @@ html, body {
     </div>
     <div class="nav-right">
         <a href="dashboard.php"></i> Dashboard</a>
-        <a href="viewAnnouncement.php"></i> Announcement</a>
+        <a href="viewAnnouncement.php"> Announcements and Resources</a>
         <a href="profile.php"></i> Edit Profile</a>
         <a href="labRules&Regulations.php"></i> Lab Rules</a>
     
         
         
         <a href="labschedule.php"></i> Lab Schedules</a>
-        <a href="viewlabresources.php"></i> Lab Resources</a>
         <a href="reservation.php"></i> Reservation</a>
+        <a href="history.php"></i> History</a>
+
         <a href="login.php" class="logout-button"></i> Log Out</a>
     </div>
 </div>

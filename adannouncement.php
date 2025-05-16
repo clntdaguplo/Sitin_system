@@ -200,10 +200,12 @@ html, body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     position: relative;
     min-height: 400px;
+    display: flex;
+    flex-direction: column;
 }
 
 .div1 h1 {
-    color:rgb(0, 0, 0);
+    color: rgb(0, 0, 0);
     margin-bottom: 25px;
     font-size: 1.8rem;
     display: flex;
@@ -211,34 +213,11 @@ html, body {
     gap: 10px;
 }
 
-.current-time {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 10px 15px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    color: #333;
-    font-size: 1.1rem;
-    font-weight: 500;
-    position: absolute;
-    bottom: 20px;
-    left: 30px;
-    right: 30px;
-}
-
-.current-time i {
-    color: #45a049;
-}
-
-.current-time span {
-    margin-right: 10px;
-}
-
 form {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    flex: 1;
 }
 
 input[type="text"], textarea {
@@ -252,7 +231,7 @@ input[type="text"], textarea {
 }
 
 input[type="text"]:focus, textarea:focus {
-    border-color:rgb(0, 0, 0);
+    border-color: rgb(0, 0, 0);
     outline: none;
     box-shadow: 0 0 0 4px rgba(20, 86, 155, 0.1);
 }
@@ -260,10 +239,11 @@ input[type="text"]:focus, textarea:focus {
 textarea {
     min-height: 200px;
     resize: vertical;
+    flex: 1;
 }
 
 button[type="submit"] {
-    background: #45a049;
+    background: linear-gradient(45deg,rgb(150, 145, 79),rgb(47, 0, 177));
     color: white;
     padding: 15px 25px;
     border: none;
@@ -276,18 +256,34 @@ button[type="submit"] {
     align-items: center;
     justify-content: center;
     gap: 10px;
-}
-
-button[type="submit"]::before {
-    content: '\f0a1';
-    font-family: 'Font Awesome 5 Free';
-    font-weight: 900;
+    margin-top: auto;
 }
 
 button[type="submit"]:hover {
-    background:rgb(68, 170, 73);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(20, 86, 155, 0.2);
+}
+
+.current-time {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-top: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.current-time i {
+    color: rgb(47, 0, 177);
+}
+
+.current-time span {
+    margin-right: 10px;
 }
 
 .div2 {
